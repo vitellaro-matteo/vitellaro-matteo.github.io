@@ -1,125 +1,57 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Thank You</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-        .thank-you-container {
-            max-width: 600px;
-        }
-        #map {
-            width: 100%;
-            height: 450px;
-            margin: 20px 0;
-        }
-        #floatingButton {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
+    <title>Ignacia's CrossClimb</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="thank-you-container">
-        <h1 id="thankYouMessage">Danke fürs Kommen</h1>
-        <p id="countdownMessage">Countdown bis zum 10. Oktober um 19:00 Uhr</p>
-        <div id="countdown"></div>
-        <div id="map"></div>
-        <a id="mapsLink" href="https://maps.app.goo.gl/1WqHfdcrGPLQQrgq9" target="_blank">Öffnen in Google Maps</a>
+    <div class="game-container">
+        <h1>Ina's Climb</h1>
+        <p>It's like CrossClimb, but slightly worse!</p>
+        <div class="grid">
+            <div class="cell locked">
+                <span class="lock-icon">🔒</span>
+            </div>
+            <div class="cell" draggable="true" data-hint="Hint for Cell 1">
+                <input maxlength="1">
+                <input maxlength="1">
+                <input maxlength="1">
+                <input maxlength="1">
+            </div>
+            <div class="cell" draggable="true" data-hint="Hint for Cell 2">
+                <input maxlength="1">
+                <input maxlength="1">
+                <input maxlength="1">
+                <input maxlength="1">
+            </div>
+            <div class="cell" draggable="true" data-hint="Hint for Cell 3">
+                <input maxlength="1">
+                <input maxlength="1">
+                <input maxlength="1">
+                <input maxlength="1">
+            </div>
+            <div class="cell" draggable="true" data-hint="Hint for Cell 4">
+                <input maxlength="1">
+                <input maxlength="1">
+                <input maxlength="1">
+                <input maxlength="1">
+            </div>
+            <div class="cell" draggable="true" data-hint="Hint for Cell 5">
+                <input maxlength="1">
+                <input maxlength="1">
+                <input maxlength="1">
+                <input maxlength="1">
+            </div>
+            <div class="cell locked">
+                <span class="lock-icon">🔒</span>
+            </div>
+        </div>
+        <button id="check">Check Answers</button>
+        <div class="hint-box" id="hint-box"></div>
+        <p class="message"></p>
     </div>
-    <img id="floatingButton" src="german-flag.png" alt="DE" width="30" height="20">
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const floatingButton = document.getElementById("floatingButton");
-            const thankYouMessage = document.getElementById("thankYouMessage");
-            const countdownMessage = document.getElementById("countdownMessage");
-            const mapsLink = document.getElementById("mapsLink");
-            const flag = document.getElementById("floatingButton");
-
-            // Handle language toggle
-            floatingButton.addEventListener("click", function() {
-                if (flag.alt === "DE") {
-                    flag.src = "italian-flag.png";
-                    flag.alt = "IT";
-                    document.documentElement.lang = "it";
-                    translateToItalian();
-                } else {
-                    flag.src = "german-flag.png";
-                    flag.alt = "DE";
-                    document.documentElement.lang = "de";
-                    translateToGerman();
-                }
-            });
-
-            // Translate page content to German
-            function translateToGerman() {
-                thankYouMessage.innerText = "Danke fürs Kommen";
-                countdownMessage.innerText = "Countdown bis zum 10. Oktober um 19:00 Uhr";
-                mapsLink.innerText = "Öffnen in Google Maps";
-            }
-
-            // Translate page content to Italian
-            function translateToItalian() {
-                thankYouMessage.innerText = "Grazie per venire";
-                countdownMessage.innerText = "Conto alla rovescia fino al 10 ottobre alle 19:00";
-                mapsLink.innerText = "Apri in Google Maps";
-            }
-
-            // Initialize countdown
-            function initializeCountdown() {
-                const countdown = document.getElementById("countdown");
-                const partyDate = new Date('October 10, 2024 19:00:00').getTime();
-                const interval = setInterval(function() {
-                    const now = new Date().getTime();
-                    const distance = partyDate - now;
-                    if (distance < 0) {
-                        clearInterval(interval);
-                        countdown.innerText = "Die Veranstaltung hat begonnen!";
-                        return;
-                    }
-                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                    countdown.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-                }, 1000);
-            }
-
-            // Initialize Google Map
-            function initializeMap() {
-                const mapDiv = document.getElementById("map");
-                const iframe = document.createElement("iframe");
-                iframe.width = "100%";
-                iframe.height = "450";
-                iframe.style.border = "0";
-                iframe.src = "https://www.google.com/maps/embed/v1/place?q=Friedhofstraße+9+66701+Beckingen&key=AIzaSyD-v7UB9Lmyb9Fd0UOGRUrZ73blIA0VICA";
-                mapDiv.appendChild(iframe);
-            }
-
-            // Set initial language to German
-            translateToGerman();
-            
-            // Initialize countdown and map
-            initializeCountdown();
-            initializeMap();
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
