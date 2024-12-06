@@ -1,0 +1,94 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+.game-container {
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.grid {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.cell {
+    width: 80px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #e0e0e0;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    position: relative;
+}
+
+.cell.locked {
+    background-color: #ccc;
+}
+
+.lock-icon {
+    font-size: 24px;
+}
+
+input {
+    width: 60%;
+    height: 20px;
+    text-align: center;
+    font-size: 16px;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.hint-box {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fffae5;
+    border: 1px solid #ffcc00;
+    border-radius: 5px;
+    display: none;
+}
+
+.message {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #ff5722;
+}
+
+.cell.error {
+    animation: shake 0.5s;
+    background-color: #ffcccc;
+    border-color: red;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
