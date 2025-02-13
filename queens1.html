@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💕💕💕Happy Valentine's Day my love💕💕💕</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
+        body {
+            font-family: 'Dancing Script', cursive;
+            background: linear-gradient(to bottom, #ffe0f0, #ffb6c1);
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #d63384;
+            margin-top: 20px;
+        }
+        .puzzle-container {
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, min(9vw, 36px));
+            grid-template-rows: repeat(10, min(9vw, 36px));
+            gap: 2px; 
+            background-color: #fff;
+            padding: 3px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 100vw;
+            overflow: hidden;
+        }
+        
+        .cell {
+            width: min(9vw, 36px);
+            height: min(9vw, 36px);
+            font-size: min(4.5vw, 20px);
+        }        
+        
+        .puzzle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .message {
+            text-align: center;
+            max-width: 80%;
+            margin: 10px auto;
+        }
+        .area-0 { background-color: #f8d7da; }
+        .area-1 { background-color: #ffc2a1; }
+        .area-2 { background-color: #aecbfa; }
+        .area-3 { background-color: #e2f2a2; }
+        .area-4 { background-color: #ffd5a3; }
+        .area-5 { background-color: #bfe7b9; }
+        .area-6 { background-color: #e0d6b9; }
+        .area-7 { background-color: #dac1f5; }
+        .area-8 { background-color: #f4a6c1; }
+        .area-9 { background-color: #bde5e5; }
+        .queen {
+            font-size: 28px;
+        }
+        .invalid {
+            color: rgba(255, 105, 180, 0.6);
+            font-size: 22px;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+        
+        /* Apply shake to all placed queens */
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <h1>Happy Valentine's Day my love</h1>
+    <div class="puzzle-container">
+        <div class="grid" id="grid"></div>
+        <div class="message" id="message"></div>
+    </div>
+    <script>
+        const gridElement = document.getElementById("grid");
+        const messageElement = document.getElementById("message");
+
+        // Define the heart-shaped grid with areas (0 = inactive, 2/3/4 = areas)
+        const heartGrid = [
+            [0, 0, 2, 2, 0, 0, 7, 7, 0, 0],
+            [0, 2, 2, 2, 2, 7, 7, 7, 9, 0],
+            [1, 2, 2, 2, 7, 7, 7, 7, 9, 9],
+            [1, 1, 4, 4, 5, 5, 7, 8, 8, 9],
+            [1, 3, 3, 4, 5, 6, 8, 8, 9, 9],
+            [0, 3, 3, 4, 5, 6, 6, 8, 8, 0],
+            [0, 0, 3, 3, 5, 5, 6, 8, 0, 0],
+            [0, 0, 0, 3, 5, 6, 6, 0, 0, 0],
+            [0, 0, 0, 0, 5, 5, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+
+        const size = 10;
+        let queens = [];
+        let areaQueenMap = {};
+
+        function createGrid() {
+            gridElement.innerHTML = "";
+            for (let row = 0; row < size; row++) {
+                for (let col = 0; col < size; col++) {
+                    const cell = document.createElement("div");
+                    cell.classList.add("cell");
+                    const area = heartGrid[row][col];
+                    cell.classList.add(`area-${area}`);
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.dataset.area = area;
+                    cell.addEventListener("click", placeQueen);
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        function placeQueen(event) {
+            const cell = event.target;
+            const row = Number(cell.dataset.row);
+            const col = Number(cell.dataset.col);
+            const area = cell.dataset.area;
+
+            if (cell.classList.contains("queen")) {
+                cell.innerHTML = "";
+                cell.classList.remove("queen");
+                queens = queens.filter(q => q.row !== row || q.col !== col);
+                delete areaQueenMap[area];
+                updateInvalidPositions();
+                return;
+            }
+
+            if (areaQueenMap[area] !== undefined || !isValidPlacement(row, col)) {
+                return;
+            }
+
+            const queenEmojis = ['🍓', '🍗', '🎡', '🚴‍♂️', '🥟', '🐸', '💕', '🐢', '🌻', '🧅'];
+            cell.innerHTML = queenEmojis[queens.length % 10];
+            cell.classList.add("queen");
+            queens.push({ row, col, area });
+            areaQueenMap[area] = true;
+            updateInvalidPositions();
+            checkWin();
+        }
+
+        function isValidPlacement(row, col) {
+            for (const q of queens) {
+                if (q.row === row || q.col === col) return false;
+                if (Math.abs(q.row - row) === Math.abs(q.col - col) && Math.abs(q.row - row) <= 1) return false;
+            }
+            return true;
+        }
+
+        function updateInvalidPositions() {
+            document.querySelectorAll(".cell").forEach(cell => {
+                const row = Number(cell.dataset.row);
+                const col = Number(cell.dataset.col);
+                const area = cell.dataset.area;
+        
+                if (cell.classList.contains("queen")) {
+                    return;
+                }
+                if (areaQueenMap[area]) {
+                    cell.innerHTML = areaQueenMap[cell.dataset.area] ? "<span class='invalid'>❌</span>" : "";
+                } else {
+                    if (cell.innerHTML = isValidPlacement(row, col)){
+                        cell.innerHTML = "";
+                    } else {
+                        cell.innerHTML = "<span class='invalid'>❌</span>";
+                    } 
+                }
+            });
+        }
+
+        function checkWin() {
+            if (queens.length === 10) {
+                messageElement.innerText = "💕 To many more fun dates. I love you to the moon and back!💕";
+        
+                // Make all emojis shake
+                document.querySelectorAll(".queen").forEach(cell => {
+                    cell.classList.add("shake");
+                });
+        
+                // Remove all ❌ indicators
+                document.querySelectorAll(".invalid").forEach(el => el.remove());
+            } else {
+                messageElement.innerText = "";
+            }
+        }
+
+        createGrid();
+    </script>
+</body>
+</html>
