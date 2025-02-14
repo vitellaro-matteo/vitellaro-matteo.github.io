@@ -145,7 +145,7 @@
                 return;
             }
 
-            const queenEmojis = ['🍓', '🍗', '🎡', '🚴‍♂️', '🥟', '🐸', '💕', '🐢', '🌻', '🧅'];
+            const queenEmojis = ['🍓', '🍗', '🎡', '🚴‍♂️', '🥟', '🐸', '💕', '🐢', '🧅'];
             cell.innerHTML = queenEmojis[queens.length % 10];
             cell.classList.add("queen");
             queens.push({ row, col, area });
@@ -184,7 +184,7 @@
         }
 
         function checkWin() {
-            if (queens.length === 10) {
+            if (queens.length === 9) {
                 messageElement.innerText = "💕 To many more fun dates. I love you to the moon and back!💕";
         
                 // Make all emojis shake
