@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Welcome Tarik!!!</title>
+  <style>
+    body {
+      background-color: lime;
+      color: magenta;
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      animation: bgColorChange 2s infinite alternate;
+    }
+
+    @keyframes bgColorChange {
+      0% { background-color: lime; }
+      50% { background-color: yellow; }
+      100% { background-color: cyan; }
+    }
+
+    h1 {
+      font-size: 72px;
+      text-shadow: 3px 3px red;
+      animation: spin 4s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    marquee {
+      font-size: 36px;
+      color: blue;
+    }
+
+    img {
+      width: 200px;
+      margin-top: 20px;
+      border: 5px dashed pink;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hello Tarik!!!</h1>
+  <marquee behavior="alternate">Welcome to my silly website!</marquee>
+  <img src="https://media.giphy.com/media/3o6Zt481isNVuQI1l6/giphy.gif" alt="Dancing banana">
+  <p><blink>You're the coolest!!!</blink></p>
+  <audio autoplay loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    Your browser does not support the audio tag.
+  </audio>
+</body>
+</html>
