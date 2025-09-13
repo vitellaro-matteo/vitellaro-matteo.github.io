@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Matteo Francesco Vitellaro - CV</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      }
+    </script>
   </head>
-  <body class="antialiased bg-gradient-to-b from-white via-slate-50 to-slate-100 text-slate-900">
+  <body class="antialiased bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">
     <div id="root"></div>
     <script type="text/babel">
       const Job = ({ title, date, bullets=[] }) => (
@@ -46,30 +51,81 @@
       function MatteoCV() {
         return (
           <div className="min-h-screen">
-            <header className="max-w-6xl mx-auto p-6 md:p-10 flex flex-col md:flex-row items-start md:items-center gap-6">
-              <div className="flex-1">
-                <h1 className="text-3xl md:text-4xl font-semibold">Matteo Francesco Vitellaro</h1>
-                <p className="mt-1 text-slate-600">Master in Information and Computer Science — University of Luxembourg</p>
-                <div className="mt-4 flex flex-wrap gap-3 text-sm">
-                  <a href="mailto:mattrovit@gmail.com" className="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200">mattrovit@gmail.com</a>
-                  <a href="tel:+4915735492292" className="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200">+49 157 3549 2292</a>
-                  <a href="DynamicCV.pdf" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200">Download CV (PDF)</a>
-                </div>
-                <div className="mt-4 flex items-center gap-3 text-sm text-slate-600">
-                  <span>German, Italian: Native</span>
-                  <span className="opacity-40">•</span>
-                  <span>English: Fluent</span>
-                  <span className="opacity-40">•</span>
-                  <span>French: Conversational (B2)</span>
-                </div>
-              </div>
-              <nav className="w-full md:w-auto flex gap-2">
-                <a href="#about" className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md">About</a>
-                <a href="#experience" className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md">Experience</a>
-                <a href="#projects" className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md">Projects</a>
-                <a href="#education" className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md">Education</a>
-              </nav>
-            </header>
+  <header className="max-w-6xl mx-auto p-6 md:p-10 flex flex-col md:flex-row items-start md:items-center gap-6">
+    <div className="flex-1">
+      <h1 className="text-3xl md:text-4xl font-semibold">Matteo Francesco Vitellaro</h1>
+      <p className="mt-1 text-slate-600">
+        Master in Information and Computer Science — University of Luxembourg
+      </p>
+      <div className="mt-4 flex flex-wrap gap-3 text-sm">
+        <a
+          href="mailto:mattrovit@gmail.com"
+          className="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200"
+        >
+          mattrovit@gmail.com
+        </a>
+        <a
+          href="tel:+4915735492292"
+          className="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200"
+        >
+          +49 157 3549 2292
+        </a>
+        <a
+          href="DynamicCV.pdf"
+          target="_blank"
+          rel="noreferrer"
+          className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
+        >
+          Download CV (PDF)
+        </a>
+      </div>
+      <div className="mt-4 flex items-center gap-3 text-sm text-slate-600">
+        <span>German, Italian: Native</span>
+        <span className="opacity-40">•</span>
+        <span>English: Fluent</span>
+        <span className="opacity-40">•</span>
+        <span>French: Conversational (B2)</span>
+      </div>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <nav className="w-full md:w-auto flex gap-2">
+        <a
+          href="#about"
+          className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md"
+        >
+          About
+        </a>
+        <a
+          href="#experience"
+          className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md"
+        >
+          Experience
+        </a>
+        <a
+          href="#projects"
+          className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md"
+        >
+          Projects
+        </a>
+        <a
+          href="#education"
+          className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md"
+        >
+          Education
+        </a>
+      </nav>
+
+      <button
+        onClick={() => {
+          document.documentElement.classList.toggle("dark");
+        }}
+        className="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600"
+      >
+        Toggle Dark Mode
+      </button>
+    </div>
+  </header>
 
             <main className="max-w-6xl mx-auto p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-8">
               <aside className="md:col-span-1 space-y-6">
