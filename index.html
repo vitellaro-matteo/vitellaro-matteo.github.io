@@ -7,42 +7,46 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
-        darkMode: 'class'
-      }
+        darkMode: "class",
+      };
     </script>
   </head>
-  <body class="antialiased bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+  <body class="antialiased bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
     <div id="root"></div>
     <script type="text/babel">
-      const Job = ({ title, date, bullets=[] }) => (
-        <div className="p-4 border rounded-lg">
+      const Job = ({ title, date, bullets = [] }) => (
+        <div className="p-4 border rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
           <div className="flex items-start justify-between">
-            <h3 className="font-medium">{title}</h3>
-            <div className="text-sm text-slate-500">{date}</div>
+            <h3 className="font-medium dark:text-white">{title}</h3>
+            <div className="text-sm text-slate-500 dark:text-slate-400">{date}</div>
           </div>
-          <ul className="mt-2 text-sm list-disc pl-5 space-y-1 text-slate-700">
-            {bullets.map((b, i) => <li key={i}>{b}</li>)}
+          <ul className="mt-2 text-sm list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+            {bullets.map((b, i) => (
+              <li key={i}>{b}</li>
+            ))}
           </ul>
         </div>
       );
 
       const Project = ({ title, dateRange, summary }) => (
-        <div className="p-4 border rounded-lg">
+        <div className="p-4 border rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
           <div className="flex items-start justify-between">
-            <h4 className="font-medium">{title}</h4>
-            <div className="text-sm text-slate-500">{dateRange}</div>
+            <h4 className="font-medium dark:text-white">{title}</h4>
+            <div className="text-sm text-slate-500 dark:text-slate-400">{dateRange}</div>
           </div>
-          <p className="mt-2 text-sm text-slate-700">{summary}</p>
+          <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">{summary}</p>
         </div>
       );
 
-      const EdItem = ({ school, degree, details=[] }) => (
-        <div className="p-3 border rounded-lg">
-          <div className="font-medium">{school}</div>
-          <div className="text-sm text-slate-600">{degree}</div>
+      const EdItem = ({ school, degree, details = [] }) => (
+        <div className="p-3 border rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+          <div className="font-medium dark:text-white">{school}</div>
+          <div className="text-sm text-slate-600 dark:text-slate-400">{degree}</div>
           {details.length > 0 && (
-            <ul className="mt-2 text-sm list-disc pl-5 text-slate-700">
-              {details.map((d, i) => <li key={i}>{d}</li>)}
+            <ul className="mt-2 text-sm list-disc pl-5 text-slate-700 dark:text-slate-300">
+              {details.map((d, i) => (
+                <li key={i}>{d}</li>
+              ))}
             </ul>
           )}
         </div>
@@ -51,161 +55,321 @@
       function MatteoCV() {
         return (
           <div className="min-h-screen">
-  <header className="max-w-6xl mx-auto p-6 md:p-10 flex flex-col md:flex-row items-start md:items-center gap-6">
-    <div className="flex-1">
-      <h1 className="text-3xl md:text-4xl font-semibold">Matteo Francesco Vitellaro</h1>
-      <p className="mt-1 text-slate-600">
-        Master in Information and Computer Science — University of Luxembourg
-      </p>
-      <div className="mt-4 flex flex-wrap gap-3 text-sm">
-        <a
-          href="mailto:mattrovit@gmail.com"
-          className="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200"
-        >
-          mattrovit@gmail.com
-        </a>
-        <a
-          href="tel:+4915735492292"
-          className="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200"
-        >
-          +49 157 3549 2292
-        </a>
-        <a
-          href="DynamicCV.pdf"
-          target="_blank"
-          rel="noreferrer"
-          className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
-        >
-          Download CV (PDF)
-        </a>
-      </div>
-      <div className="mt-4 flex items-center gap-3 text-sm text-slate-600">
-        <span>German, Italian: Native</span>
-        <span className="opacity-40">•</span>
-        <span>English: Fluent</span>
-        <span className="opacity-40">•</span>
-        <span>French: Conversational (B2)</span>
-      </div>
-    </div>
+            <header className="max-w-6xl mx-auto p-6 md:p-10 flex flex-col md:flex-row items-start md:items-center gap-6">
+              <div className="flex-1">
+                <h1 className="text-3xl md:text-4xl font-semibold dark:text-white">
+                  Matteo Francesco Vitellaro
+                </h1>
+                <p className="mt-1 text-slate-600 dark:text-slate-400">
+                  Master in Information and Computer Science — University of Luxembourg
+                </p>
+                <div className="mt-4 flex flex-wrap gap-3 text-sm">
+                  <a
+                    href="mailto:mattrovit@gmail.com"
+                    className="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600"
+                  >
+                    mattrovit@gmail.com
+                  </a>
+                  <a
+                    href="tel:+4915735492292"
+                    className="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600"
+                  >
+                    +49 157 3549 2292
+                  </a>
+                  <a
+                    href="DynamicCV.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-600 dark:hover:bg-yellow-500"
+                  >
+                    Download CV (PDF)
+                  </a>
+                </div>
+                <div className="mt-4 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                  <span>German, Italian: Native</span>
+                  <span className="opacity-40">•</span>
+                  <span>English: Fluent</span>
+                  <span className="opacity-40">•</span>
+                  <span>French: Conversational (B2)</span>
+                </div>
+              </div>
 
-    <div className="flex items-center gap-2">
-      <nav className="w-full md:w-auto flex gap-2">
-        <a
-          href="#about"
-          className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md"
-        >
-          About
-        </a>
-        <a
-          href="#experience"
-          className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md"
-        >
-          Experience
-        </a>
-        <a
-          href="#projects"
-          className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md"
-        >
-          Projects
-        </a>
-        <a
-          href="#education"
-          className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md"
-        >
-          Education
-        </a>
-      </nav>
-
-      <button
-        onClick={() => {
-          document.documentElement.classList.toggle("dark");
-        }}
-        className="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600"
-      >
-        Toggle Dark Mode
-      </button>
-    </div>
-  </header>
+              <nav className="w-full md:w-auto flex gap-2">
+                <a
+                  href="#about"
+                  className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700"
+                >
+                  About
+                </a>
+                <a
+                  href="#experience"
+                  className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700"
+                >
+                  Experience
+                </a>
+                <a
+                  href="#projects"
+                  className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700"
+                >
+                  Projects
+                </a>
+                <a
+                  href="#education"
+                  className="px-4 py-2 rounded-lg bg-white border shadow-sm hover:shadow-md dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700"
+                >
+                  Education
+                </a>
+              </nav>
+            </header>
 
             <main className="max-w-6xl mx-auto p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-8">
               <aside className="md:col-span-1 space-y-6">
-                <section className="bg-white p-6 rounded-2xl shadow-sm">
-                  <h3 className="font-medium text-lg">Profile</h3>
-                  <p className="mt-2 text-sm text-slate-600">Master’s student in Computer Science specializing in AI and Reliable Software, focused on secure, trustworthy AI systems. Multilingual, experienced in intercultural environments. Co-Founder of the University of Luxembourg Cinema Club.</p>
+                <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm">
+                  <h3 className="font-medium text-lg dark:text-white">Profile</h3>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                    Master’s student in Computer Science specializing in AI and Reliable
+                    Software, focused on secure, trustworthy AI systems. Multilingual,
+                    experienced in intercultural environments. Co-Founder of the
+                    University of Luxembourg Cinema Club.
+                  </p>
                 </section>
-                <section className="bg-white p-6 rounded-2xl shadow-sm">
-                  <h3 className="font-medium text-lg">Skills</h3>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-slate-700">
-                    <div><strong className="block">Languages</strong><div className="mt-1">Python, Java, C/C++, Swift, Assembly, TypeScript, SQL, HTML, CSS, JavaScript, Bash</div></div>
-                    <div><strong className="block">Tools & Frameworks</strong><div className="mt-1">Git, Docker, PyTorch, Alloy Analyzer, AWS, Lambda, Flutter, CI/CD</div></div>
-                    <div><strong className="block">Concepts</strong><div className="mt-1">LLMs, RAG (Faiss), Federated Learning, Model Checking, Prompt Engineering, AI Agents</div></div>
-                    <div><strong className="block">Other</strong><div className="mt-1">Metamodeling, Reinforcement Learning, Deep Learning, Backend Development</div></div>
+                <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm">
+                  <h3 className="font-medium text-lg dark:text-white">Skills</h3>
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-slate-700 dark:text-slate-300">
+                    <div>
+                      <strong className="block">Languages</strong>
+                      <div className="mt-1">
+                        Python, Java, C/C++, Swift, Assembly, TypeScript, SQL, HTML, CSS,
+                        JavaScript, Bash
+                      </div>
+                    </div>
+                    <div>
+                      <strong className="block">Tools & Frameworks</strong>
+                      <div className="mt-1">
+                        Git, Docker, PyTorch, Alloy Analyzer, AWS, Lambda, Flutter, CI/CD
+                      </div>
+                    </div>
+                    <div>
+                      <strong className="block">Concepts</strong>
+                      <div className="mt-1">
+                        LLMs, RAG (Faiss), Federated Learning, Model Checking, Prompt
+                        Engineering, AI Agents
+                      </div>
+                    </div>
+                    <div>
+                      <strong className="block">Other</strong>
+                      <div className="mt-1">
+                        Metamodeling, Reinforcement Learning, Deep Learning, Backend
+                        Development
+                      </div>
+                    </div>
                   </div>
                 </section>
-                <section className="bg-white p-6 rounded-2xl shadow-sm">
-                  <h3 className="font-medium text-lg">Languages</h3>
-                  <ul className="mt-2 text-sm text-slate-700 space-y-1">
-                    <li>German, Italian — Native</li><li>English — Fluent</li><li>French — Conversational (B2)</li><li>Spanish — Basic Comprehension (B1)</li><li>Japanese — Elementary (A1)</li>
+                <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm">
+                  <h3 className="font-medium text-lg dark:text-white">Languages</h3>
+                  <ul className="mt-2 text-sm text-slate-700 dark:text-slate-300 space-y-1">
+                    <li>German, Italian — Native</li>
+                    <li>English — Fluent</li>
+                    <li>French — Conversational (B2)</li>
+                    <li>Spanish — Basic Comprehension (B1)</li>
+                    <li>Japanese — Elementary (A1)</li>
                   </ul>
                 </section>
-                <section className="bg-white p-6 rounded-2xl shadow-sm">
-                  <h3 className="font-medium text-lg">Links</h3>
+                <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm">
+                  <h3 className="font-medium text-lg dark:text-white">Links</h3>
                   <div className="mt-3 space-y-2 text-sm">
-                    <a href="https://www.linkedin.com/in/matteo-vitellaro" target="_blank" rel="noreferrer" className="block hover:underline">LinkedIn — /in/matteo-vitellaro</a>
-                    <a href="https://github.com/vitellaro-matteo" target="_blank" rel="noreferrer" className="block hover:underline">GitHub — vitellaro-matteo</a>
+                    <a
+                      href="https://www.linkedin.com/in/matteo-vitellaro"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block hover:underline"
+                    >
+                      LinkedIn — /in/matteo-vitellaro
+                    </a>
+                    <a
+                      href="https://github.com/vitellaro-matteo"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block hover:underline"
+                    >
+                      GitHub — vitellaro-matteo
+                    </a>
                   </div>
                 </section>
               </aside>
+
               <section id="experience" className="md:col-span-2 space-y-6">
-                <div className="bg-white p-6 rounded-2xl shadow-sm">
-                  <h2 className="text-2xl font-semibold">Experience</h2>
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm">
+                  <h2 className="text-2xl font-semibold dark:text-white">Experience</h2>
                   <div className="mt-4 space-y-4">
-                    {Job({title:"Remote Part-time AI Engineer — Flow (Chile)", date:"09/2024 - ongoing", bullets:["Developed a RAG-based SQL assistant inside a multi-agent framework implementing access control and automated query handling.","Scaled LLM-driven solutions using LangChain, Faiss, and Redshift for enterprise-grade pipelines."]})}
-                    {Job({title:"Intern — Flow (Plataforma de pagos, Chile)", date:"07/2024 - 09/2024", bullets:["Built a RAG-based support chatbot prototype and an automatic LLM evaluation tool to assess response quality.","Worked with AWS Bedrock focusing on prompt engineering and inference optimization."]})}
-                    {Job({title:"PhD Research Assistant — SNT, Esch-sur-Alzette", date:"02/2024 - 06/2024", bullets:["Developed a federated learning framework for distributed multi-agent UAVs improving swarm intelligence and scalability.","Replaced RL components with neural-network-based approaches to aid multi-objective optimization."]})}
+                    {Job({
+                      title: "Remote Part-time AI Engineer — Flow (Chile)",
+                      date: "09/2024 - ongoing",
+                      bullets: [
+                        "Developed a RAG-based SQL assistant inside a multi-agent framework implementing access control and automated query handling.",
+                        "Scaled LLM-driven solutions using LangChain, Faiss, and Redshift for enterprise-grade pipelines.",
+                      ],
+                    })}
+                    {Job({
+                      title: "Intern — Flow (Plataforma de pagos, Chile)",
+                      date: "07/2024 - 09/2024",
+                      bullets: [
+                        "Built a RAG-based support chatbot prototype and an automatic LLM evaluation tool to assess response quality.",
+                        "Worked with AWS Bedrock focusing on prompt engineering and inference optimization.",
+                      ],
+                    })}
+                    {Job({
+                      title: "PhD Research Assistant — SNT, Esch-sur-Alzette",
+                      date: "02/2024 - 06/2024",
+                      bullets: [
+                        "Developed a federated learning framework for distributed multi-agent UAVs improving swarm intelligence and scalability.",
+                        "Replaced RL components with neural-network-based approaches to aid multi-objective optimization.",
+                      ],
+                    })}
                   </div>
                 </div>
-                <div id="projects" className="bg-white p-6 rounded-2xl shadow-sm">
-                  <h2 className="text-2xl font-semibold">Projects</h2>
+
+                <div id="projects" className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm">
+                  <h2 className="text-2xl font-semibold dark:text-white">Projects</h2>
                   <div className="mt-4 grid gap-4">
-                    {Project({title:"Enabling Federated Learning Across Distributed UAV Swarms", dateRange:"02/2024 - 06/2024", summary:"Designed a decentralized federated learning framework using PyTorch for distributed cluster analysis and K-hop clustering for privacy-preserving training. Implemented multi-threaded leader-client coordination for aggregation without a central authority."})}
-                    {Project({title:"Adaptive Refusal Mechanisms for Safer Large Language Models", dateRange:"03/2025 - 08/2025", summary:"Extended circuit-breakers framework to build dynamic refusal mechanisms for open-source LLMs. Designed a risk-scoring module using semantic similarity and classification, and evaluated static vs. adaptive strategies on safety and clarity metrics."})}
-                    {Project({title:"Blockly-based educational programming application", dateRange:"02/2023 - 07/2023", summary:"Built a Flutter app with Google Blockly enabling teachers to design and validate programming tasks, with debugging features and progressive tutorials."})}
+                    {Project({
+                      title: "Enabling Federated Learning Across Distributed UAV Swarms",
+                      dateRange: "02/2024 - 06/2024",
+                      summary:
+                        "Designed a decentralized federated learning framework using PyTorch for distributed cluster analysis and K-hop clustering for privacy-preserving training. Implemented multi-threaded leader-client coordination for aggregation without a central authority.",
+                    })}
+                    {Project({
+                      title: "Adaptive Refusal Mechanisms for Safer Large Language Models",
+                      dateRange: "03/2025 - 08/2025",
+                      summary:
+                        "Extended circuit-breakers framework to build dynamic refusal mechanisms for open-source LLMs. Designed a risk-scoring module using semantic similarity and classification, and evaluated static vs. adaptive strategies on safety and clarity metrics.",
+                    })}
+                    {Project({
+                      title: "Blockly-based educational programming application",
+                      dateRange: "02/2023 - 07/2023",
+                      summary:
+                        "Built a Flutter app with Google Blockly enabling teachers to design and validate programming tasks, with debugging features and progressive tutorials.",
+                    })}
                   </div>
                 </div>
-                <div id="education" className="bg-white p-6 rounded-2xl shadow-sm">
-                  <h2 className="text-2xl font-semibold">Education</h2>
-                  <div className="mt-4 space-y-3 text-sm text-slate-700">
-                    {EdItem({school:"University of Luxembourg", degree:"Master in Information and Computer Science (2023 - 2025)", details:["Focus: AI, Reliable Software, Formal Methods (TLA+, Alloy, Model Checking)"]})}
-                    {EdItem({school:"Waseda University — Tokyo", degree:"Global Exchange Program (2022 - 2023)", details:["Faculty of Science and Engineering","Final grade: 17.7/20"]})}
-                    {EdItem({school:"University of Luxembourg", degree:"Bachelor in Applied Information Technology (2020 - 2023)", details:["Top Student Prize Scholarship for Japanese Language Studies (Sophia University)"]})}
+
+                <div id="education" className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm">
+                  <h2 className="text-2xl font-semibold dark:text-white">Education</h2>
+                  <div className="mt-4 space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                    {EdItem({
+                      school: "University of Luxembourg",
+                      degree: "Master in Information and Computer Science (2023 - 2025)",
+                      details: [
+                        "Focus: AI, Reliable Software, Formal Methods (TLA+, Alloy, Model Checking)",
+                      ],
+                    })}
+                    {EdItem({
+                      school: "Waseda University — Tokyo",
+                      degree: "Global Exchange Program (2022 - 2023)",
+                      details: ["Faculty of Science and Engineering", "Final grade: 17.7/20"],
+                    })}
+                    {EdItem({
+                      school: "University of Luxembourg",
+                      degree: "Bachelor in Applied Information Technology (2020 - 2023)",
+                      details: [
+                        "Top Student Prize Scholarship for Japanese Language Studies (Sophia University)",
+                      ],
+                    })}
                   </div>
                 </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm">
-                  <h2 className="text-2xl font-semibold">Selected Repositories & Links</h2>
+
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm">
+                  <h2 className="text-2xl font-semibold dark:text-white">
+                    Selected Repositories & Links
+                  </h2>
                   <div className="mt-3 text-sm">
-                    <ul className="list-disc pl-5 space-y-1 text-slate-700">
-                      <li><a href="https://github.com/vitellaro-matteo/optimization" target="_blank" rel="noreferrer" className="hover:underline">github.com/vitellaro-matteo/optimization</a></li>
-                      <li><a href="https://github.com/vitellaro-matteo" target="_blank" rel="noreferrer" className="hover:underline">github.com/vitellaro-matteo</a></li>
+                    <ul className="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                      <li>
+                        <a
+                          href="https://github.com/vitellaro-matteo/optimization"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="hover:underline"
+                        >
+                          github.com/vitellaro-matteo/optimization
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="https://github.com/vitellaro-matteo"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="hover:underline"
+                        >
+                          github.com/vitellaro-matteo
+                        </a>
+                      </li>
                     </ul>
                   </div>
                 </div>
               </section>
             </main>
-            <footer className="max-w-6xl mx-auto p-6 md:p-10 text-sm text-slate-600">
+
+            <footer className="max-w-6xl mx-auto p-6 md:p-10 text-sm text-slate-600 dark:text-slate-400">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>© {new Date().getFullYear()} Matteo Francesco Vitellaro</div>
                 <div className="space-x-3">
-                  <a href="https://www.linkedin.com/in/matteo-vitellaro" target="_blank" rel="noreferrer" className="underline">LinkedIn</a>
-                  <a href="https://github.com/vitellaro-matteo" target="_blank" rel="noreferrer" className="underline">GitHub</a>
+                  <a
+                    href="https://www.linkedin.com/in/matteo-vitellaro"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline"
+                  >
+                    LinkedIn
+                  </a>
+                  <a
+                    href="https://github.com/vitellaro-matteo"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline"
+                  >
+                    GitHub
+                  </a>
                 </div>
+              </div>
+
+              <!-- Dark Mode Toggle -->
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={() => {
+                    document.documentElement.classList.toggle("dark");
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600"
+                >
+                  <!-- Moon (light mode) -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 block dark:hidden"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M17.293 13.293a8 8 0 01-11.586-11.586A8 8 0 1017.293 13.293z" />
+                  </svg>
+                  <!-- Sun (dark mode) -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 hidden dark:block"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M10 15a5 5 0 100-10 5 5 0 000 10zm0 3a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM3 10a1 1 0 011-1H5a1 1 0 110 2H4a1 1 0 01-1-1zm12 0a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zM4.222 4.222a1 1 0 011.415 0L6.343 5.93a1 1 0 11-1.415 1.415L4.222 5.637a1 1 0 010-1.415zm9.9 9.9a1 1 0 011.415 0l1.707 1.707a1 1 0 01-1.415 1.415L14.122 15.537a1 1 0 010-1.415zM10 2a1 1 0 011-1V0a1 1 0 11-2 0v1a1 1 0 011 1zm0 16a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1z"
+                    />
+                  </svg>
+                  <span className="text-sm">Toggle Dark Mode</span>
+                </button>
               </div>
             </footer>
           </div>
         );
       }
 
-      ReactDOM.createRoot(document.getElementById('root')).render(<MatteoCV />);
+      ReactDOM.createRoot(document.getElementById("root")).render(<MatteoCV />);
     </script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
