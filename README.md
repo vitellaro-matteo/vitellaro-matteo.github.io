@@ -44,4 +44,4 @@ Formal      TLA+ · Alloy · Model Checking
 
 ---
 
-*Currently open to research engineer, applied ML, and AI systems roles — globally.*
+*Currently open to research engineer, applied ML, and AI systems roles globally.*
