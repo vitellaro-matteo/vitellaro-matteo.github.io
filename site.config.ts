@@ -12,9 +12,9 @@ export const site = {
   /** {{HERO_BIO}} — 1–2 sentences about me */
   heroBio: 'HERO_BIO — one or two sentences about me go here.',
   /** {{SITE_URL}} — origin only, e.g. https://<user>.github.io or a custom domain */
-  url: 'https://SITE-URL.example',
-  /** {{BASE_PATH}} — "/blog" for a GitHub Pages project site, "/" for a custom domain */
-  basePath: '/blog',
+  url: 'https://vitellaro-matteo.github.io',
+  /** {{BASE_PATH}} — "/" for a user site or custom domain, "/<repo>" for a project site */
+  basePath: '/',
   /** {{TIMEZONE}} — used for week numbers and dates */
   timezone: 'Europe/Berlin',
 

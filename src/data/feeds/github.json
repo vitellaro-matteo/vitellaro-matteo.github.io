@@ -947,8 +947,8 @@
   },
   "pushes": [
     {
-      "repo": "blog",
-      "url": "https://github.com/GITHUB_USERNAME/blog",
+      "repo": "vitellaro-matteo.github.io",
+      "url": "https://github.com/GITHUB_USERNAME/vitellaro-matteo.github.io",
       "message": "Placeholder commit message for the latest push",
       "time": "2026-09-27T18:40:00Z"
     },
