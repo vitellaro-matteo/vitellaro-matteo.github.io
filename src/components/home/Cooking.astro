@@ -1,27 +1,31 @@
 ---
 import Card from '../Card.astro';
 import Frame from '../Frame.astro';
+import MiniMap from '../MiniMap.astro';
 import { formatDate } from '../../lib/dates';
-// Phase 1 placeholder — switches to the recipes collection in Phase 2.
-import placeholder from '../../data/placeholder/home.json';
+import { getRecipes, cookedCount } from '../../lib/content';
 
-const recipe = placeholder.recipe;
-const cooked = placeholder.challenge_cooked;
+const recipes = await getRecipes();
+const recipe = recipes[0];
+const cooked = cookedCount(recipes);
 ---
 
 <Card id="cooking" class="span-12" label="07 — cooking" title="last cooked" linkText="all" href="/cooking" external={false}>
   <div class="grid-12">
-    <a class="recipe span-5" href={`/cooking/${recipe.slug}`}>
-      <Frame src={recipe.image} alt={recipe.title} ratio="4 / 3" tone={2} />
-      <span class="text">
-        <span class="mono muted">{formatDate(recipe.date)} · {recipe.country}</span>
-        <span class="title">{recipe.title}</span>
-        <span class="source muted">from {recipe.source_name}</span>
-      </span>
-    </a>
+    <div class="span-5">
+      {recipe && (
+        <a class="recipe" href={`/cooking/${recipe.id}`}>
+          <Frame src={recipe.data.image} alt={recipe.data.title} ratio="4 / 3" tone={2} />
+          <span class="text">
+            <span class="mono muted">{formatDate(recipe.data.date)} · {recipe.data.country}</span>
+            <span class="title">{recipe.data.title}</span>
+            <span class="source muted">from {recipe.data.source_name}</span>
+          </span>
+        </a>
+      )}
+    </div>
     <div class="challenge span-7">
-      <!-- Phase 3 replaces this with the mini world map (same size: Equal Earth, 1000 × 447). -->
-      <div class="map-placeholder" aria-hidden="true"></div>
+      <MiniMap />
       <div class="count">
         <p>
           <span class="n accent">{cooked}</span><span class="of muted"> / 195 national dishes</span>
@@ -55,10 +59,6 @@ const cooked = placeholder.challenge_cooked;
     display: flex;
     flex-direction: column;
     gap: 24px;
-  }
-  .map-placeholder {
-    aspect-ratio: 1000 / 447;
-    background: var(--kraft);
   }
   .count {
     display: flex;

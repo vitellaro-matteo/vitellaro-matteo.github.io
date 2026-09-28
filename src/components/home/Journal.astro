@@ -1,19 +1,18 @@
 ---
 import Card from '../Card.astro';
 import { formatDate } from '../../lib/dates';
-// Phase 1 placeholder — switches to the journal content collection in Phase 2.
-import placeholder from '../../data/placeholder/home.json';
+import { getJournal } from '../../lib/content';
 
-const entries = placeholder.journal.slice(0, 3);
+const entries = (await getJournal()).slice(0, 3);
 ---
 
 <Card id="journal" class="span-5" label="06 — journal" title="notes & essays" linkText="all" href="/journal" external={false}>
   <ul>
     {entries.map((entry) => (
       <li>
-        <a class="row" href={`/journal/${entry.slug}`}>
-          <span class="mono muted">{formatDate(entry.date)}</span>
-          <span class="title">{entry.title}</span>
+        <a class="row" href={`/journal/${entry.id}`}>
+          <span class="mono muted">{formatDate(entry.data.date)}</span>
+          <span class="title">{entry.data.title}</span>
         </a>
       </li>
     ))}

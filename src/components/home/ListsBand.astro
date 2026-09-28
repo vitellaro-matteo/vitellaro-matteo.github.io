@@ -1,8 +1,7 @@
 ---
-// Phase 1 placeholder — YEAR comes from the latest src/content/lists/YEAR.yaml in Phase 2.
-import placeholder from '../../data/placeholder/home.json';
+import { latestListYear } from '../../lib/content';
 
-const year = placeholder.lists_year;
+const year = await latestListYear();
 const categories = ['songs', 'albums', 'films', 'books'];
 ---
 
@@ -12,16 +11,18 @@ const categories = ['songs', 'albums', 'films', 'books'];
     <h2 id="lists-title">Top tens, every December</h2>
     <p class="muted">A yearly look back: ten songs, ten albums, ten films, ten books.</p>
   </div>
-  <ul class="tiles span-7">
-    {categories.map((cat) => (
-      <li>
-        <a class="tile" href={`/lists/${year}#${cat}`}>
-          <span class="ten">10</span>
-          <span class="label muted">{cat} of {year}</span>
-        </a>
-      </li>
-    ))}
-  </ul>
+  {year && (
+    <ul class="tiles span-7">
+      {categories.map((cat) => (
+        <li>
+          <a class="tile" href={`/lists/${year}#${cat}`}>
+            <span class="ten">10</span>
+            <span class="label muted">{cat} of {year}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
 </section>
 
 <style>
