@@ -1,0 +1,57 @@
+{
+  "data": [
+    {
+      "id": "18000000000000001",
+      "media_type": "IMAGE",
+      "media_url": "https://scontent.cdninstagram.com/v/t51/1.jpg?stp=dst-jpg&oh=signed1",
+      "permalink": "https://www.instagram.com/p/AAAAAAAAAA1/",
+      "caption": "Morning light on the balcony",
+      "timestamp": "2026-09-27T07:41:13+0000"
+    },
+    {
+      "id": "18000000000000002",
+      "media_type": "VIDEO",
+      "media_url": "https://scontent.cdninstagram.com/v/t50/2.mp4?oh=signed2",
+      "thumbnail_url": "https://scontent.cdninstagram.com/v/t51/2-thumb.jpg?oh=signed2t",
+      "permalink": "https://www.instagram.com/reel/AAAAAAAAAA2/",
+      "timestamp": "2026-09-25T18:03:00+0000"
+    },
+    {
+      "id": "18000000000000003",
+      "media_type": "CAROUSEL_ALBUM",
+      "media_url": "https://scontent.cdninstagram.com/v/t51/3.jpg?oh=signed3",
+      "permalink": "https://www.instagram.com/p/AAAAAAAAAA3/",
+      "caption": "Market day",
+      "timestamp": "2026-09-22T11:20:00+0200"
+    },
+    {
+      "id": "18000000000000004",
+      "media_type": "IMAGE",
+      "media_url": "https://scontent.cdninstagram.com/v/t51/4.jpg?oh=signed4",
+      "permalink": "https://www.instagram.com/p/AAAAAAAAAA4/",
+      "timestamp": "2026-09-20T09:00:00+0000"
+    },
+    {
+      "id": "18000000000000005",
+      "media_type": "IMAGE",
+      "media_url": "https://scontent.cdninstagram.com/v/t51/5.jpg?oh=signed5",
+      "permalink": "https://www.instagram.com/p/AAAAAAAAAA5/",
+      "timestamp": "2026-09-18T09:00:00+0000"
+    },
+    {
+      "id": "18000000000000006",
+      "media_type": "IMAGE",
+      "media_url": "https://scontent.cdninstagram.com/v/t51/6.jpg?oh=signed6",
+      "permalink": "https://www.instagram.com/p/AAAAAAAAAA6/",
+      "timestamp": "2026-09-15T09:00:00+0000"
+    },
+    {
+      "id": "18000000000000007",
+      "media_type": "IMAGE",
+      "media_url": "https://scontent.cdninstagram.com/v/t51/7.jpg?oh=signed7",
+      "permalink": "https://www.instagram.com/p/AAAAAAAAAA7/",
+      "timestamp": "2026-09-12T09:00:00+0000"
+    }
+  ],
+  "paging": { "cursors": { "before": "QVFI", "after": "QVFJ" } }
+}

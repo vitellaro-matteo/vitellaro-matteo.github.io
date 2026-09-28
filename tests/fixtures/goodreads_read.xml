@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Example's bookshelf: read</title>
+    <link>https://www.goodreads.com/review/list/12345?shelf=read</link>
+    <item>
+      <title>A book added long ago</title>
+      <book_id>111</book_id>
+      <book_large_image_url><![CDATA[https://i.gr-assets.com/books/111._SY475_.jpg]]></book_large_image_url>
+      <book id="111"><num_pages></num_pages></book>
+      <author_name>Old Author</author_name>
+      <user_read_at></user_read_at>
+    </item>
+    <item>
+      <title>Klara and the Sun</title>
+      <book_id>54120408</book_id>
+      <book_large_image_url><![CDATA[https://i.gr-assets.com/books/54120408._SY475_.jpg]]></book_large_image_url>
+      <book id="54120408"><num_pages>303</num_pages></book>
+      <author_name>Kazuo Ishiguro</author_name>
+      <user_read_at><![CDATA[Sun, 30 Aug 2026 00:00:00 -0700]]></user_read_at>
+    </item>
+    <item>
+      <title>The Remains of the Day</title>
+      <book_id>28921</book_id>
+      <book_large_image_url></book_large_image_url>
+      <book_medium_image_url><![CDATA[https://i.gr-assets.com/books/28921._SX98_.jpg]]></book_medium_image_url>
+      <book id="28921"><num_pages>258</num_pages></book>
+      <author_name>Kazuo Ishiguro</author_name>
+      <user_read_at><![CDATA[Fri, 11 Sep 2026 00:00:00 -0700]]></user_read_at>
+    </item>
+  </channel>
+</rss>

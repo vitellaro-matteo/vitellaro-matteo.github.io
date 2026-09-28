@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Example's bookshelf: currently-reading</title>
+    <link>https://www.goodreads.com/review/list/12345?shelf=currently-reading</link>
+    <item>
+      <guid><![CDATA[https://www.goodreads.com/review/show/9000000001]]></guid>
+      <pubDate><![CDATA[Mon, 14 Sep 2026 09:12:03 -0700]]></pubDate>
+      <title>Piranesi</title>
+      <link><![CDATA[https://www.goodreads.com/review/show/9000000001]]></link>
+      <book_id>50202953</book_id>
+      <book_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1609095173i/50202953._SY75_.jpg]]></book_image_url>
+      <book_small_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1609095173i/50202953._SY75_.jpg]]></book_small_image_url>
+      <book_medium_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1609095173i/50202953._SX98_.jpg]]></book_medium_image_url>
+      <book_large_image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png]]></book_large_image_url>
+      <book_description><![CDATA[Piranesi's house is no ordinary building.]]></book_description>
+      <book id="50202953">
+        <num_pages>272</num_pages>
+      </book>
+      <author_name>Susanna Clarke</author_name>
+      <isbn>1635575636</isbn>
+      <user_name>Example</user_name>
+      <user_rating>0</user_rating>
+      <user_read_at></user_read_at>
+      <user_date_added><![CDATA[Mon, 14 Sep 2026 09:12:03 -0700]]></user_date_added>
+      <user_shelves>currently-reading</user_shelves>
+    </item>
+  </channel>
+</rss>

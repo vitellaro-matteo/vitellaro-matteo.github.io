@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:letterboxd="https://letterboxd.com" xmlns:tmdb="https://themoviedb.org" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Letterboxd - Example</title>
+    <link>https://letterboxd.com/example/</link>
+    <description>Letterboxd - Example</description>
+    <item>
+      <title>Perfect Days, 2023 - ★★★★½</title>
+      <link>https://letterboxd.com/example/film/perfect-days-2023/</link>
+      <guid isPermaLink="false">letterboxd-review-1</guid>
+      <pubDate>Sat, 26 Sep 2026 21:14:02 +1200</pubDate>
+      <letterboxd:watchedDate>2026-09-26</letterboxd:watchedDate>
+      <letterboxd:rewatch>No</letterboxd:rewatch>
+      <letterboxd:filmTitle>Perfect Days</letterboxd:filmTitle>
+      <letterboxd:filmYear>2023</letterboxd:filmYear>
+      <letterboxd:memberRating>4.5</letterboxd:memberRating>
+      <tmdb:movieId>976893</tmdb:movieId>
+      <description><![CDATA[ <p><img src="https://a.ltrbxd.com/resized/film-poster/perfect-days-0-600-0-900.jpg"/></p> <p>This review may contain spoilers.</p> <p>Quiet mornings, cassette tapes and trees.<br />The kind of film that makes you notice light.</p> <p>Went home and cleaned the kitchen.</p> ]]></description>
+      <dc:creator>Example</dc:creator>
+    </item>
+    <item>
+      <title>Paris, Texas, 1984</title>
+      <link>https://letterboxd.com/example/film/paris-texas/</link>
+      <guid isPermaLink="false">letterboxd-watch-2</guid>
+      <pubDate>Tue, 22 Sep 2026 20:01:00 +1200</pubDate>
+      <letterboxd:watchedDate>2026-09-22</letterboxd:watchedDate>
+      <letterboxd:rewatch>Yes</letterboxd:rewatch>
+      <letterboxd:filmTitle>Paris, Texas</letterboxd:filmTitle>
+      <letterboxd:filmYear>1984</letterboxd:filmYear>
+      <letterboxd:memberRating>5.0</letterboxd:memberRating>
+      <description><![CDATA[ <p><img src="https://a.ltrbxd.com/resized/film-poster/paris-texas-0-600-0-900.jpg"/></p> <p>Rewatched on Tuesday September 22, 2026.</p> ]]></description>
+    </item>
+    <item>
+      <title>A list: Films for rainy Sundays</title>
+      <link>https://letterboxd.com/example/list/rainy-sundays/</link>
+      <guid isPermaLink="false">letterboxd-list-3</guid>
+      <pubDate>Mon, 21 Sep 2026 10:00:00 +1200</pubDate>
+      <description><![CDATA[ <p>Some films.</p> ]]></description>
+    </item>
+    <item>
+      <title>Ikiru, 1952</title>
+      <link>https://letterboxd.com/example/film/ikiru/</link>
+      <guid isPermaLink="false">letterboxd-watch-4</guid>
+      <pubDate>Sat, 19 Sep 2026 22:30:00 +1200</pubDate>
+      <letterboxd:watchedDate>2026-09-19</letterboxd:watchedDate>
+      <letterboxd:rewatch>No</letterboxd:rewatch>
+      <letterboxd:filmTitle>Ikiru</letterboxd:filmTitle>
+      <letterboxd:filmYear>1952</letterboxd:filmYear>
+      <description><![CDATA[ <p><img src="https://a.ltrbxd.com/resized/film-poster/ikiru-0-600-0-900.jpg"/></p> <p>Watched on Saturday September 19, 2026.</p> ]]></description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "50000000001",
+    "type": "PushEvent",
+    "actor": { "login": "example" },
+    "repo": { "name": "example/example.github.io" },
+    "payload": {
+      "repository_id": 900000001,
+      "push_id": 26000000001,
+      "ref": "refs/heads/main",
+      "head": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678",
+      "before": "0f1e2d3c4b5a69788796a5b4c3d2e1f098765432"
+    },
+    "public": true,
+    "created_at": "2026-09-27T18:40:12Z"
+  },
+  {
+    "id": "50000000002",
+    "type": "WatchEvent",
+    "repo": { "name": "someone/cool-project" },
+    "payload": { "action": "started" },
+    "created_at": "2026-09-27T12:00:00Z"
+  },
+  {
+    "id": "50000000003",
+    "type": "PushEvent",
+    "repo": { "name": "example/example.github.io" },
+    "payload": { "head": "ffffffffffffffffffffffffffffffffffffffff" },
+    "created_at": "2026-09-26T09:00:00Z"
+  },
+  {
+    "id": "50000000004",
+    "type": "PushEvent",
+    "repo": { "name": "example/WeeklySpotifyUpdate" },
+    "payload": {
+      "head": "1234567890abcdef1234567890abcdef12345678",
+      "commits": [
+        { "sha": "aaaa", "message": "Older commit in the same push" },
+        {
+          "sha": "1234",
+          "message": "Handle empty playlists\n\nSkip the weekly move when nothing was liked."
+        }
+      ]
+    },
+    "created_at": "2026-09-25T09:12:00Z"
+  },
+  {
+    "id": "50000000005",
+    "type": "CreateEvent",
+    "repo": { "name": "example/new-thing" },
+    "payload": { "ref_type": "repository" },
+    "created_at": "2026-09-22T09:00:00Z"
+  },
+  {
+    "id": "50000000006",
+    "type": "PushEvent",
+    "repo": { "name": "example/dotfiles" },
+    "payload": { "head": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" },
+    "created_at": "2026-09-20T21:03:00Z"
+  },
+  {
+    "id": "50000000007",
+    "type": "PushEvent",
+    "repo": { "name": "example/fourth-repo" },
+    "payload": { "head": "cccccccccccccccccccccccccccccccccccccccc" },
+    "created_at": "2026-09-19T08:00:00Z"
+  }
+]
