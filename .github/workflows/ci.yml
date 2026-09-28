@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   site:
-    name: Site (lint, check, build)
+    name: Site (lint, check, test, build)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,8 +24,12 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run check
-      # Builds from the committed feed fixtures; real feeds are only fetched on deploy.
+      - run: npm test
+      # Real feeds are only fetched on deploy; USE_FIXTURES builds every card from the
+      # committed sample feeds so CI exercises them.
       - run: npm run build
+        env:
+          USE_FIXTURES: 'true'
 
   fetchers:
     name: Fetchers (ruff, mypy, pytest)
