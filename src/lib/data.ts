@@ -1,4 +1,5 @@
 import { load as loadYaml } from 'js-yaml';
+import { z } from 'astro/zod';
 import type { SpotifyFeed, LetterboxdFeed, GoodreadsFeed, InstagramFeed, GithubFeed } from './feeds';
 import spotifyJson from '../data/feeds/spotify.json';
 import letterboxdJson from '../data/feeds/letterboxd.json';
@@ -13,22 +14,26 @@ export const goodreads = goodreadsJson as GoodreadsFeed;
 export const instagram = instagramJson as InstagramFeed;
 export const github = githubJson as GithubFeed;
 
-export interface Now {
-  on_repeat: string;
-  reading: string;
-  thinking_about: string;
-  progress: { page: number; of: number } | null;
-  updated: Date | string;
+const nowSchema = z.object({
+  on_repeat: z.string(),
+  reading: z.string().nullish(),
+  thinking_about: z.string(),
+  progress: z
+    .object({ page: z.number().int().nonnegative(), of: z.number().int().positive() })
+    .nullish(),
+  updated: z.coerce.date(),
+});
+
+const parsed = nowSchema.safeParse(loadYaml(nowRaw) ?? {});
+if (!parsed.success) {
+  throw new Error(`src/data/now.yaml is invalid:\n${z.prettifyError(parsed.error)}`);
 }
 
-const nowData = (loadYaml(nowRaw) ?? {}) as Partial<Now>;
 const currentBook = goodreads.currently_reading[0];
 
-export const now: Now = {
-  on_repeat: nowData.on_repeat ?? '',
+export const now = {
+  ...parsed.data,
   // `reading` falls back to the current Goodreads book if left empty.
-  reading: nowData.reading || (currentBook ? currentBook.title : ''),
-  thinking_about: nowData.thinking_about ?? '',
-  progress: nowData.progress ?? null,
-  updated: nowData.updated ?? '',
+  reading: parsed.data.reading || (currentBook ? currentBook.title : ''),
+  progress: parsed.data.progress ?? null,
 };
