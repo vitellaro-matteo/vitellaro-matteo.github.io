@@ -48,10 +48,17 @@ class FeedResult(NamedTuple):
 
 
 def require_env(name: str) -> str:
-    """The value of an environment variable (an Actions secret), or skip the fetcher."""
-    value = os.environ.get(name, "").strip()
+    """
+    The value of an environment variable (an Actions secret), or skip the fetcher.
+    Surrounding whitespace is stripped, since pasted secrets often end in a newline;
+    the log says so, without the value.
+    """
+    raw = os.environ.get(name, "")
+    value = raw.strip()
     if not value:
         raise SkipFetcher(f"{name} is not set")
+    if value != raw:
+        log.warning("%s had leading or trailing whitespace; it was stripped", name)
     return value
 
 
