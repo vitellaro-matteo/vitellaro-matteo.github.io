@@ -8,10 +8,16 @@ version = "0.1.0"
 description = "Fetchers that turn Spotify, Letterboxd, Goodreads, Instagram and GitHub into feed JSON for the site."
 license = "MIT"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = ["defusedxml>=0.7.1", "requests>=2.32"]
 
 [project.optional-dependencies]
-dev = ["mypy>=1.13", "pytest>=8.3", "ruff>=0.8"]
+dev = [
+  "mypy>=1.13",
+  "pytest>=8.3",
+  "ruff>=0.8",
+  "types-defusedxml>=0.7",
+  "types-requests>=2.32",
+]
 
 [tool.setuptools]
 packages = ["scripts"]
@@ -21,7 +27,7 @@ target-version = "py310"
 line-length = 100
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "ANN"]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "ANN", "BLE", "N"]
 
 [tool.mypy]
 python_version = "3.10"
