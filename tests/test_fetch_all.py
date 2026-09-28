@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -93,3 +94,29 @@ def test_fails_only_when_nothing_updated(
     live, media = dirs
     fetchers = [Fetcher("first", broken), Fetcher("second", unconfigured)]
     assert main(fetchers, live, media, config={}) == 1
+
+
+def crashing(session: requests.Session, config: dict[str, str], images: ImageSaver) -> FeedResult:
+    entry = "a string where a dict was expected"
+    return FeedResult({"value": entry.get("id")}, "never")  # type: ignore[attr-defined]
+
+
+def test_unexpected_errors_are_traced_to_file_and_line(
+    dirs: tuple[Path, Path],
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    live, media = dirs
+    summary = tmp_path / "summary.md"
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+
+    main([Fetcher("crashy", crashing), Fetcher("second", working)], live, media, config={})
+
+    text = summary.read_text(encoding="utf-8")
+    assert "| crashy | failed | AttributeError: 'str' object has no attribute 'get' |" in text
+    assert "<details><summary>crashy: traceback</summary>" in text
+    assert re.search(r'tests[\\/]test_fetch_all\.py", line \d+, in crashing', text)
+    assert "in crashing" in text
+    assert "Traceback (most recent call last)" in caplog.text
+    assert "in crashing" in caplog.text
