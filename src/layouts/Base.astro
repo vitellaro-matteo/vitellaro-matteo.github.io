@@ -1,0 +1,46 @@
+---
+import '@fontsource/shippori-mincho/latin-400.css';
+import '@fontsource/shippori-mincho/latin-ext-400.css';
+import '@fontsource/shippori-mincho/latin-500.css';
+import '@fontsource/shippori-mincho/latin-ext-500.css';
+import '@fontsource/instrument-sans/latin-400.css';
+import '@fontsource/instrument-sans/latin-ext-400.css';
+import '@fontsource/instrument-sans/latin-500.css';
+import '@fontsource/instrument-sans/latin-ext-500.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-ext-400.css';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../../site.config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** nav item to mark as current (journal, lists, cooking) */
+  current?: string;
+}
+
+const { title, description = site.heroTitle, current } = Astro.props;
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
+  </head>
+  <body>
+    <Header current={current} />
+    <main class="container">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

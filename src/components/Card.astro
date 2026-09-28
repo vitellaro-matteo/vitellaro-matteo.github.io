@@ -1,0 +1,61 @@
+---
+interface Props {
+  /** e.g. `01 — listening` */
+  label: string;
+  title: string;
+  /** source link text without glyph, e.g. `spotify` or `all` */
+  linkText: string;
+  href: string;
+  /** true → ` ↗`, false → ` →` */
+  external?: boolean;
+  id?: string;
+  class?: string;
+}
+
+const { label, title, linkText, href, external = true, id, class: className } = Astro.props;
+const headingId = id ? `${id}-title` : undefined;
+---
+
+<section class:list={['card', className]} id={id} aria-labelledby={headingId}>
+  <header class="card-head">
+    <div class="card-titles">
+      <p class="mono accent">{label}</p>
+      <h3 id={headingId}>{title}</h3>
+    </div>
+    <a class="source mono muted" href={href}>{linkText}{external ? ' ↗' : ' →'}</a>
+  </header>
+  <slot />
+</section>
+
+<style>
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+  }
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .card-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+  h3 {
+    font-size: 26px;
+  }
+  .source {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    white-space: nowrap;
+  }
+</style>

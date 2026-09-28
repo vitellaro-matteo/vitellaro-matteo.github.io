@@ -1,0 +1,22 @@
+/* Design tokens — SITE_SPEC.md §2. Exact values; do not add new ones. */
+:root {
+  --paper:     #F3EFE7; /* page background */
+  --card:      #FAF8F4; /* card background */
+  --kraft:     #E6DECF; /* now-box, lists band, image placeholders, uncooked countries */
+  --kraft-2:   #D8CDB9; /* placeholder tone */
+  --kraft-3:   #CFC3AC; /* placeholder tone, divider inside kraft boxes */
+  --line:      #DDD5C6; /* card borders, header rule */
+  --line-soft: #E6DECF; /* row dividers inside cards */
+  --ink:       #2A2724; /* text, strong rules */
+  --muted:     #5F5850; /* secondary text, meta, source links */
+  --numeral:   #8A7F6E; /* list numerals 02–10 */
+  --accent:    #9C4A32; /* section labels, active nav, #1 numeral, progress, cooked countries */
+  /* Alternative accents:
+     --accent: #5E6B4E;  moss
+     --accent: #3F5A6B;  slate
+     --accent: #2A2724;  ink */
+
+  --font-display: 'Shippori Mincho', 'Hiragino Mincho ProN', Georgia, serif;
+  --font-body: 'Instrument Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}

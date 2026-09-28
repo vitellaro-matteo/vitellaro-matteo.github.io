@@ -1,0 +1,27 @@
+---
+// Image with a kraft background behind it while loading (or instead of it, if src is null).
+interface Props {
+  src: string | null | undefined;
+  alt: string;
+  /** CSS aspect-ratio, e.g. `2 / 3` */
+  ratio?: string;
+  width?: number;
+  height?: number;
+  /** placeholder tone: 1 = --kraft, 2 = --kraft-2, 3 = --kraft-3 */
+  tone?: 1 | 2 | 3;
+  class?: string;
+}
+
+const { src, alt, ratio, width, height, tone = 1, class: className } = Astro.props;
+const style = [
+  ratio && `aspect-ratio: ${ratio}`,
+  width && `width: ${width}px`,
+  height && `height: ${height}px`,
+]
+  .filter(Boolean)
+  .join('; ');
+---
+
+<div class:list={['frame', tone > 1 && `tone-${tone}`, className]} style={style || undefined}>
+  {src && <img src={src} alt={alt} loading="lazy" decoding="async" />}
+</div>

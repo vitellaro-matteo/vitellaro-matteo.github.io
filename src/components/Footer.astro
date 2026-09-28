@@ -1,0 +1,65 @@
+---
+import { site, links } from '../../site.config';
+
+const items = [
+  { label: 'spotify', href: links.spotify, external: true },
+  { label: 'letterboxd', href: links.letterboxd, external: true },
+  { label: 'goodreads', href: links.goodreads, external: true },
+  { label: 'instagram', href: links.instagram, external: true },
+  { label: 'github', href: links.github, external: true },
+  { label: 'rss', href: links.rss, external: false },
+];
+---
+
+<footer class="container">
+  <div class="site-footer">
+  <div class="left">
+    <span class="wordmark display">{site.name}</span>
+    <p class="line muted">Updated automatically, written slowly.</p>
+  </div>
+  <ul class="links">
+    {items.map((item) => (
+      <li>
+        <a class="mono muted" href={item.href}>
+          {item.external ? `${item.label} ↗` : item.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 96px;
+    padding-top: 40px;
+    padding-bottom: 64px;
+    border-top: 1px solid var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+  }
+  .left {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .wordmark {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .line {
+    font-size: 14px;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .links a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+</style>

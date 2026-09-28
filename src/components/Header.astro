@@ -1,0 +1,82 @@
+---
+import { site } from '../../site.config';
+
+interface Props {
+  current?: string;
+}
+
+const { current } = Astro.props;
+
+// First six are anchors on the home page; journal and lists have their own pages.
+const nav = [
+  { key: 'listening', href: '/#listening' },
+  { key: 'watching', href: '/#watching' },
+  { key: 'reading', href: '/#reading' },
+  { key: 'seeing', href: '/#seeing' },
+  { key: 'making', href: '/#making' },
+  { key: 'cooking', href: '/#cooking' },
+  { key: 'journal', href: '/journal' },
+  { key: 'lists', href: '/lists' },
+];
+---
+
+<header class="site-header">
+  <div class="container inner">
+    <a class="brand" href="/">
+      <span class="wordmark display">{site.name}</span>
+      <span class="tagline mono muted">{site.tagline}</span>
+    </a>
+    <nav aria-label="Main">
+      <ul>
+        {nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={{ current: item.key === current }}
+              aria-current={item.key === current ? 'page' : undefined}
+            >
+              {item.key}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--line);
+  }
+  .inner {
+    height: 112px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .wordmark {
+    font-size: 28px;
+    line-height: 1;
+  }
+  .brand:hover .tagline {
+    color: var(--accent);
+  }
+  nav ul {
+    display: flex;
+    gap: 30px;
+  }
+  nav a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 15px;
+  }
+  nav a.current {
+    color: var(--accent);
+  }
+</style>
