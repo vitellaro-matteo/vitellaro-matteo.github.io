@@ -73,17 +73,19 @@ These components work in any journal post or recipe without importing anything.
 <Recipe slug="my-recipe" />
 ```
 
-- `<Track>` looks the track up by its Spotify id in the weekly playlist feed.
-  For a song that isn't in the feed, pass `title="…"` and `artist="…"` (and
-  optionally `cover="/media/…"`); these also override what the feed says.
+- `<Track>` looks the track up by its Spotify id. You can pass `title="…"`,
+  `artist="…"` and `cover="/media/…"` to override what the feed says.
 - `<Recipe>` takes the file name of one of your recipes.
 - Every embed accepts `label="…"` to replace its small accent label.
 
-### Tracks that left the playlist (planned)
+### Tracks that left the playlist
 
-The Spotify fetcher will also fetch every track embedded anywhere in
-`src/content` by its id, so `<Track id="…" />` keeps working on its own after the
-song leaves the weekly playlist.
+The Spotify fetcher also fetches every track embedded anywhere in `src/content`
+by its id, so `<Track id="…" />` keeps working on its own after the song leaves
+the weekly playlist. The id is the last part of the song's share link:
+`open.spotify.com/track/<id>`. A new embed shows up after the next deploy; in
+`npm run dev` only tracks in the sample feed resolve, so pass `title` and
+`artist` while drafting if you want to preview it.
 
 ### Margin notes
 

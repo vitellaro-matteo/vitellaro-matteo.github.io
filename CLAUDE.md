@@ -69,7 +69,7 @@ Anything you decided where the design is silent, and anything you need from Matt
 1. ✓ Scaffold, tokens, fonts, header/footer, home page on fixture data.
 2. ✓ Journal, lists, cooking pages, content schemas, example files.
 3. ✓ Challenge map + `countries.yaml`.
-4. Python fetchers + tests + deploy workflow.
+4. ✓ Python fetchers + tests + deploy workflow.
 5. Mobile pass, accessibility pass (contrast, focus = 2px accent outline offset 2px,
    alt text), Lighthouse ≥ 95 in all categories.
 

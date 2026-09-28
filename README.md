@@ -11,9 +11,10 @@ and cook, one quiet shelf at a time.
 
 ## Features
 
-- **Home page** of cards for listening, watching, reading, photos, code and
-  cooking, built from typed feed data. A card whose feed is missing is left out
-  rather than showing stale or sample data.
+- **Self-updating home page:** last week's Spotify finds, recent Letterboxd
+  films, the book on the nightstand, Instagram photos and a GitHub contribution
+  calendar, refreshed every morning by Python fetchers. If a source fails, the
+  card shows the last good copy, or steps aside and the grid repacks itself.
 - **Journal** of notes and essays in MDX, with embeddable tracks, films, books
   and recipes, and margin notes that sit beside the paragraph they annotate.
 - **Cooking log** of recipes followed from elsewhere, always credited, with my
@@ -45,10 +46,11 @@ flowchart LR
   A --> P[GitHub Pages]
 ```
 
-Feeds are fetched at deploy time and never committed. The fetchers and the
-deploy workflow are the next step on the [roadmap](#roadmap); until then the
-feed cards run on sample fixtures in development and CI, and production builds
-leave them out.
+Feeds are fetched on every deploy (daily at 05:00 UTC, on push and on demand)
+and never committed. Each fetcher is independent: the last good output is kept
+in the Actions cache, so one broken source never takes the others down. In
+development and CI the site runs on sample fixtures of the same shape, which
+never reach production.
 
 ## Design system
 
@@ -82,10 +84,11 @@ it; touch targets are at least 44px.
 - **TypeScript** (strict) and **Zod** schemas for all content and data files
 - **Plain CSS** with custom properties; no UI framework
 - **d3-geo, topojson-client and topojson-simplify** for the build-time SVG map
-- **Vitest** for the TypeScript helpers; ruff, mypy (strict) and pytest set up
-  for the Python fetchers
+- **Python 3.10+** fetchers (`requests`, `defusedxml`), checked with ruff, mypy
+  (strict) and pytest against saved API responses
+- **Vitest** for the TypeScript helpers
 - **ESLint** (typescript-eslint, astro, jsx-a11y) and **Prettier**
-- **GitHub Actions** for CI, **GitHub Pages** for hosting
+- **GitHub Actions** for CI and a daily deploy, **GitHub Pages** for hosting
 
 ## Project structure
 
@@ -102,10 +105,11 @@ it; touch targets are at least 44px.
 │   ├── lib/                typed, tested helpers (dates, paths, feeds, map, …)
 │   ├── pages/              routes and the RSS feed
 │   └── styles/             design tokens and global CSS
-├── scripts/                Python fetchers
+├── scripts/                Python fetchers (one module per source + fetch_all)
+├── tests/                  pytest suite and saved API responses
 ├── public/media/           photos and cover art
 ├── docs/                   DESIGN, CONTENT and SETUP guides
-└── .github/workflows/      CI
+└── .github/workflows/      CI and deploy
 ```
 
 ## Decisions
@@ -132,7 +136,7 @@ it; touch targets are at least 44px.
 
 - [x] Design system, home page, journal, lists and cooking pages
 - [x] Around-the-world map and challenge page
-- [ ] Python fetchers and the deploy workflow (daily refresh, cached fallbacks)
+- [x] Python fetchers and the deploy workflow (daily refresh, cached fallbacks)
 - [ ] Mobile layout and accessibility pass (Lighthouse ≥ 95)
 
 ## Quick start

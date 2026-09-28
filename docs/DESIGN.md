@@ -51,10 +51,9 @@ the directory-style output, so GitHub Pages never redirects.
 - **Site:** Astro (static output), TypeScript in strict mode, plain CSS with
   custom properties. No Tailwind, no UI kit. Content collections for the journal,
   recipes and lists. Markdown runs through Astro's Sätteri processor.
-- **Data fetchers:** Python 3.10+ in `scripts/` (`requests`, `feedparser`,
-  `PyYAML`, `python-dateutil`), configured in `pyproject.toml`, fully
-  type-hinted, with `pytest` tests against saved fixture feeds for every parser.
-  CI and deploy run Python 3.12.
+- **Data fetchers:** Python 3.10+ in `scripts/` (`requests`, `defusedxml`),
+  configured in `pyproject.toml`, fully type-hinted, with `pytest` tests against
+  saved responses for every parser (§6). CI and deploy run Python 3.12.
 - **Map:** `d3-geo` + `topojson-client` + `topojson-simplify` + `world-atlas`
   (countries-50m), rendered to static SVG **at build time**, with no client-side
   map library (§4.7).
@@ -220,6 +219,12 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
      `from SOURCE`. Right, span 7: the mini world map (§4.7 styling, no tooltips)
      and, 24px below it, a row: display 32px `N` in accent + body 15px muted
      ` / 195 national dishes`, and a right-aligned mono link `the challenge →`.
+     **When feed cards are hidden** (§6), the visible cards keep their order and
+     are packed into rows of two that alternate 7 + 5 and 5 + 7, exactly as above,
+     so the grid never has a hole. A card left alone on the last row spans all 12
+     columns, and its content keeps the width it would have at span 7, aligned
+     left. `packCards` in `src/lib/layout.ts` does the packing; cooking always
+     follows on its own row.
 5. **Lists band** (kraft band, `margin-top: 96px`). Left, span 5, gap 18px: mono
    accent `08 — lists`, display 40px / 1.25 `Top tens, every December`, body 16px
    / 1.7 muted `A yearly look back: ten songs, ten albums, ten films, ten books.`
@@ -416,10 +421,29 @@ public/media/…                  Matteo's photos (recipes, list covers)
 
 ## 6. Data pipeline
 
-The automatic cards are fed by Python fetchers. `scripts/fetch_all.py` runs each
-fetcher, writes feed JSON to `src/data/live/` and downloads every image it needs
-into `public/media/feeds/`. Images are never hotlinked, because Instagram URLs
-expire. One failing fetcher never breaks the others.
+The automatic cards are fed by Python fetchers in `scripts/`. Running
+`python -m scripts.fetch_all` runs each fetcher in turn; a fetcher that succeeds
+writes its feed to `src/data/live/<name>.json` and downloads every image it needs
+into `public/media/feeds/<name>/`. Images are never hotlinked, because Instagram
+URLs expire. Files are named by a hash of a stable key (post id, album id, …), so
+an image already on disk is not downloaded again, and images the latest fetch no
+longer uses are removed.
+
+**One failing fetcher never stops the others.** Each outcome is one of:
+
+| Outcome | When                                                                   | What happens                                                                 |
+| ------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| updated | the fetch worked                                                       | the feed file and its images are replaced                                    |
+| skipped | a secret or a `site.config.ts` value is missing or still a placeholder | a log line names what is missing; the previous output stays                  |
+| failed  | the source errored (network, API change, bad data)                     | the error is logged with any credentials redacted; the previous output stays |
+
+`fetch_all` exits 0 when at least one fetcher updated, and writes a summary table
+(feed, result, details, and whether the site shows fresh data, the last good
+copy or a hidden card) to the log and to the GitHub step summary.
+
+Usernames and ids are read from `site.config.ts` by a small parser, so every
+site value still lives in that one file; tokens come from environment variables
+set from Actions secrets.
 
 **Feeds are not committed.** Both output paths are gitignored. `src/data/feeds/`
 holds only committed sample fixtures in the same shape, for development and
@@ -427,43 +451,75 @@ tests.
 
 **When a feed is missing:**
 
-1. The deploy workflow saves each fetcher's last good output in the GitHub
-   Actions cache and restores it when that fetcher fails.
+1. The deploy workflow restores the last good feeds from the GitHub Actions
+   cache before fetching. A fetcher that fails leaves the restored copy in place,
+   and the merged result is saved back to the cache for the next run.
 2. With no cached copy either, the build has no data for that feed, and the card
-   it fills is left out of the page. The build log names each hidden card, e.g.
+   it fills is left out of the page (the other cards are repacked, §4.1). The
+   build log names each hidden card, e.g.
    `[feeds] no instagram feed: hiding the seeing card`. A `<Track>` embed is
    likewise left out when the Spotify feed is missing.
 3. **Fixtures never reach production.** The site reads fixtures only in
    `npm run dev` or when the build runs with `USE_FIXTURES=true` (CI does, so it
    exercises every card).
 
-- **spotify.py:** refresh-token flow; reads the `SPOTIFY_PLAYLIST_ID` tracks
-  (id, title, artists, album cover, url). It also scans `src/content` for
-  `<Track id="…">` embeds and fetches those tracks by id, so embeds keep working
-  after a track leaves the playlist.
-- **letterboxd.py:** RSS `https://letterboxd.com/LETTERBOXD_USERNAME/rss/`:
-  film title, year, member rating, watched date, poster, review text (HTML stripped).
-- **goodreads.py:** RSS `https://www.goodreads.com/review/list_rss/GOODREADS_USER_ID?shelf=currently-reading`
-  and `?shelf=read` (latest 2): title, author, cover, pages if present.
+**The fetchers:**
+
+- **spotify.py:** exchanges `SPOTIFY_REFRESH_TOKEN` for an access token, then
+  reads the `SPOTIFY_PLAYLIST_ID` playlist with `GET /playlists/{id}/items`
+  (id, title, artists, album cover of at least 300px, url). It also scans
+  `src/content` for `<Track id="…">` embeds and fetches any that aren't in the
+  playlist with `GET /tracks/{id}`, one by one, since the batch endpoint was
+  removed for development-mode apps in February 2026. They are written to the
+  feed's `embedded` list, so embeds keep working after a song leaves the
+  playlist. An unknown id is logged and left to the site build to report.
+- **letterboxd.py:** RSS `https://letterboxd.com/LETTERBOXD_USERNAME/rss/`, the
+  10 latest diary entries (lists are skipped): film title, year, member rating,
+  watched date, poster and review text. Letterboxd's boilerplate paragraphs
+  ("Watched on …", "This review may contain spoilers") are dropped, so an entry
+  without a real review has none.
+- **goodreads.py:** RSS `https://www.goodreads.com/review/list_rss/GOODREADS_USER_ID`
+  with `?shelf=currently-reading`, and `?shelf=read` sorted by finish date to
+  keep the latest 2: title, author, the largest real cover (never the "no photo"
+  placeholder) and page count if present.
 - **instagram.py:** Instagram API with Instagram Login (the account must be
-  Business or Creator; it stays public). Gets the latest 6 IMAGE/CAROUSEL posts
-  (`thumbnail_url` for videos). Refreshes the long-lived token on every run; when
-  the returned token differs, updates the `INSTAGRAM_TOKEN` secret with
-  `gh secret set`, authenticated with `GH_SECRETS_TOKEN`.
-- **github.py:** GraphQL `contributionsCollection` (last 30 weeks) plus the
-  latest public push events (repo, message, time).
+  Business or Creator; it stays public). Gets the latest 6 posts of any type,
+  using `thumbnail_url` for videos, with timestamps normalised to UTC. On every
+  run it refreshes the long-lived token; when Instagram returns a new one, it is
+  masked in the log and written to the `INSTAGRAM_TOKEN` secret with
+  `gh secret set`, authenticated with `GH_SECRETS_TOKEN`, passing the token on
+  stdin. Without `GH_SECRETS_TOKEN` the refresh still works for that run and a
+  warning says to update the secret by hand.
+- **github.py:** GraphQL `contributionsCollection` from the Sunday 29 weeks
+  before the current week until now (30 columns), authenticated with
+  `GH_STATS_TOKEN`; then the public events of `GITHUB_USERNAME`, keeping the
+  latest push to each of the 3 most recently pushed repositories. Since October
+  2025 push events no longer include commits, so each message (first line only)
+  is read from the commit API by the push's `head`.
+
+RSS is parsed with `defusedxml`; HTTP uses `requests` with a 20-second timeout
+and a descriptive user agent. Both are the only runtime dependencies.
 
 **Deploy workflow, `.github/workflows/deploy.yml`:** triggered by a push to
-`main`, a daily cron at 05:00 UTC and manual dispatch, with `concurrency` so runs
-never overlap. Steps: set up Python → install → `pytest` →
-`python scripts/fetch_all.py` (writing into the build workspace) → build Astro →
-deploy to Pages. Nothing is committed back to the repo.
+`main`, a daily cron at 05:00 UTC and manual dispatch. Permissions are limited to
+`contents: read`, `pages: write` and `id-token: write`; the `pages` concurrency
+group queues runs so two never overlap, and never cancels one mid-deploy.
 
-The cache save and restore steps above belong to this workflow.
+1. Check out, set up Python 3.12 and install the fetchers.
+2. Restore the last good feeds (`src/data/live`, `public/media/feeds`) from the
+   Actions cache.
+3. Fetch. The step is allowed to fail (`continue-on-error`), so missing secrets
+   or a total outage never block a deploy; its summary shows what happened.
+4. Save the feeds back to the cache under a new key when there is anything to
+   save.
+5. Set up Node from `.nvmrc`, `npm ci`, `npm run build` (without fixtures).
+6. Upload `dist/` with `actions/upload-pages-artifact` and publish it with
+   `actions/deploy-pages` in a separate job. Nothing is committed back to the repo.
 
 **CI workflow, `.github/workflows/ci.yml`:** on every push and pull request, runs
 lint, `astro check`, the Vitest suite and a build with `USE_FIXTURES=true`, plus
-ruff, mypy and pytest.
+ruff, mypy and pytest. The pytest suite runs every parser against saved API
+responses in `tests/fixtures/`, with no network access.
 
 The build also generates `/rss.xml` (journal entries and recipes) and a sitemap.
 
@@ -474,6 +530,6 @@ The build also generates `/rss.xml` (journal entries and recipes) and a sitemap.
 1. ✓ Scaffold, tokens, fonts, header/footer, home page on fixture data.
 2. ✓ Journal, lists and cooking pages, content schemas, example files.
 3. ✓ Challenge map and `countries.yaml`.
-4. Python fetchers, tests and the deploy workflow.
+4. ✓ Python fetchers, tests and the deploy workflow.
 5. Mobile pass, accessibility pass (contrast, focus styles as a 2px accent
    outline offset 2px, alt text), Lighthouse ≥ 95 in every category.
