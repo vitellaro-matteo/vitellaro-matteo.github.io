@@ -1,0 +1,172 @@
+# EXAMPLE — copy this file to src/content/lists/YEAR.yaml (e.g. 2025.yaml),
+# fill in ten of each, then delete these comment lines and the draft line.
+# Images go in public/media/… — square covers for songs and albums, 2:3 for films and books.
+draft: true
+
+songs:
+  - title: Song title 1
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Song title 2
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Song title 3
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Song title 4
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Song title 5
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Song title 6
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Song title 7
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Song title 8
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Song title 9
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Song title 10
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+
+albums:
+  - title: Album title 1
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Album title 2
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Album title 3
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Album title 4
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Album title 5
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Album title 6
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Album title 7
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Album title 8
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Album title 9
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+  - title: Album title 10
+    creator: Artist name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-1x1.svg
+
+films:
+  - title: Film title 1
+    creator: Director name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Film title 2
+    creator: Director name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Film title 3
+    creator: Director name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Film title 4
+    creator: Director name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Film title 5
+    creator: Director name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Film title 6
+    creator: Director name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Film title 7
+    creator: Director name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Film title 8
+    creator: Director name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Film title 9
+    creator: Director name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Film title 10
+    creator: Director name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+
+books:
+  - title: Book title 1
+    creator: Author name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Book title 2
+    creator: Author name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Book title 3
+    creator: Author name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Book title 4
+    creator: Author name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Book title 5
+    creator: Author name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Book title 6
+    creator: Author name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Book title 7
+    creator: Author name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Book title 8
+    creator: Author name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Book title 9
+    creator: Author name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
+  - title: Book title 10
+    creator: Author name
+    note: One line on why it stayed.
+    image: /media/examples/placeholder-2x3.svg
