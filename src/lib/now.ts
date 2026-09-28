@@ -15,11 +15,10 @@ const nowSchema = z.object({
 
 const parsed = nowSchema.safeParse(loadYaml(nowRaw) ?? {});
 if (!parsed.success) {
-  throw new Error(`src/data/now.yaml is invalid:
-${z.prettifyError(parsed.error)}`);
+  throw new Error(`src/data/now.yaml is invalid:\n${z.prettifyError(parsed.error)}`);
 }
 
-const currentBook = goodreads.currently_reading[0];
+const currentBook = goodreads?.currently_reading[0];
 
 /** The hand-edited "now" box, with `reading` falling back to the current Goodreads book. */
 export const now = {

@@ -3,54 +3,46 @@ import Card from '../Card.astro';
 import { github } from '../../lib/feeds';
 import { links } from '../../../site.config';
 import { relativeTime } from '../../lib/dates';
+import { contributionLevels } from '../../lib/contributions';
 
-const weeks = github.calendar.weeks.slice(-30);
-
-// Levels 1–3 by quartiles of the non-zero days: ≤ Q1 → 1, ≤ Q3 → 2, above Q3 → 3.
-const nonZero = weeks
-  .flatMap((w) => w.days.map((d) => d.count))
-  .filter((c) => c > 0)
-  .sort((a, b) => a - b);
-const quantile = (q: number) =>
-  nonZero[Math.min(nonZero.length - 1, Math.floor(q * nonZero.length))] ?? 0;
-const q1 = quantile(0.25);
-const q3 = quantile(0.75);
-const level = (c: number) => (c === 0 ? 0 : c <= q1 ? 1 : c <= q3 ? 2 : 3);
-
-const pushes = github.pushes.slice(0, 3);
+const weeks = github?.calendar.weeks.slice(-30) ?? [];
+const level = contributionLevels(weeks.flatMap((w) => w.days.map((d) => d.count)));
+const pushes = github?.pushes.slice(0, 3) ?? [];
 ---
 
-<Card
-  id="making"
-  class="span-7"
-  label="05 — making"
-  title="on github"
-  linkText="github"
-  href={links.github}
->
-  <div
-    class="calendar"
-    role="img"
-    aria-label={`${github.calendar.total} contributions in the last 30 weeks`}
+{github && (
+  <Card
+    id="making"
+    class="span-7"
+    label="05 — making"
+    title="on github"
+    linkText="github"
+    href={links.github}
   >
-    {weeks.map((week) => (
-      <div class="week">
-        {week.days.map((day) => (
-          <span class={`day l${level(day.count)}`} />
-        ))}
-      </div>
-    ))}
-  </div>
-  <ul>
-    {pushes.map((push) => (
-      <li class="row">
-        <span class="repo">{push.repo}</span>
-        <span class="message muted">{push.message}</span>
-        <span class="mono muted">{relativeTime(push.time)}</span>
-      </li>
-    ))}
-  </ul>
-</Card>
+    <div
+      class="calendar"
+      role="img"
+      aria-label={`${github.calendar.total} contributions in the last 30 weeks`}
+    >
+      {weeks.map((week) => (
+        <div class="week">
+          {week.days.map((day) => (
+            <span class={`day l${level(day.count)}`} />
+          ))}
+        </div>
+      ))}
+    </div>
+    <ul>
+      {pushes.map((push) => (
+        <li class="row">
+          <span class="repo">{push.repo}</span>
+          <span class="message muted">{push.message}</span>
+          <span class="mono muted">{relativeTime(push.time)}</span>
+        </li>
+      ))}
+    </ul>
+  </Card>
+)}
 
 <style>
   .calendar {

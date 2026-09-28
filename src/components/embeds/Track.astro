@@ -1,6 +1,6 @@
 ---
-// <Track id="…" /> — looks the track up in the Spotify feed by id.
-// Tracks that have left the feed need title and artist passed in directly.
+// <Track id="…" /> — looks the track up in the Spotify feed by id. Explicit
+// title/artist/cover props override the feed.
 import EmbedCard from './EmbedCard.astro';
 import { spotify } from '../../lib/feeds';
 
@@ -13,25 +13,33 @@ interface Props {
 }
 
 const { id, label = "from last week's finds", ...given } = Astro.props;
-const found = spotify.tracks.find((t) => t.id === id);
+const found = spotify?.tracks.find((t) => t.id === id);
 const title = given.title ?? found?.title;
 const artist = given.artist ?? found?.artists.join(', ');
 
-if (!title || !artist) {
+// With a feed, an unknown id is an authoring mistake and should stop the build.
+// Without one (the fetch failed and nothing was cached), the embed is left out,
+// like the home-page card, so one outage can't block a deploy.
+if (!(title && artist) && spotify) {
   throw new Error(
     `<Track id="${id}"/>: track not found in the Spotify feed. ` +
       `Pass title="…" and artist="…" (and optionally cover="/media/…") directly.`,
   );
 }
+if (!(title && artist)) {
+  console.warn(`[feeds] no spotify feed: leaving out <Track id="${id}"/>`);
+}
 ---
 
-<EmbedCard
-  label={label}
-  title={title}
-  subtitle={artist}
-  image={given.cover ?? found?.cover}
-  imageAlt={`Cover art for ${title}`}
-  imageHeight={96}
-  linkText="listen"
-  href={found?.url ?? `https://open.spotify.com/track/${id}`}
-/>
+{title && artist && (
+  <EmbedCard
+    label={label}
+    title={title}
+    subtitle={artist}
+    image={given.cover ?? found?.cover}
+    imageAlt={`Cover art for ${title}`}
+    imageHeight={96}
+    linkText="listen"
+    href={found?.url ?? `https://open.spotify.com/track/${id}`}
+  />
+)}

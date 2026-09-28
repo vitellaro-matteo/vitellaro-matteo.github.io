@@ -4,41 +4,42 @@ import Frame from '../Frame.astro';
 import { letterboxd } from '../../lib/feeds';
 import { links } from '../../../site.config';
 import { placeholderTone } from '../../lib/placeholder';
+import { firstSentence } from '../../lib/text';
 
-const films = letterboxd.films.slice(0, 3);
-const latestReview = letterboxd.films.find((f) => f.review)?.review?.trim() ?? null;
-const firstSentence = latestReview
-  ? (latestReview.match(/^[\s\S]*?[.!?](?=\s|$)/)?.[0] ?? latestReview)
-  : null;
+const films = letterboxd?.films.slice(0, 3) ?? [];
+const latestReview = letterboxd?.films.find((f) => f.review)?.review;
+const quote = latestReview ? firstSentence(latestReview) : null;
 
 const meta = (f: (typeof films)[number]) =>
   [f.year, f.rating != null ? `★ ${f.rating}` : null].filter((x) => x != null).join(' · ');
 ---
 
-<Card
-  id="watching"
-  class="span-5"
-  label="02 — watching"
-  title="recently watched"
-  linkText="letterboxd"
-  href={links.letterboxd}
->
-  <ul class="films">
-    {films.map((film, i) => (
-      <li class="film">
-        <Frame
-          src={film.poster}
-          alt={`Poster for ${film.title}`}
-          ratio="2 / 3"
-          tone={placeholderTone(i)}
-        />
-        <p class="title">{film.title}</p>
-        <p class="mono muted">{meta(film)}</p>
-      </li>
-    ))}
-  </ul>
-  {firstSentence && <blockquote class="quote">“{firstSentence}”</blockquote>}
-</Card>
+{letterboxd && (
+  <Card
+    id="watching"
+    class="span-5"
+    label="02 — watching"
+    title="recently watched"
+    linkText="letterboxd"
+    href={links.letterboxd}
+  >
+    <ul class="films">
+      {films.map((film, i) => (
+        <li class="film">
+          <Frame
+            src={film.poster}
+            alt={`Poster for ${film.title}`}
+            ratio="2 / 3"
+            tone={placeholderTone(i)}
+          />
+          <p class="title">{film.title}</p>
+          <p class="mono muted">{meta(film)}</p>
+        </li>
+      ))}
+    </ul>
+    {quote && <blockquote class="quote">“{quote}”</blockquote>}
+  </Card>
+)}
 
 <style>
   .films {

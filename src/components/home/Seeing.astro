@@ -6,33 +6,35 @@ import { site, links } from '../../../site.config';
 import { formatDate } from '../../lib/dates';
 import { placeholderTone } from '../../lib/placeholder';
 
-const posts = instagram.posts.slice(0, 6);
+const posts = instagram?.posts.slice(0, 6) ?? [];
 ---
 
-<Card
-  id="seeing"
-  class="span-7"
-  label="04 — seeing"
-  title={`@${site.instagramUsername}`}
-  linkText="instagram"
-  href={links.instagram}
->
-  <ul class="photos">
-    {posts.map((post, i) => (
-      <li>
-        <a href={post.permalink} aria-label={`Instagram post from ${formatDate(post.timestamp)}`}>
-          <Frame
-            src={post.image}
-            alt={post.caption ?? ''}
-            ratio="1 / 1"
-            tone={placeholderTone(i)}
-          />
-        </a>
-      </li>
-    ))}
-  </ul>
-  <p class="caption muted">The quieter account — photos I don't post anywhere else.</p>
-</Card>
+{instagram && (
+  <Card
+    id="seeing"
+    class="span-7"
+    label="04 — seeing"
+    title={`@${site.instagramUsername}`}
+    linkText="instagram"
+    href={links.instagram}
+  >
+    <ul class="photos">
+      {posts.map((post, i) => (
+        <li>
+          <a href={post.permalink} aria-label={`Instagram post from ${formatDate(post.timestamp)}`}>
+            <Frame
+              src={post.image}
+              alt={post.caption ?? ''}
+              ratio="1 / 1"
+              tone={placeholderTone(i)}
+            />
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p class="caption muted">The quieter account — photos I don't post anywhere else.</p>
+  </Card>
+)}
 
 <style>
   .photos {
