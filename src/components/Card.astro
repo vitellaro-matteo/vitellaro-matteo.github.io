@@ -1,4 +1,6 @@
 ---
+import type { CardSpan } from '../lib/layout';
+
 interface Props {
   /** e.g. `01 — listening` */
   label: string;
@@ -9,14 +11,15 @@ interface Props {
   /** true → ` ↗`, false → ` →` */
   external?: boolean;
   id?: string;
-  class?: string;
+  span: CardSpan;
+  alone?: boolean;
 }
 
-const { label, title, linkText, href, external = true, id, class: className } = Astro.props;
+const { label, title, linkText, href, external = true, id, span, alone = false } = Astro.props;
 const headingId = id ? `${id}-title` : undefined;
 ---
 
-<section class:list={['card', className]} id={id} aria-labelledby={headingId}>
+<section class:list={['card', `span-${span}`, { alone }]} id={id} aria-labelledby={headingId}>
   <header class="card-head">
     <div class="card-titles">
       <p class="mono accent">{label}</p>
@@ -39,6 +42,12 @@ const headingId = id ? `${id}-title` : undefined;
     flex-direction: column;
     gap: 24px;
     min-width: 0;
+  }
+  /* A card alone on the last row spans the full width, but its content keeps the
+     width it would have at span 7 (seven of twelve columns, minus the card's
+     36px padding on each side), so text and grids don't stretch across the page. */
+  .card.alone > :global(*) {
+    max-width: calc((100% + 72px - 11 * 32px) * 7 / 12 + 6 * 32px - 72px);
   }
   .card-head {
     display: flex;

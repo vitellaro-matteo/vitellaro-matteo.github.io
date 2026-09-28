@@ -3,13 +3,22 @@ import Card from '../Card.astro';
 import { formatDate } from '../../lib/dates';
 import { getJournal, emptyNotes } from '../../lib/content';
 import { routes } from '../../lib/paths';
+import type { CardSpan } from '../../lib/layout';
+
+interface Props {
+  span: CardSpan;
+  alone: boolean;
+}
+
+const { span, alone } = Astro.props;
 
 const entries = (await getJournal()).slice(0, 3);
 ---
 
 <Card
   id="journal"
-  class="span-5"
+  span={span}
+  alone={alone}
   label="06 — journal"
   title="notes & essays"
   linkText="all"

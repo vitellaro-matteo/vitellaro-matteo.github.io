@@ -5,6 +5,14 @@ import { instagram } from '../../lib/feeds';
 import { site, links } from '../../../site.config';
 import { formatDate } from '../../lib/dates';
 import { placeholderTone } from '../../lib/placeholder';
+import type { CardSpan } from '../../lib/layout';
+
+interface Props {
+  span: CardSpan;
+  alone: boolean;
+}
+
+const { span, alone } = Astro.props;
 
 const posts = instagram?.posts.slice(0, 6) ?? [];
 ---
@@ -12,7 +20,8 @@ const posts = instagram?.posts.slice(0, 6) ?? [];
 {instagram && (
   <Card
     id="seeing"
-    class="span-7"
+    span={span}
+    alone={alone}
     label="04 — seeing"
     title={`@${site.instagramUsername}`}
     linkText="instagram"

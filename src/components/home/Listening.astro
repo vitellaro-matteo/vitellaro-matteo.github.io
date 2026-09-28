@@ -1,6 +1,14 @@
 ---
 import Card from '../Card.astro';
 import { spotify } from '../../lib/feeds';
+import type { CardSpan } from '../../lib/layout';
+
+interface Props {
+  span: CardSpan;
+  alone: boolean;
+}
+
+const { span, alone } = Astro.props;
 
 const tracks = spotify?.tracks.slice(0, 10) ?? [];
 ---
@@ -8,7 +16,8 @@ const tracks = spotify?.tracks.slice(0, 10) ?? [];
 {spotify && (
   <Card
     id="listening"
-    class="span-7"
+    span={span}
+    alone={alone}
     label="01 — listening"
     title="last week's finds"
     linkText="spotify"

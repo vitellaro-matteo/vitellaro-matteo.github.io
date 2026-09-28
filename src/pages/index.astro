@@ -11,18 +11,32 @@ import Journal from '../components/home/Journal.astro';
 import Cooking from '../components/home/Cooking.astro';
 import ListsBand from '../components/home/ListsBand.astro';
 import { previousWeekMeta } from '../lib/dates';
+import { github, goodreads, instagram, letterboxd, spotify } from '../lib/feeds';
+import { packCards } from '../lib/layout';
+
+// In design order. Feed cards drop out when their feed is missing; the rest are
+// repacked so the grid never has a hole. Cooking always takes a full row after them.
+const cards = [
+  { key: 'listening', component: Listening, visible: spotify !== null },
+  { key: 'watching', component: Watching, visible: letterboxd !== null },
+  { key: 'reading', component: Reading, visible: goodreads !== null },
+  { key: 'seeing', component: Seeing, visible: instagram !== null },
+  { key: 'making', component: Making, visible: github !== null },
+  { key: 'journal', component: Journal, visible: true },
+] as const;
+
+const visible = cards.filter((card) => card.visible);
+const placements = packCards(visible.map((card) => card.key));
 ---
 
 <Base>
   <Hero />
   <SectionHeading title="This week" meta={previousWeekMeta()} />
   <div class="cards grid-12">
-    <Listening />
-    <Watching />
-    <Reading />
-    <Seeing />
-    <Making />
-    <Journal />
+    {placements.map(({ span, alone }, i) => {
+      const Card = visible[i]?.component;
+      return Card && <Card span={span} alone={alone} />;
+    })}
     <Cooking />
   </div>
   <ListsBand />

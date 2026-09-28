@@ -4,6 +4,14 @@ import { github } from '../../lib/feeds';
 import { links } from '../../../site.config';
 import { relativeTime } from '../../lib/dates';
 import { contributionLevels } from '../../lib/contributions';
+import type { CardSpan } from '../../lib/layout';
+
+interface Props {
+  span: CardSpan;
+  alone: boolean;
+}
+
+const { span, alone } = Astro.props;
 
 const weeks = github?.calendar.weeks.slice(-30) ?? [];
 const level = contributionLevels(weeks.flatMap((w) => w.days.map((d) => d.count)));
@@ -13,7 +21,8 @@ const pushes = github?.pushes.slice(0, 3) ?? [];
 {github && (
   <Card
     id="making"
-    class="span-7"
+    span={span}
+    alone={alone}
     label="05 — making"
     title="on github"
     linkText="github"

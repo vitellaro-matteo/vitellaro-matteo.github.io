@@ -4,6 +4,14 @@ import Frame from '../Frame.astro';
 import { goodreads } from '../../lib/feeds';
 import { now } from '../../lib/now';
 import { links } from '../../../site.config';
+import type { CardSpan } from '../../lib/layout';
+
+interface Props {
+  span: CardSpan;
+  alone: boolean;
+}
+
+const { span, alone } = Astro.props;
 
 const book = goodreads?.currently_reading[0];
 const finished = goodreads?.read.slice(0, 2) ?? [];
@@ -14,7 +22,8 @@ const pct = progress ? Math.min(100, Math.max(0, (progress.page / progress.of) *
 {goodreads && (
   <Card
     id="reading"
-    class="span-5"
+    span={span}
+    alone={alone}
     label="03 — reading"
     title="on the nightstand"
     linkText="goodreads"

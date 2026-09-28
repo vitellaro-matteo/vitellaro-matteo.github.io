@@ -5,6 +5,14 @@ import { letterboxd } from '../../lib/feeds';
 import { links } from '../../../site.config';
 import { placeholderTone } from '../../lib/placeholder';
 import { firstSentence } from '../../lib/text';
+import type { CardSpan } from '../../lib/layout';
+
+interface Props {
+  span: CardSpan;
+  alone: boolean;
+}
+
+const { span, alone } = Astro.props;
 
 const films = letterboxd?.films.slice(0, 3) ?? [];
 const latestReview = letterboxd?.films.find((f) => f.review)?.review;
@@ -17,7 +25,8 @@ const meta = (f: (typeof films)[number]) =>
 {letterboxd && (
   <Card
     id="watching"
-    class="span-5"
+    span={span}
+    alone={alone}
     label="02 — watching"
     title="recently watched"
     linkText="letterboxd"
