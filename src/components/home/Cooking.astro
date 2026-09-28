@@ -1,0 +1,82 @@
+---
+import Card from '../Card.astro';
+import Frame from '../Frame.astro';
+import { formatDate } from '../../lib/dates';
+// Phase 1 placeholder — switches to the recipes collection in Phase 2.
+import placeholder from '../../data/placeholder/home.json';
+
+const recipe = placeholder.recipe;
+const cooked = placeholder.challenge_cooked;
+---
+
+<Card id="cooking" class="span-12" label="07 — cooking" title="last cooked" linkText="all" href="/cooking" external={false}>
+  <div class="grid-12">
+    <a class="recipe span-5" href={`/cooking/${recipe.slug}`}>
+      <Frame src={recipe.image} alt={recipe.title} ratio="4 / 3" tone={2} />
+      <span class="text">
+        <span class="mono muted">{formatDate(recipe.date)} · {recipe.country}</span>
+        <span class="title">{recipe.title}</span>
+        <span class="source muted">from {recipe.source_name}</span>
+      </span>
+    </a>
+    <div class="challenge span-7">
+      <!-- Phase 3 replaces this with the mini world map (same size: Equal Earth, 1000 × 447). -->
+      <div class="map-placeholder" aria-hidden="true"></div>
+      <div class="count">
+        <p>
+          <span class="n accent">{cooked}</span><span class="of muted"> / 195 national dishes</span>
+        </p>
+        <a class="mono" href="/cooking/around-the-world">the challenge →</a>
+      </div>
+    </div>
+  </div>
+</Card>
+
+<style>
+  .recipe {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    line-height: 1.3;
+  }
+  .source {
+    font-size: 14px;
+  }
+  .challenge {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .map-placeholder {
+    aspect-ratio: 1000 / 447;
+    background: var(--kraft);
+  }
+  .count {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .n {
+    font-family: var(--font-display);
+    font-size: 32px;
+    line-height: 1;
+  }
+  .of {
+    font-size: 15px;
+  }
+  .count a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+</style>

@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Hero from '../components/home/Hero.astro';
+import Listening from '../components/home/Listening.astro';
+import Watching from '../components/home/Watching.astro';
+import Reading from '../components/home/Reading.astro';
+import Seeing from '../components/home/Seeing.astro';
+import Making from '../components/home/Making.astro';
+import Journal from '../components/home/Journal.astro';
+import Cooking from '../components/home/Cooking.astro';
+import ListsBand from '../components/home/ListsBand.astro';
+import { previousWeekMeta } from '../lib/dates';
+---
+
+<Base>
+  <Hero />
+  <SectionHeading title="This week" meta={previousWeekMeta()} />
+  <div class="cards grid-12">
+    <Listening />
+    <Watching />
+    <Reading />
+    <Seeing />
+    <Making />
+    <Journal />
+    <Cooking />
+  </div>
+  <ListsBand />
+</Base>
+
+<style>
+  .cards {
+    row-gap: 32px;
+  }
+</style>

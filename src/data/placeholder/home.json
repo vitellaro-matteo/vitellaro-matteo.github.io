@@ -1,0 +1,18 @@
+{
+  "_note": "Phase 1 placeholder for the journal card, cooking card and lists band. Replaced by content collections in Phase 2.",
+  "journal": [
+    { "slug": "placeholder-one", "title": "A placeholder essay title", "date": "2026-09-20" },
+    { "slug": "placeholder-two", "title": "Notes on something small", "date": "2026-09-06" },
+    { "slug": "placeholder-three", "title": "A longer placeholder title that wraps onto two lines", "date": "2026-08-23" }
+  ],
+  "recipe": {
+    "slug": "placeholder-recipe",
+    "title": "Placeholder recipe title",
+    "date": "2026-09-24",
+    "country": "Country name",
+    "source_name": "Source name",
+    "image": null
+  },
+  "challenge_cooked": 3,
+  "lists_year": 2025
+}

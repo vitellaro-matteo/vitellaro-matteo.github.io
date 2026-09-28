@@ -1,0 +1,40 @@
+---
+import Card from '../Card.astro';
+import { spotify } from '../../lib/data';
+
+const tracks = spotify.tracks.slice(0, 10);
+---
+
+<Card id="listening" class="span-7" label="01 — listening" title="last week's finds" linkText="spotify" href={spotify.playlist_url}>
+  <ol class="rows">
+    {tracks.map((track, i) => (
+      <li class="row">
+        <span class="mono muted">{String(i + 1).padStart(2, '0')}</span>
+        <span class="title">{track.title}</span>
+        <span class="artist muted">{track.artists.join(', ')}</span>
+      </li>
+    ))}
+  </ol>
+  <p class="note muted">Every Monday, the songs I liked the week before move into one playlist.</p>
+</Card>
+
+<style>
+  .row {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: baseline;
+    column-gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .title {
+    font-size: 16px;
+  }
+  .artist {
+    font-size: 15px;
+    text-align: right;
+  }
+  .note {
+    font-size: 14px;
+  }
+</style>

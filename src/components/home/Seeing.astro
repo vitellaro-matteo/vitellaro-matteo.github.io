@@ -1,0 +1,36 @@
+---
+import Card from '../Card.astro';
+import Frame from '../Frame.astro';
+import { instagram } from '../../lib/data';
+import { site, links } from '../../../site.config';
+import { formatDate } from '../../lib/dates';
+
+const posts = instagram.posts.slice(0, 6);
+---
+
+<Card id="seeing" class="span-7" label="04 — seeing" title={`@${site.instagramUsername}`} linkText="instagram" href={links.instagram}>
+  <ul class="photos">
+    {posts.map((post, i) => (
+      <li>
+        <a href={post.permalink} aria-label={`Instagram post from ${formatDate(post.timestamp)}`}>
+          <Frame src={post.image} alt={post.caption ?? ''} ratio="1 / 1" tone={((i % 3) + 1) as 1 | 2 | 3} />
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p class="caption muted">The quieter account — photos I don't post anywhere else.</p>
+</Card>
+
+<style>
+  .photos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .photos a {
+    display: block;
+  }
+  .caption {
+    font-size: 14px;
+  }
+</style>

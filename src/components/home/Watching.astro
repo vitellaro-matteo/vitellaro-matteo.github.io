@@ -1,0 +1,49 @@
+---
+import Card from '../Card.astro';
+import Frame from '../Frame.astro';
+import { letterboxd } from '../../lib/data';
+import { links } from '../../../site.config';
+
+const films = letterboxd.films.slice(0, 3);
+const latestReview = letterboxd.films.find((f) => f.review)?.review?.trim() ?? null;
+const firstSentence = latestReview ? (latestReview.match(/^[\s\S]*?[.!?](?=\s|$)/)?.[0] ?? latestReview) : null;
+
+const meta = (f: (typeof films)[number]) =>
+  [f.year, f.rating != null ? `★ ${f.rating}` : null].filter((x) => x != null).join(' · ');
+---
+
+<Card id="watching" class="span-5" label="02 — watching" title="recently watched" linkText="letterboxd" href={links.letterboxd}>
+  <ul class="films">
+    {films.map((film, i) => (
+      <li class="film">
+        <Frame src={film.poster} alt={`Poster for ${film.title}`} ratio="2 / 3" tone={((i % 3) + 1) as 1 | 2 | 3} />
+        <p class="title">{film.title}</p>
+        <p class="mono muted">{meta(film)}</p>
+      </li>
+    ))}
+  </ul>
+  {firstSentence && <blockquote class="quote">“{firstSentence}”</blockquote>}
+</Card>
+
+<style>
+  .films {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .film {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .title {
+    font-size: 14px;
+  }
+  .quote {
+    padding-top: 20px;
+    border-top: 1px solid var(--line-soft);
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 1.6;
+  }
+</style>

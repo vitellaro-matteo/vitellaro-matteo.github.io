@@ -1,0 +1,16 @@
+{
+  "fetched_at": "2026-09-28T05:00:00Z",
+  "playlist_url": "https://open.spotify.com/playlist/SPOTIFY_PLAYLIST_ID",
+  "tracks": [
+    { "title": "Placeholder track one", "artists": ["Artist name"], "url": "https://open.spotify.com/track/placeholder1", "cover": null },
+    { "title": "A slightly longer placeholder track title", "artists": ["Another artist"], "url": "https://open.spotify.com/track/placeholder2", "cover": null },
+    { "title": "Track three", "artists": ["Artist name", "Featured artist"], "url": "https://open.spotify.com/track/placeholder3", "cover": null },
+    { "title": "Placeholder track four", "artists": ["Band name"], "url": "https://open.spotify.com/track/placeholder4", "cover": null },
+    { "title": "Five", "artists": ["Solo artist"], "url": "https://open.spotify.com/track/placeholder5", "cover": null },
+    { "title": "Placeholder track six (live)", "artists": ["Artist name"], "url": "https://open.spotify.com/track/placeholder6", "cover": null },
+    { "title": "Track seven", "artists": ["Duo name"], "url": "https://open.spotify.com/track/placeholder7", "cover": null },
+    { "title": "Placeholder track eight", "artists": ["Another artist"], "url": "https://open.spotify.com/track/placeholder8", "cover": null },
+    { "title": "Track nine", "artists": ["Ensemble name"], "url": "https://open.spotify.com/track/placeholder9", "cover": null },
+    { "title": "Placeholder track ten", "artists": ["Artist name"], "url": "https://open.spotify.com/track/placeholder10", "cover": null }
+  ]
+}
