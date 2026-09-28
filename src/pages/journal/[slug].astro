@@ -3,7 +3,9 @@ import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import EntryLayout from '../../components/EntryLayout.astro';
 import { embeds } from '../../components/embeds';
-import { getJournal, neighbours, readingTime, type JournalEntry } from '../../lib/content';
+import { getJournal, type JournalEntry } from '../../lib/content';
+import { neighbours } from '../../lib/entries';
+import { readingTime } from '../../lib/text';
 import { formatDate } from '../../lib/dates';
 import { routes } from '../../lib/paths';
 

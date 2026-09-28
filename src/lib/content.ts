@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { isYear } from './entries';
 
 // Drafts (including the example files) show in `npm run dev` only, never in the build.
 const showDrafts = import.meta.env.DEV;
@@ -12,8 +13,6 @@ export const emptyNotes = {
   cooking: 'Nothing cooked yet.',
   lists: 'The first list arrives in December.',
 };
-
-const isYear = (id: string) => /^\d{4}$/.test(id);
 
 export type JournalEntry = CollectionEntry<'journal'>;
 export type Recipe = CollectionEntry<'recipes'>;
@@ -44,23 +43,4 @@ export async function getLists(): Promise<List[]> {
 export async function latestListYear(): Promise<string | null> {
   const latest = (await getLists()).find((list) => isYear(list.id));
   return latest?.id ?? null;
-}
-
-/** Number of distinct challenge countries cooked. */
-export function cookedCount(recipes: Recipe[]): number {
-  return new Set(recipes.map((r) => r.data.challenge).filter(Boolean)).size;
-}
-
-/** Reading time in minutes, at 200 words per minute. */
-export function readingTime(body: string | undefined): number {
-  const words = (body ?? '')
-    .replace(/<[^<>]*>/g, ' ')
-    .split(/\s+/)
-    .filter(Boolean).length;
-  return Math.max(1, Math.round(words / 200));
-}
-
-/** Older / newer neighbours in a newest-first list. */
-export function neighbours<T>(items: T[], index: number): { older?: T; newer?: T } {
-  return { older: items[index + 1], newer: items[index - 1] };
 }
