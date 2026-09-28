@@ -16,8 +16,8 @@ jobs:
     name: Site (lint, check, test, build)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -35,8 +35,8 @@ jobs:
     name: Fetchers (ruff, mypy, pytest)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
           cache: pip
@@ -45,5 +45,4 @@ jobs:
       - run: ruff check .
       - run: ruff format --check .
       - run: mypy
-      # pytest exits with 5 when it collects no tests; that is expected until the fetchers exist.
-      - run: pytest || [ $? -eq 5 ]
+      - run: pytest
