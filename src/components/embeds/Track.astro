@@ -1,6 +1,7 @@
 ---
-// <Track id="…" /> — looks the track up in the Spotify feed by id. Explicit
-// title/artist/cover props override the feed.
+// <Track id="…" /> — looks the track up in the Spotify feed by id: the playlist,
+// then the embedded tracks the fetcher adds. Explicit title/artist/cover props
+// override the feed.
 import EmbedCard from './EmbedCard.astro';
 import { spotify } from '../../lib/feeds';
 
@@ -13,7 +14,7 @@ interface Props {
 }
 
 const { id, label = "from last week's finds", ...given } = Astro.props;
-const found = spotify?.tracks.find((t) => t.id === id);
+const found = [...(spotify?.tracks ?? []), ...(spotify?.embedded ?? [])].find((t) => t.id === id);
 const title = given.title ?? found?.title;
 const artist = given.artist ?? found?.artists.join(', ');
 

@@ -46,17 +46,22 @@ function load<T>(name: FeedName): T | null {
   return data as T | null;
 }
 
+export interface SpotifyTrack {
+  /** Spotify track id */
+  id: string;
+  title: string;
+  artists: string[];
+  url: string;
+  cover: string | null;
+}
+
 export interface SpotifyFeed {
   fetched_at: string;
   playlist_url: string;
-  tracks: {
-    /** Spotify track id */
-    id: string;
-    title: string;
-    artists: string[];
-    url: string;
-    cover: string | null;
-  }[];
+  /** The "last week's finds" playlist, in playlist order. */
+  tracks: SpotifyTrack[];
+  /** Tracks used by <Track id="…"> embeds that aren't in the playlist. */
+  embedded: SpotifyTrack[];
 }
 
 export interface LetterboxdFeed {
