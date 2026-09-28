@@ -2,14 +2,16 @@
 import Base from '../../layouts/Base.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import Frame from '../../components/Frame.astro';
-import MiniMap from '../../components/MiniMap.astro';
-import { getRecipes, cookedCount, emptyNotes } from '../../lib/content';
+import MiniMap from '../../components/map/MiniMap.astro';
+import { getRecipes, emptyNotes } from '../../lib/content';
+import { getCooked } from '../../lib/challenge';
+import { COUNTRY_TOTAL } from '../../lib/countries';
 import { routes } from '../../lib/paths';
 import { formatDate } from '../../lib/dates';
 import { placeholderTone } from '../../lib/placeholder';
 
 const recipes = await getRecipes();
-const cooked = cookedCount(recipes);
+const cooked = (await getCooked()).size;
 ---
 
 <Base title="What I've been cooking" current="cooking">
@@ -23,7 +25,9 @@ const cooked = cookedCount(recipes);
     <div class="intro span-5">
       <p class="mono accent">around the world</p>
       <h2 id="challenge-title">One national dish per country</h2>
-      <p class="muted">{cooked} of 195 cooked</p>
+      <p class="muted">
+        {cooked} of {COUNTRY_TOTAL} cooked
+      </p>
       <a class="mono" href={routes.challenge}>
         the challenge →
       </a>

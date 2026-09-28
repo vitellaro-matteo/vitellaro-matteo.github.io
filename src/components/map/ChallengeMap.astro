@@ -1,0 +1,104 @@
+---
+// The full, interactive map for the challenge page, with its tooltip.
+import WorldMapSvg from './WorldMapSvg.astro';
+import { challengeMap } from '../../lib/challenge';
+import { COUNTRY_TOTAL } from '../../lib/countries';
+import type { CookedCountry } from '../../lib/map/world-map';
+
+interface Props {
+  cooked: ReadonlyMap<string, CookedCountry>;
+}
+
+const { cooked } = Astro.props;
+const map = challengeMap('full', cooked);
+const label = `World map: ${cooked.size} of ${COUNTRY_TOTAL} countries cooked, shown in the accent colour.`;
+---
+
+<div class="challenge-map" data-challenge-map>
+  <WorldMapSvg map={map} ground="paper" interactive label={label} />
+  <div class="map-tooltip" role="tooltip" hidden>
+    <p class="mono muted" data-field="name"></p>
+    <p class="dish" data-field="dish"></p>
+    <p class="mono muted" data-field="cooked"></p>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-challenge-map]');
+  const tip = root?.querySelector<HTMLElement>('.map-tooltip');
+
+  if (root && tip) {
+    const field = (name: string) => tip.querySelector<HTMLElement>(`[data-field="${name}"]`);
+    const [nameEl, dishEl, cookedEl] = [field('name'), field('dish'), field('cooked')];
+    const OFFSET = 12;
+
+    const countryFrom = (target: EventTarget | null) =>
+      target instanceof Element ? target.closest<SVGElement>('[data-name]') : null;
+
+    const hide = () => {
+      tip.hidden = true;
+    };
+
+    const show = (country: SVGElement, x: number, y: number) => {
+      const { name = '', dish = '', cooked } = country.dataset;
+      if (nameEl) nameEl.textContent = name;
+      if (dishEl) dishEl.textContent = dish;
+      if (cookedEl) {
+        cookedEl.textContent = cooked ? `cooked ${cooked}` : '';
+        cookedEl.hidden = !cooked;
+      }
+      tip.hidden = false;
+
+      // Keep the tooltip inside the map: flip it to the left of the pointer near the right edge.
+      const box = root.getBoundingClientRect();
+      const left = x - box.left + OFFSET;
+      const fitsRight = left + tip.offsetWidth <= box.width;
+      tip.style.left = `${fitsRight ? left : x - box.left - OFFSET - tip.offsetWidth}px`;
+      tip.style.top = `${y - box.top + OFFSET}px`;
+    };
+
+    root.addEventListener('pointermove', (event) => {
+      const country = countryFrom(event.target);
+      if (country) show(country, event.clientX, event.clientY);
+      else hide();
+    });
+    root.addEventListener('pointerleave', hide);
+    root.addEventListener('focusin', (event) => {
+      const country = countryFrom(event.target);
+      if (!country) return;
+      const rect = country.getBoundingClientRect();
+      show(country, rect.left + rect.width / 2, rect.top + rect.height / 2);
+    });
+    root.addEventListener('focusout', hide);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') hide();
+    });
+  }
+</script>
+
+<style>
+  .challenge-map {
+    position: relative;
+  }
+  .map-tooltip {
+    position: absolute;
+    z-index: 1;
+    max-width: 260px;
+    padding: 8px 12px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .map-tooltip[hidden],
+  .map-tooltip [hidden] {
+    display: none;
+  }
+  .dish {
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 1.3;
+  }
+</style>

@@ -1,0 +1,15 @@
+---
+// The small, decorative challenge map for the home card and the cooking band.
+// The cooked count always sits next to it, so it is hidden from screen readers.
+import WorldMapSvg from './WorldMapSvg.astro';
+import { challengeMap, getCooked } from '../../lib/challenge';
+
+interface Props {
+  ground: 'paper' | 'card' | 'kraft';
+}
+
+const { ground } = Astro.props;
+const map = challengeMap('mini', await getCooked());
+---
+
+<WorldMapSvg map={map} ground={ground} />

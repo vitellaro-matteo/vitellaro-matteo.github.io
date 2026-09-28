@@ -1,0 +1,102 @@
+---
+// Draws a prepared WorldMap. Interactive maps link cooked countries and carry
+// the data the tooltip script reads; the mini map is decorative.
+import type { WorldMap, MapCountry, CookedCountry } from '../../lib/map/world-map';
+import { formatDate } from '../../lib/dates';
+
+interface Props {
+  map: WorldMap;
+  ground: 'paper' | 'card' | 'kraft';
+  interactive?: boolean;
+  /** Summary for screen readers; required when interactive. */
+  label?: string;
+}
+
+const { map, ground, interactive = false, label } = Astro.props;
+
+const tooltipData = (country?: MapCountry, cooked?: CookedCountry) =>
+  interactive && country
+    ? {
+        'data-name': country.name,
+        'data-dish': country.dish,
+        'data-cooked': cooked ? formatDate(cooked.date) : undefined,
+      }
+    : {};
+
+const linkLabel = (country: MapCountry, cooked: CookedCountry) =>
+  `${country.name}: ${country.dish}, cooked ${formatDate(cooked.date)}`;
+---
+
+<svg
+  class:list={['world-map', { 'on-kraft': ground === 'kraft' }]}
+  viewBox={map.viewBox}
+  role={interactive ? 'img' : undefined}
+  aria-label={interactive ? label : undefined}
+  aria-hidden={interactive ? undefined : 'true'}
+>
+  {map.shapes.map((shape) =>
+    interactive && shape.country && shape.cooked ? (
+      <a
+        href={shape.cooked.href}
+        aria-label={linkLabel(shape.country, shape.cooked)}
+        {...tooltipData(shape.country, shape.cooked)}
+      >
+        <path d={shape.d} class="cooked" />
+      </a>
+    ) : (
+      <path
+        d={shape.d}
+        class:list={{ cooked: shape.cooked }}
+        {...tooltipData(shape.country, shape.cooked)}
+      />
+    ),
+  )}
+  {map.dots.map((dot) =>
+    interactive && dot.cooked ? (
+      <a
+        href={dot.cooked.href}
+        aria-label={linkLabel(dot.country, dot.cooked)}
+        {...tooltipData(dot.country, dot.cooked)}
+      >
+        <circle cx={dot.cx} cy={dot.cy} r={dot.r} class="dot cooked" />
+      </a>
+    ) : (
+      <circle
+        cx={dot.cx}
+        cy={dot.cy}
+        r={dot.r}
+        class:list={['dot', { cooked: dot.cooked }]}
+        {...tooltipData(dot.country, dot.cooked)}
+      />
+    ),
+  )}
+</svg>
+
+<style>
+  .world-map {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  path {
+    fill: var(--kraft);
+    stroke: var(--paper);
+    stroke-width: 0.6px;
+    vector-effect: non-scaling-stroke;
+  }
+  .dot {
+    fill: var(--kraft);
+    stroke: none;
+  }
+  /* On a kraft band, kraft countries would vanish into the ground. */
+  .on-kraft path {
+    fill: var(--card);
+    stroke: var(--kraft-3);
+  }
+  .on-kraft .dot {
+    fill: var(--card);
+  }
+  .world-map .cooked {
+    fill: var(--accent);
+  }
+</style>

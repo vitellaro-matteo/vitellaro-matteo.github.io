@@ -1,14 +1,16 @@
 ---
 import Card from '../Card.astro';
 import Frame from '../Frame.astro';
-import MiniMap from '../MiniMap.astro';
+import MiniMap from '../map/MiniMap.astro';
 import { formatDate } from '../../lib/dates';
-import { getRecipes, cookedCount, emptyNotes } from '../../lib/content';
+import { getRecipes, emptyNotes } from '../../lib/content';
+import { getCooked } from '../../lib/challenge';
+import { COUNTRY_TOTAL } from '../../lib/countries';
 import { routes } from '../../lib/paths';
 
 const recipes = await getRecipes();
 const recipe = recipes[0];
-const cooked = cookedCount(recipes);
+const cooked = (await getCooked()).size;
 ---
 
 <Card
@@ -42,7 +44,7 @@ const cooked = cookedCount(recipes);
       <div class="count">
         <p>
           <span class="n accent">{cooked}</span>
-          <span class="of muted"> / 195 national dishes</span>
+          <span class="of muted"> / {COUNTRY_TOTAL} national dishes</span>
         </p>
         <a class="mono" href={routes.challenge}>
           the challenge →

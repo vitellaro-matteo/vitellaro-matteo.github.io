@@ -3,6 +3,7 @@
 interface Props {
   label: string;
   title: string;
+  /** Right-hand text; pages with richer content use the `right` slot instead. */
   text?: string;
 }
 
@@ -14,7 +15,13 @@ const { label, title, text } = Astro.props;
     <p class="mono accent">{label}</p>
     <h1>{title}</h1>
   </div>
-  {text && <p class="text muted">{text}</p>}
+  {Astro.slots.has('right') ? (
+    <div>
+      <slot name="right" />
+    </div>
+  ) : (
+    text && <p class="text muted">{text}</p>
+  )}
 </div>
 
 <style>

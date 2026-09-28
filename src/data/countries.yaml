@@ -1,0 +1,1034 @@
+# The around-the-world challenge: one national dish per country.
+# 195 entries: the 193 UN member states, the Holy See and Palestine.
+# Continents follow the UN M49 regions (Americas covers North, Central and South
+# America and the Caribbean). Dishes are seeded with the most commonly cited
+# national dish; set dish_verified: true once checked. See docs/CONTENT.md.
+
+# Africa
+- iso_n3: '012'
+  name: 'Algeria'
+  continent: Africa
+  dish: 'Couscous'
+  dish_verified: false
+- iso_n3: '024'
+  name: 'Angola'
+  continent: Africa
+  dish: 'Muamba de galinha'
+  dish_verified: false
+- iso_n3: '204'
+  name: 'Benin'
+  continent: Africa
+  dish: 'Amiwo'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '072'
+  name: 'Botswana'
+  continent: Africa
+  dish: 'Seswaa'
+  dish_verified: false
+- iso_n3: '854'
+  name: 'Burkina Faso'
+  continent: Africa
+  dish: 'Riz gras'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '108'
+  name: 'Burundi'
+  continent: Africa
+  dish: 'Ibiharage'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '132'
+  name: 'Cabo Verde'
+  continent: Africa
+  dish: 'Cachupa'
+  dish_verified: false
+- iso_n3: '120'
+  name: 'Cameroon'
+  continent: Africa
+  dish: 'Ndolé'
+  dish_verified: false
+- iso_n3: '140'
+  name: 'Central African Republic'
+  continent: Africa
+  dish: 'Kanda'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '148'
+  name: 'Chad'
+  continent: Africa
+  dish: 'Boule with sauce'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '174'
+  name: 'Comoros'
+  continent: Africa
+  dish: 'Langouste à la vanille'
+  dish_verified: false
+- iso_n3: '178'
+  name: 'Congo'
+  continent: Africa
+  dish: 'Saka-saka'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '384'
+  name: "Côte d'Ivoire"
+  continent: Africa
+  dish: 'Attiéké with grilled fish'
+  dish_verified: false
+- iso_n3: '180'
+  name: 'DR Congo'
+  continent: Africa
+  dish: 'Poulet à la moambé'
+  dish_verified: false
+- iso_n3: '262'
+  name: 'Djibouti'
+  continent: Africa
+  dish: 'Skoudehkaris'
+  dish_verified: false
+- iso_n3: '818'
+  name: 'Egypt'
+  continent: Africa
+  dish: 'Koshari'
+  dish_verified: false
+- iso_n3: '226'
+  name: 'Equatorial Guinea'
+  continent: Africa
+  dish: 'Pepesup'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '232'
+  name: 'Eritrea'
+  continent: Africa
+  dish: 'Zigni with injera'
+  dish_verified: false
+- iso_n3: '748'
+  name: 'Eswatini'
+  continent: Africa
+  dish: 'Sishwala with meat stew'
+  dish_verified: false
+- iso_n3: '231'
+  name: 'Ethiopia'
+  continent: Africa
+  dish: 'Doro wat with injera'
+  dish_verified: false
+- iso_n3: '266'
+  name: 'Gabon'
+  continent: Africa
+  dish: 'Poulet nyembwe'
+  dish_verified: false
+- iso_n3: '270'
+  name: 'Gambia'
+  continent: Africa
+  dish: 'Domoda'
+  dish_verified: false
+- iso_n3: '288'
+  name: 'Ghana'
+  continent: Africa
+  dish: 'Fufu with light soup'
+  dish_verified: false
+- iso_n3: '324'
+  name: 'Guinea'
+  continent: Africa
+  dish: 'Poulet yassa'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '624'
+  name: 'Guinea-Bissau'
+  continent: Africa
+  dish: 'Jollof rice'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '404'
+  name: 'Kenya'
+  continent: Africa
+  dish: 'Ugali with sukuma wiki'
+  dish_verified: false
+- iso_n3: '426'
+  name: 'Lesotho'
+  continent: Africa
+  dish: 'Papa with moroho'
+  dish_verified: false
+- iso_n3: '430'
+  name: 'Liberia'
+  continent: Africa
+  dish: 'Palm butter soup'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '434'
+  name: 'Libya'
+  continent: Africa
+  dish: 'Bazin'
+  dish_verified: false
+- iso_n3: '450'
+  name: 'Madagascar'
+  continent: Africa
+  dish: 'Romazava'
+  dish_verified: false
+- iso_n3: '454'
+  name: 'Malawi'
+  continent: Africa
+  dish: 'Nsima with chambo'
+  dish_verified: false
+- iso_n3: '466'
+  name: 'Mali'
+  continent: Africa
+  dish: 'Tiguadèguèna'
+  dish_verified: false
+- iso_n3: '478'
+  name: 'Mauritania'
+  continent: Africa
+  dish: 'Thieboudienne'
+  dish_verified: false
+- iso_n3: '480'
+  name: 'Mauritius'
+  continent: Africa
+  dish: 'Dholl puri'
+  dish_verified: false
+- iso_n3: '504'
+  name: 'Morocco'
+  continent: Africa
+  dish: 'Tagine'
+  dish_verified: false
+- iso_n3: '508'
+  name: 'Mozambique'
+  continent: Africa
+  dish: 'Matapa'
+  dish_verified: false
+- iso_n3: '516'
+  name: 'Namibia'
+  continent: Africa
+  dish: 'Kapana'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '562'
+  name: 'Niger'
+  continent: Africa
+  dish: 'Dambou'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '566'
+  name: 'Nigeria'
+  continent: Africa
+  dish: 'Jollof rice'
+  dish_verified: false
+- iso_n3: '646'
+  name: 'Rwanda'
+  continent: Africa
+  dish: 'Isombe'
+  dish_verified: false
+- iso_n3: '686'
+  name: 'Senegal'
+  continent: Africa
+  dish: 'Thieboudienne'
+  dish_verified: false
+- iso_n3: '690'
+  name: 'Seychelles'
+  continent: Africa
+  dish: 'Octopus curry'
+  dish_verified: false
+- iso_n3: '694'
+  name: 'Sierra Leone'
+  continent: Africa
+  dish: 'Cassava leaf stew'
+  dish_verified: false
+- iso_n3: '706'
+  name: 'Somalia'
+  continent: Africa
+  dish: 'Canjeero with suqaar'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '710'
+  name: 'South Africa'
+  continent: Africa
+  dish: 'Bobotie'
+  dish_verified: false
+- iso_n3: '728'
+  name: 'South Sudan'
+  continent: Africa
+  dish: 'Kisra with mulah'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '729'
+  name: 'Sudan'
+  continent: Africa
+  dish: 'Ful medames'
+  dish_verified: false
+- iso_n3: '678'
+  name: 'São Tomé and Príncipe'
+  continent: Africa
+  dish: 'Calulu'
+  dish_verified: false
+- iso_n3: '834'
+  name: 'Tanzania'
+  continent: Africa
+  dish: 'Ugali with nyama choma'
+  dish_verified: false
+- iso_n3: '768'
+  name: 'Togo'
+  continent: Africa
+  dish: 'Fufu with peanut soup'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '788'
+  name: 'Tunisia'
+  continent: Africa
+  dish: 'Couscous'
+  dish_verified: false
+- iso_n3: '800'
+  name: 'Uganda'
+  continent: Africa
+  dish: 'Matoke'
+  dish_verified: false
+- iso_n3: '894'
+  name: 'Zambia'
+  continent: Africa
+  dish: 'Nshima with ifisashi'
+  dish_verified: false
+- iso_n3: '716'
+  name: 'Zimbabwe'
+  continent: Africa
+  dish: 'Sadza with nyama'
+  dish_verified: false
+
+# Americas
+- iso_n3: '028'
+  name: 'Antigua and Barbuda'
+  continent: Americas
+  dish: 'Fungee and pepperpot'
+  dish_verified: false
+- iso_n3: '032'
+  name: 'Argentina'
+  continent: Americas
+  dish: 'Asado'
+  dish_verified: false
+- iso_n3: '044'
+  name: 'Bahamas'
+  continent: Americas
+  dish: 'Cracked conch with peas and rice'
+  dish_verified: false
+- iso_n3: '052'
+  name: 'Barbados'
+  continent: Americas
+  dish: 'Cou-cou and flying fish'
+  dish_verified: false
+- iso_n3: '084'
+  name: 'Belize'
+  continent: Americas
+  dish: 'Rice and beans with stewed chicken'
+  dish_verified: false
+- iso_n3: '068'
+  name: 'Bolivia'
+  continent: Americas
+  dish: 'Salteñas'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '076'
+  name: 'Brazil'
+  continent: Americas
+  dish: 'Feijoada'
+  dish_verified: false
+- iso_n3: '124'
+  name: 'Canada'
+  continent: Americas
+  dish: 'Poutine'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '152'
+  name: 'Chile'
+  continent: Americas
+  dish: 'Pastel de choclo'
+  dish_verified: false
+- iso_n3: '170'
+  name: 'Colombia'
+  continent: Americas
+  dish: 'Bandeja paisa'
+  dish_verified: false
+- iso_n3: '188'
+  name: 'Costa Rica'
+  continent: Americas
+  dish: 'Gallo pinto'
+  dish_verified: false
+- iso_n3: '192'
+  name: 'Cuba'
+  continent: Americas
+  dish: 'Ropa vieja'
+  dish_verified: false
+- iso_n3: '212'
+  name: 'Dominica'
+  continent: Americas
+  dish: 'Callaloo soup'
+  dish_verified: false
+- iso_n3: '214'
+  name: 'Dominican Republic'
+  continent: Americas
+  dish: 'La bandera'
+  dish_verified: false
+- iso_n3: '218'
+  name: 'Ecuador'
+  continent: Americas
+  dish: 'Encebollado'
+  dish_verified: false
+- iso_n3: '222'
+  name: 'El Salvador'
+  continent: Americas
+  dish: 'Pupusas'
+  dish_verified: false
+- iso_n3: '308'
+  name: 'Grenada'
+  continent: Americas
+  dish: 'Oil down'
+  dish_verified: false
+- iso_n3: '320'
+  name: 'Guatemala'
+  continent: Americas
+  dish: 'Pepián'
+  dish_verified: false
+- iso_n3: '328'
+  name: 'Guyana'
+  continent: Americas
+  dish: 'Pepperpot'
+  dish_verified: false
+- iso_n3: '332'
+  name: 'Haiti'
+  continent: Americas
+  dish: 'Soup joumou'
+  dish_verified: false
+- iso_n3: '340'
+  name: 'Honduras'
+  continent: Americas
+  dish: 'Baleadas'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '388'
+  name: 'Jamaica'
+  continent: Americas
+  dish: 'Ackee and saltfish'
+  dish_verified: false
+- iso_n3: '484'
+  name: 'Mexico'
+  continent: Americas
+  dish: 'Mole poblano'
+  dish_verified: false
+- iso_n3: '558'
+  name: 'Nicaragua'
+  continent: Americas
+  dish: 'Gallo pinto'
+  dish_verified: false
+- iso_n3: '591'
+  name: 'Panama'
+  continent: Americas
+  dish: 'Sancocho'
+  dish_verified: false
+- iso_n3: '600'
+  name: 'Paraguay'
+  continent: Americas
+  dish: 'Sopa paraguaya'
+  dish_verified: false
+- iso_n3: '604'
+  name: 'Peru'
+  continent: Americas
+  dish: 'Ceviche'
+  dish_verified: false
+- iso_n3: '659'
+  name: 'Saint Kitts and Nevis'
+  continent: Americas
+  dish: 'Stewed saltfish with dumplings and breadfruit'
+  dish_verified: false
+- iso_n3: '662'
+  name: 'Saint Lucia'
+  continent: Americas
+  dish: 'Green figs and saltfish'
+  dish_verified: false
+- iso_n3: '670'
+  name: 'Saint Vincent and the Grenadines'
+  continent: Americas
+  dish: 'Roasted breadfruit and fried jackfish'
+  dish_verified: false
+- iso_n3: '740'
+  name: 'Suriname'
+  continent: Americas
+  dish: 'Pom'
+  dish_verified: false
+- iso_n3: '780'
+  name: 'Trinidad and Tobago'
+  continent: Americas
+  dish: 'Crab and callaloo'
+  dish_verified: false
+- iso_n3: '840'
+  name: 'United States'
+  continent: Americas
+  dish: 'Hamburger'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '858'
+  name: 'Uruguay'
+  continent: Americas
+  dish: 'Chivito'
+  dish_verified: false
+- iso_n3: '862'
+  name: 'Venezuela'
+  continent: Americas
+  dish: 'Pabellón criollo'
+  dish_verified: false
+
+# Asia
+- iso_n3: '004'
+  name: 'Afghanistan'
+  continent: Asia
+  dish: 'Kabuli palaw'
+  dish_verified: false
+- iso_n3: '051'
+  name: 'Armenia'
+  continent: Asia
+  dish: 'Harissa'
+  dish_verified: false
+- iso_n3: '031'
+  name: 'Azerbaijan'
+  continent: Asia
+  dish: 'Plov'
+  dish_verified: false
+- iso_n3: '048'
+  name: 'Bahrain'
+  continent: Asia
+  dish: 'Machboos'
+  dish_verified: false
+- iso_n3: '050'
+  name: 'Bangladesh'
+  continent: Asia
+  dish: 'Shorshe ilish'
+  dish_verified: false
+- iso_n3: '064'
+  name: 'Bhutan'
+  continent: Asia
+  dish: 'Ema datshi'
+  dish_verified: false
+- iso_n3: '096'
+  name: 'Brunei'
+  continent: Asia
+  dish: 'Ambuyat'
+  dish_verified: false
+- iso_n3: '116'
+  name: 'Cambodia'
+  continent: Asia
+  dish: 'Fish amok'
+  dish_verified: false
+- iso_n3: '156'
+  name: 'China'
+  continent: Asia
+  dish: 'Peking duck'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '196'
+  name: 'Cyprus'
+  continent: Asia
+  dish: 'Souvla'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '268'
+  name: 'Georgia'
+  continent: Asia
+  dish: 'Khachapuri'
+  dish_verified: false
+- iso_n3: '356'
+  name: 'India'
+  continent: Asia
+  dish: 'Khichdi'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '360'
+  name: 'Indonesia'
+  continent: Asia
+  dish: 'Nasi goreng'
+  dish_verified: false
+  note: 'one of five dishes named national dishes'
+- iso_n3: '364'
+  name: 'Iran'
+  continent: Asia
+  dish: 'Chelow kabab'
+  dish_verified: false
+- iso_n3: '368'
+  name: 'Iraq'
+  continent: Asia
+  dish: 'Masgouf'
+  dish_verified: false
+- iso_n3: '376'
+  name: 'Israel'
+  continent: Asia
+  dish: 'Falafel'
+  dish_verified: false
+- iso_n3: '392'
+  name: 'Japan'
+  continent: Asia
+  dish: 'Sushi'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '400'
+  name: 'Jordan'
+  continent: Asia
+  dish: 'Mansaf'
+  dish_verified: false
+- iso_n3: '398'
+  name: 'Kazakhstan'
+  continent: Asia
+  dish: 'Beshbarmak'
+  dish_verified: false
+- iso_n3: '414'
+  name: 'Kuwait'
+  continent: Asia
+  dish: 'Machboos'
+  dish_verified: false
+- iso_n3: '417'
+  name: 'Kyrgyzstan'
+  continent: Asia
+  dish: 'Beshbarmak'
+  dish_verified: false
+- iso_n3: '418'
+  name: 'Laos'
+  continent: Asia
+  dish: 'Larb'
+  dish_verified: false
+- iso_n3: '422'
+  name: 'Lebanon'
+  continent: Asia
+  dish: 'Kibbeh'
+  dish_verified: false
+- iso_n3: '458'
+  name: 'Malaysia'
+  continent: Asia
+  dish: 'Nasi lemak'
+  dish_verified: false
+- iso_n3: '462'
+  name: 'Maldives'
+  continent: Asia
+  dish: 'Garudhiya'
+  dish_verified: false
+- iso_n3: '496'
+  name: 'Mongolia'
+  continent: Asia
+  dish: 'Buuz'
+  dish_verified: false
+- iso_n3: '104'
+  name: 'Myanmar'
+  continent: Asia
+  dish: 'Mohinga'
+  dish_verified: false
+- iso_n3: '524'
+  name: 'Nepal'
+  continent: Asia
+  dish: 'Dal bhat'
+  dish_verified: false
+- iso_n3: '408'
+  name: 'North Korea'
+  continent: Asia
+  dish: 'Pyongyang naengmyeon'
+  dish_verified: false
+- iso_n3: '512'
+  name: 'Oman'
+  continent: Asia
+  dish: 'Shuwa'
+  dish_verified: false
+- iso_n3: '586'
+  name: 'Pakistan'
+  continent: Asia
+  dish: 'Nihari'
+  dish_verified: false
+- iso_n3: '275'
+  name: 'Palestine'
+  continent: Asia
+  dish: 'Musakhan'
+  dish_verified: false
+- iso_n3: '608'
+  name: 'Philippines'
+  continent: Asia
+  dish: 'Adobo'
+  dish_verified: false
+- iso_n3: '634'
+  name: 'Qatar'
+  continent: Asia
+  dish: 'Machboos'
+  dish_verified: false
+- iso_n3: '682'
+  name: 'Saudi Arabia'
+  continent: Asia
+  dish: 'Kabsa'
+  dish_verified: false
+- iso_n3: '702'
+  name: 'Singapore'
+  continent: Asia
+  dish: 'Hainanese chicken rice'
+  dish_verified: false
+- iso_n3: '410'
+  name: 'South Korea'
+  continent: Asia
+  dish: 'Kimchi'
+  dish_verified: false
+- iso_n3: '144'
+  name: 'Sri Lanka'
+  continent: Asia
+  dish: 'Rice and curry'
+  dish_verified: false
+- iso_n3: '760'
+  name: 'Syria'
+  continent: Asia
+  dish: 'Kibbeh'
+  dish_verified: false
+- iso_n3: '762'
+  name: 'Tajikistan'
+  continent: Asia
+  dish: 'Oshi palav'
+  dish_verified: false
+- iso_n3: '764'
+  name: 'Thailand'
+  continent: Asia
+  dish: 'Pad thai'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '626'
+  name: 'Timor-Leste'
+  continent: Asia
+  dish: "Batar da'an"
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '795'
+  name: 'Turkmenistan'
+  continent: Asia
+  dish: 'Palaw'
+  dish_verified: false
+- iso_n3: '792'
+  name: 'Türkiye'
+  continent: Asia
+  dish: 'Kebab'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '784'
+  name: 'United Arab Emirates'
+  continent: Asia
+  dish: 'Harees'
+  dish_verified: false
+- iso_n3: '860'
+  name: 'Uzbekistan'
+  continent: Asia
+  dish: 'Plov'
+  dish_verified: false
+- iso_n3: '704'
+  name: 'Vietnam'
+  continent: Asia
+  dish: 'Phở'
+  dish_verified: false
+- iso_n3: '887'
+  name: 'Yemen'
+  continent: Asia
+  dish: 'Saltah'
+  dish_verified: false
+
+# Europe
+- iso_n3: '008'
+  name: 'Albania'
+  continent: Europe
+  dish: 'Tavë kosi'
+  dish_verified: false
+- iso_n3: '020'
+  name: 'Andorra'
+  continent: Europe
+  dish: "Escudella i carn d'olla"
+  dish_verified: false
+- iso_n3: '040'
+  name: 'Austria'
+  continent: Europe
+  dish: 'Wiener schnitzel'
+  dish_verified: false
+- iso_n3: '112'
+  name: 'Belarus'
+  continent: Europe
+  dish: 'Draniki'
+  dish_verified: false
+- iso_n3: '056'
+  name: 'Belgium'
+  continent: Europe
+  dish: 'Moules-frites'
+  dish_verified: false
+- iso_n3: '070'
+  name: 'Bosnia and Herzegovina'
+  continent: Europe
+  dish: 'Ćevapi'
+  dish_verified: false
+- iso_n3: '100'
+  name: 'Bulgaria'
+  continent: Europe
+  dish: 'Shopska salad'
+  dish_verified: false
+- iso_n3: '191'
+  name: 'Croatia'
+  continent: Europe
+  dish: 'Pašticada'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '203'
+  name: 'Czechia'
+  continent: Europe
+  dish: 'Vepřo knedlo zelo'
+  dish_verified: false
+- iso_n3: '208'
+  name: 'Denmark'
+  continent: Europe
+  dish: 'Stegt flæsk med persillesovs'
+  dish_verified: false
+- iso_n3: '233'
+  name: 'Estonia'
+  continent: Europe
+  dish: 'Mulgikapsad'
+  dish_verified: false
+- iso_n3: '246'
+  name: 'Finland'
+  continent: Europe
+  dish: 'Karjalanpiirakka'
+  dish_verified: false
+- iso_n3: '250'
+  name: 'France'
+  continent: Europe
+  dish: 'Pot-au-feu'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '276'
+  name: 'Germany'
+  continent: Europe
+  dish: 'Sauerbraten'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '300'
+  name: 'Greece'
+  continent: Europe
+  dish: 'Moussaka'
+  dish_verified: false
+- iso_n3: '336'
+  name: 'Holy See'
+  continent: Europe
+  dish: 'Fettuccine alla papalina'
+  dish_verified: false
+  note: 'no national dish of its own; a Roman dish named for a pope'
+- iso_n3: '348'
+  name: 'Hungary'
+  continent: Europe
+  dish: 'Gulyás'
+  dish_verified: false
+- iso_n3: '352'
+  name: 'Iceland'
+  continent: Europe
+  dish: 'Hangikjöt'
+  dish_verified: false
+- iso_n3: '372'
+  name: 'Ireland'
+  continent: Europe
+  dish: 'Irish stew'
+  dish_verified: false
+- iso_n3: '380'
+  name: 'Italy'
+  continent: Europe
+  dish: 'Pizza Margherita'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '428'
+  name: 'Latvia'
+  continent: Europe
+  dish: 'Grey peas with bacon'
+  dish_verified: false
+- iso_n3: '438'
+  name: 'Liechtenstein'
+  continent: Europe
+  dish: 'Käsknöpfle'
+  dish_verified: false
+- iso_n3: '440'
+  name: 'Lithuania'
+  continent: Europe
+  dish: 'Cepelinai'
+  dish_verified: false
+- iso_n3: '442'
+  name: 'Luxembourg'
+  continent: Europe
+  dish: 'Judd mat Gaardebounen'
+  dish_verified: false
+- iso_n3: '470'
+  name: 'Malta'
+  continent: Europe
+  dish: 'Stuffat tal-fenek'
+  dish_verified: false
+- iso_n3: '498'
+  name: 'Moldova'
+  continent: Europe
+  dish: 'Mămăligă'
+  dish_verified: false
+- iso_n3: '492'
+  name: 'Monaco'
+  continent: Europe
+  dish: 'Barbagiuan'
+  dish_verified: false
+- iso_n3: '499'
+  name: 'Montenegro'
+  continent: Europe
+  dish: 'Kačamak'
+  dish_verified: false
+- iso_n3: '528'
+  name: 'Netherlands'
+  continent: Europe
+  dish: 'Stamppot'
+  dish_verified: false
+- iso_n3: '807'
+  name: 'North Macedonia'
+  continent: Europe
+  dish: 'Tavče gravče'
+  dish_verified: false
+- iso_n3: '578'
+  name: 'Norway'
+  continent: Europe
+  dish: 'Fårikål'
+  dish_verified: false
+- iso_n3: '616'
+  name: 'Poland'
+  continent: Europe
+  dish: 'Pierogi'
+  dish_verified: false
+- iso_n3: '620'
+  name: 'Portugal'
+  continent: Europe
+  dish: 'Bacalhau'
+  dish_verified: false
+- iso_n3: '642'
+  name: 'Romania'
+  continent: Europe
+  dish: 'Sarmale'
+  dish_verified: false
+- iso_n3: '643'
+  name: 'Russia'
+  continent: Europe
+  dish: 'Pelmeni'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '674'
+  name: 'San Marino'
+  continent: Europe
+  dish: 'Nidi di rondine'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '688'
+  name: 'Serbia'
+  continent: Europe
+  dish: 'Pljeskavica'
+  dish_verified: false
+- iso_n3: '703'
+  name: 'Slovakia'
+  continent: Europe
+  dish: 'Bryndzové halušky'
+  dish_verified: false
+- iso_n3: '705'
+  name: 'Slovenia'
+  continent: Europe
+  dish: 'Kranjska klobasa'
+  dish_verified: false
+- iso_n3: '724'
+  name: 'Spain'
+  continent: Europe
+  dish: 'Paella'
+  dish_verified: false
+- iso_n3: '752'
+  name: 'Sweden'
+  continent: Europe
+  dish: 'Köttbullar'
+  dish_verified: false
+- iso_n3: '756'
+  name: 'Switzerland'
+  continent: Europe
+  dish: 'Fondue'
+  dish_verified: false
+- iso_n3: '804'
+  name: 'Ukraine'
+  continent: Europe
+  dish: 'Borscht'
+  dish_verified: false
+- iso_n3: '826'
+  name: 'United Kingdom'
+  continent: Europe
+  dish: 'Fish and chips'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+
+# Oceania
+- iso_n3: '036'
+  name: 'Australia'
+  continent: Oceania
+  dish: 'Meat pie'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '242'
+  name: 'Fiji'
+  continent: Oceania
+  dish: 'Kokoda'
+  dish_verified: false
+- iso_n3: '296'
+  name: 'Kiribati'
+  continent: Oceania
+  dish: 'Palusami'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '584'
+  name: 'Marshall Islands'
+  continent: Oceania
+  dish: 'Breadfruit with coconut'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '583'
+  name: 'Micronesia'
+  continent: Oceania
+  dish: 'Breadfruit with coconut'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '520'
+  name: 'Nauru'
+  continent: Oceania
+  dish: 'Coconut fish'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '554'
+  name: 'New Zealand'
+  continent: Oceania
+  dish: 'Hāngī'
+  dish_verified: false
+- iso_n3: '585'
+  name: 'Palau'
+  continent: Oceania
+  dish: 'Fruit bat soup'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '598'
+  name: 'Papua New Guinea'
+  continent: Oceania
+  dish: 'Mumu'
+  dish_verified: false
+- iso_n3: '882'
+  name: 'Samoa'
+  continent: Oceania
+  dish: 'Palusami'
+  dish_verified: false
+- iso_n3: '090'
+  name: 'Solomon Islands'
+  continent: Oceania
+  dish: 'Poi'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+- iso_n3: '776'
+  name: 'Tonga'
+  continent: Oceania
+  dish: 'Lu pulu'
+  dish_verified: false
+- iso_n3: '798'
+  name: 'Tuvalu'
+  continent: Oceania
+  dish: 'Pulaka'
+  dish_verified: false
+  note: 'no official national dish; most cited'
+  centroid: [179.2, -8.5]
+- iso_n3: '548'
+  name: 'Vanuatu'
+  continent: Oceania
+  dish: 'Laplap'
+  dish_verified: false

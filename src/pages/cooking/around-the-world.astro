@@ -1,0 +1,110 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import ChallengeMap from '../../components/map/ChallengeMap.astro';
+import { getCooked } from '../../lib/challenge';
+import { CONTINENTS, COUNTRY_TOTAL, countries } from '../../lib/countries';
+
+const cooked = await getCooked();
+const byContinent = CONTINENTS.map((continent) => ({
+  continent,
+  countries: countries
+    .filter((c) => c.continent === continent)
+    .sort((a, b) => a.name.localeCompare(b.name)),
+}));
+---
+
+<Base title="One dish, every country" current="cooking">
+  <PageIntro label="around the world" title="One dish, every country">
+    <p slot="right" class="count">
+      <span class="n accent">{cooked.size}</span>
+      <span class="of muted"> / {COUNTRY_TOTAL}</span>
+    </p>
+  </PageIntro>
+  <p class="visually-hidden">
+    The map below is also available as a list of every country and its dish, grouped by continent,
+    after the map.
+  </p>
+
+  <ChallengeMap cooked={cooked} />
+
+  {byContinent.map(({ continent, countries: list }) => (
+    <section class="continent" aria-labelledby={`continent-${continent.toLowerCase()}`}>
+      <SectionHeading title={continent} id={`continent-${continent.toLowerCase()}`} />
+      <ul class="countries">
+        {list.map((country) => {
+          const done = cooked.get(country.iso_n3);
+          return (
+            <li>
+              {done ? (
+                <a class="row" href={done.href}>
+                  <span class="name">
+                    <span class="square" aria-hidden="true" />
+                    {country.name}
+                    <span class="visually-hidden">, cooked</span>
+                  </span>
+                  <span class="dish muted">{country.dish}</span>
+                </a>
+              ) : (
+                <div class="row">
+                  <span class="name">{country.name}</span>
+                  <span class="dish muted">{country.dish}</span>
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  ))}
+</Base>
+
+<style>
+  .count {
+    display: flex;
+    align-items: baseline;
+  }
+  .n {
+    font-family: var(--font-display);
+    font-size: 56px;
+    line-height: 1;
+  }
+  .of {
+    font-size: 16px;
+  }
+  .continent {
+    margin-top: 64px;
+  }
+  .continent:first-of-type {
+    margin-top: 96px;
+  }
+  .countries {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 32px;
+  }
+  .row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    height: 100%;
+    padding: 14px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+  }
+  .square {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+  }
+  .dish {
+    font-size: 14px;
+  }
+</style>
