@@ -1,5 +1,5 @@
-// Every blank from SITE_SPEC.md §0 lives here — nowhere else.
-// Tokens (Spotify, Instagram, GitHub) are GitHub Actions secrets, not here.
+// Every site-specific value lives here and nowhere else (docs/SETUP.md lists them).
+// Tokens are GitHub Actions secrets, never files in the repo.
 // Values in CAPITALS are placeholders still to be filled in.
 
 export const site = {
@@ -8,12 +8,13 @@ export const site = {
   /** {{TAGLINE}} */
   tagline: 'a slow feed',
   /** {{HERO_TITLE}} */
-  heroTitle:
-    'A quiet shelf for the songs, films, books and small things I keep finding.',
+  heroTitle: 'A quiet shelf for the songs, films, books and small things I keep finding.',
   /** {{HERO_BIO}} — 1–2 sentences about me */
   heroBio: 'HERO_BIO — one or two sentences about me go here.',
-  /** {{SITE_URL}} — e.g. https://<user>.github.io or a custom domain */
+  /** {{SITE_URL}} — origin only, e.g. https://<user>.github.io or a custom domain */
   url: 'https://SITE-URL.example',
+  /** {{BASE_PATH}} — "/blog" for a GitHub Pages project site, "/" for a custom domain */
+  basePath: '/blog',
   /** {{TIMEZONE}} — used for week numbers and dates */
   timezone: 'Europe/Berlin',
 
@@ -27,7 +28,7 @@ export const site = {
   instagramUsername: 'fuzetea_esports',
   /** {{GITHUB_USERNAME}} */
   githubUsername: 'GITHUB_USERNAME',
-} as const;
+};
 
 export const links = {
   spotify: `https://open.spotify.com/playlist/${site.spotifyPlaylistId}`,
@@ -35,5 +36,4 @@ export const links = {
   goodreads: `https://www.goodreads.com/user/show/${site.goodreadsUserId}`,
   instagram: `https://www.instagram.com/${site.instagramUsername}/`,
   github: `https://github.com/${site.githubUsername}`,
-  rss: '/rss.xml',
-} as const;
+};
