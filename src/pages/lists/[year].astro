@@ -1,0 +1,161 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import Frame from '../../components/Frame.astro';
+import { getLists, type List } from '../../lib/content';
+
+export async function getStaticPaths() {
+  return (await getLists()).map((list) => ({ params: { year: list.id }, props: { list } }));
+}
+
+interface Props {
+  list: List;
+}
+
+const { list } = Astro.props;
+const year = list.id;
+const categories = ['songs', 'albums', 'films', 'books'] as const;
+const square = (cat: string) => cat === 'songs' || cat === 'albums';
+---
+
+<Base title={`${year}, in tens`} current="lists">
+  <PageIntro
+    label="lists"
+    title={`${year}, in tens`}
+    text="Written in December. Ten of each, in order, with a line on why each one stayed."
+  />
+
+  <div class="tabs" role="tablist" aria-label="Categories">
+    {categories.map((cat, i) => (
+      <a
+        class="tab"
+        role="tab"
+        id={`tab-${cat}`}
+        href={`#${cat}`}
+        aria-controls={cat}
+        aria-selected={i === 0 ? 'true' : 'false'}
+      >
+        {cat}
+      </a>
+    ))}
+  </div>
+
+  {categories.map((cat) => (
+    <section class="panel" id={cat} role="tabpanel" aria-labelledby={`tab-${cat}`}>
+      <ol>
+        {list.data[cat].map((item, i) => (
+          <li class="row">
+            <span class:list={['numeral', { first: i === 0 }]}>{String(i + 1).padStart(2, '0')}</span>
+            <Frame
+              src={item.image}
+              alt={`${item.title} — ${item.creator}`}
+              width={104}
+              height={square(cat) ? 104 : 156}
+              tone={((i % 3) + 1) as 1 | 2 | 3}
+            />
+            <div class="text">
+              <p class="title">{item.title}</p>
+              <p class="creator muted">{item.creator}</p>
+            </div>
+            <p class="note muted">{item.note}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  ))}
+
+  <p class="archive">
+    <a class="mono" href="/lists">archive: earlier years →</a>
+  </p>
+</Base>
+
+<script>
+  const tabs = Array.from(document.querySelectorAll<HTMLAnchorElement>('.tab'));
+  const panels = Array.from(document.querySelectorAll<HTMLElement>('.panel'));
+  const names = panels.map((p) => p.id);
+
+  function show(name: string) {
+    if (!names.includes(name)) name = names[0];
+    tabs.forEach((t) => t.setAttribute('aria-selected', String(t.getAttribute('aria-controls') === name)));
+    panels.forEach((p) => (p.hidden = p.id !== name));
+  }
+
+  tabs.forEach((tab) =>
+    tab.addEventListener('click', (event) => {
+      event.preventDefault();
+      const name = tab.getAttribute('aria-controls')!;
+      history.replaceState(null, '', `#${name}`);
+      show(name);
+    }),
+  );
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+  show(location.hash.slice(1));
+</script>
+
+<style>
+  .tabs {
+    display: flex;
+    gap: 36px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tab {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    font-size: 16px;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab[aria-selected='true'] {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+  .tab:hover {
+    color: var(--accent);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 120px 104px 1fr 300px;
+    column-gap: 32px;
+    align-items: start;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .numeral {
+    font-family: var(--font-display);
+    font-size: 56px;
+    line-height: 1;
+    color: var(--numeral);
+  }
+  .numeral.first {
+    color: var(--accent);
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    line-height: 1.3;
+  }
+  .creator {
+    font-size: 15px;
+  }
+  .note {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .archive {
+    margin-top: 40px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .archive a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+</style>

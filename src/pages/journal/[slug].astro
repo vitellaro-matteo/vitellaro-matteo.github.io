@@ -1,0 +1,45 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import EntryLayout from '../../components/EntryLayout.astro';
+import { embeds } from '../../components/embeds';
+import { getJournal, neighbours, readingTime, type JournalEntry } from '../../lib/content';
+import { formatDate } from '../../lib/dates';
+
+export async function getStaticPaths() {
+  const entries = await getJournal();
+  return entries.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, ...neighbours(entries, i) },
+  }));
+}
+
+interface Props {
+  entry: JournalEntry;
+  older?: JournalEntry;
+  newer?: JournalEntry;
+}
+
+const { entry, older, newer } = Astro.props;
+const { Content } = await render(entry);
+const link = (e?: JournalEntry) => e && { title: e.data.title, href: `/journal/${e.id}` };
+
+const meta = [
+  { label: 'written', value: formatDate(entry.data.date) },
+  { label: 'reading time', value: `${readingTime(entry.body)} min` },
+  ...(entry.data.tags.length ? [{ label: 'filed under', value: entry.data.tags.join(', ') }] : []),
+];
+---
+
+<Base title={entry.data.title} description={entry.data.summary} current="journal">
+  <EntryLayout
+    label="journal"
+    meta={meta}
+    title={entry.data.title}
+    lead={entry.data.lead}
+    older={link(older)}
+    newer={link(newer)}
+  >
+    <Content components={embeds} />
+  </EntryLayout>
+</Base>
