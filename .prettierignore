@@ -1,0 +1,7 @@
+dist/
+.astro/
+node_modules/
+.venv/
+package-lock.json
+# Prettier's MDX parser predates MDX 2+ syntax and can rewrite components incorrectly.
+*.mdx
