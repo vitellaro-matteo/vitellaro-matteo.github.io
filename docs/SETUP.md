@@ -97,34 +97,86 @@ keeps its last good copy or is hidden. Create them in this order:
 ### 2. Spotify: `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`
 
 These are the same kind of credentials as in the WeeklySpotifyUpdate repo; you
-can reuse that app and skip to step 3. Since February 2026 an app in development
+can reuse that app and skip step 1. Since February 2026 an app in development
 mode only works while its owner has Spotify Premium, and it can only read
 playlists its user owns, which is the case for "last week's finds".
 
 1. Go to [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard),
-   log in and click **Create app**. Give it a name and description, add the
-   redirect URI `http://127.0.0.1:8888/callback` (Spotify no longer accepts
-   `localhost`), tick **Web API** and save.
-2. Open the app's **Settings** and copy the **Client ID** and **Client secret**.
-   Save them as `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`.
-3. In a browser where you are logged in to Spotify, open this URL with your
-   client id filled in, and click **Agree**:
+   log in and click **Create app**. Give it a name and description, tick
+   **Web API** and save.
+2. **Register the redirect URI.** Open the app's **Settings**, click **Edit** and,
+   under **Redirect URIs**, enter exactly:
    ```
-   https://accounts.spotify.com/authorize?client_id=<CLIENT_ID>&response_type=code&redirect_uri=http://127.0.0.1:8888/callback&scope=playlist-read-private%20playlist-read-collaborative
+   http://127.0.0.1:8888/callback
    ```
-4. The browser tries to open `http://127.0.0.1:8888/callback?code=…` and shows
-   an error page; that is expected. Copy the `code` value from the address bar.
-   It works once, for about ten minutes.
-5. Exchange it for tokens:
-   ```sh
-   curl -X POST https://accounts.spotify.com/api/token \
-     -u "<CLIENT_ID>:<CLIENT_SECRET>" \
-     -d grant_type=authorization_code \
-     -d code=<CODE> \
-     -d redirect_uri=http://127.0.0.1:8888/callback
+   It must be `127.0.0.1`, not `localhost` (Spotify rejects `localhost`), with
+   `http`, the port and no trailing slash. Click **Add**, then **Save** at the
+   bottom of the page; the URI isn't registered until you save. This is the URI
+   WeeklySpotifyUpdate uses, so one registration serves both repos.
+3. In the same **Settings**, copy the **Client ID** and **Client secret**. Save
+   them as `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`.
+4. Get the refresh token with the helper script. In PowerShell:
+   ```powershell
+   $env:SPOTIFY_CLIENT_ID = "<client id>"
+   $env:SPOTIFY_CLIENT_SECRET = "<client secret>"
+   python -m scripts.spotify_auth
    ```
-6. Save the `refresh_token` from the JSON response as `SPOTIFY_REFRESH_TOKEN`.
-   It keeps working until you remove the app's access in your Spotify account.
+   In a POSIX shell, `export` the same variables. If `SPOTIFY_CLIENT_SECRET` is
+   unset, the script asks for the secret with hidden input instead, which keeps
+   it out of your shell history. It opens Spotify in your browser; click
+   **Agree**.
+5. The script prints `SPOTIFY_REFRESH_TOKEN=…` and the granted scopes, which
+   should be `playlist-read-private playlist-read-collaborative`. Save the token
+   as `SPOTIFY_REFRESH_TOKEN`. It keeps working until you remove the app's access
+   in your Spotify account.
+
+If Spotify shows **redirect_uri: Not matching configuration** or **Invalid
+redirect URI**, the URI isn't registered for that client id: check step 2
+character for character, and that it was saved. The script stops after five
+minutes without a callback and prints the exact URI it expects. To use another
+registered URI, pass it with `--redirect-uri`, for example
+`--redirect-uri http://127.0.0.1:9090/callback`; the script listens on that
+URI's host and port.
+
+#### If the Spotify fetcher fails
+
+The **Fetch feeds** step's log and summary quote Spotify's own error, followed by
+a hint, for example:
+
+```
+spotify | failed | SpotifyAuthError: token refresh failed (HTTP 400): invalid_client: Invalid client secret. Hint: …
+```
+
+They never contain the client ID, the secret or a token. The log also warns when
+a secret had stray whitespace (it is stripped) or doesn't look like what it
+should be. It describes the problem without printing the value.
+
+To test the three values on your machine, run the same token refresh plus one
+playlist read:
+
+```powershell
+python -m scripts.spotify --check
+```
+
+It reads `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` and `SPOTIFY_REFRESH_TOKEN`
+from the environment and asks, with hidden input, for any that aren't set. It
+prints only OK or failed, with Spotify's error code, its description and a hint.
+
+| Spotify says             | What it means                                                                                                                             | Fix                                                                                                                                                                                                                                                                                |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `invalid_client`         | The client ID or secret is wrong, or the secret was rotated in the dashboard and the repo secret still holds the old one.                 | Copy both again from the app's **Settings** and re-save `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`. After rotating a secret, update it in every repo that uses the app.                                                                                                       |
+| `invalid_grant`          | The refresh token was revoked or has expired, or it was issued for a different client ID.                                                 | Create a new token with `python -m scripts.spotify_auth` (step 4) using the same client ID as the secret, and re-save `SPOTIFY_REFRESH_TOKEN`. Spotify can report `invalid_grant` even when the client ID is also wrong, so if a fresh token still fails, check the client ID too. |
+| anything else            | Shown exactly as Spotify worded it.                                                                                                       | Follow the description.                                                                                                                                                                                                                                                            |
+| playlist read `HTTP 403` | The account may not use the app: in development mode the owner needs Premium, and other accounts must be added under **User Management**. | Authorize with the account that owns the app and the playlist.                                                                                                                                                                                                                     |
+| playlist read `HTTP 404` | The playlist id is wrong or the playlist belongs to another account.                                                                      | Check `spotifyPlaylistId` in `site.config.ts`.                                                                                                                                                                                                                                     |
+
+A refresh token copied from WeeklySpotifyUpdate's `.spotify_cache` works only
+with that app's client ID and secret. The file is JSON, so copy just the
+`refresh_token` value (the log warns if the secret looks like JSON, or like an
+access token). Tokens from that cache also carry write scopes this site doesn't
+need; a dedicated token from `scripts.spotify_auth` asks only for read access.
+When saving secrets, `gh secret set NAME` prompts for the value, which avoids a
+trailing newline from `echo`.
 
 ### 3. `GH_SECRETS_TOKEN`: lets the deploy rotate the Instagram token
 

@@ -473,6 +473,13 @@ tests.
   removed for development-mode apps in February 2026. They are written to the
   feed's `embedded` list, so embeds keep working after a song leaves the
   playlist. An unknown id is logged and left to the site build to report.
+  When the token refresh or a playlist read fails, the error quotes Spotify's
+  own `error` and `error_description` (or Web API message) plus a one-line hint
+  for the common cases (`invalid_client`, `invalid_grant`, HTTP 403/404), in the
+  log and the step summary. Credentials are never logged; malformed ones (stray
+  whitespace, pasted JSON, an access token instead of a refresh token) are
+  described without their value. `python -m scripts.spotify --check` runs the
+  same refresh and one playlist read locally.
 - **letterboxd.py:** RSS `https://letterboxd.com/LETTERBOXD_USERNAME/rss/`, the
   10 latest diary entries (lists are skipped): film title, year, member rating,
   watched date, poster and review text. Letterboxd's boilerplate paragraphs
@@ -499,6 +506,14 @@ tests.
 
 RSS is parsed with `defusedxml`; HTTP uses `requests` with a 20-second timeout
 and a descriptive user agent. Both are the only runtime dependencies.
+
+`scripts/spotify_auth.py` is not a fetcher but the one-time helper that creates
+`SPOTIFY_REFRESH_TOKEN` (see `docs/SETUP.md`). It runs the authorization code
+flow against a local server on the redirect URI's host and port, by default
+`http://127.0.0.1:8888/callback`, the URI WeeklySpotifyUpdate already uses, so
+both repos share one Spotify app. It uses only the standard library, checks the
+OAuth `state`, prints just the refresh token and granted scopes, and never
+echoes the client secret.
 
 **Deploy workflow, `.github/workflows/deploy.yml`:** triggered by a push to
 `main`, a daily cron at 05:00 UTC and manual dispatch. Permissions are limited to

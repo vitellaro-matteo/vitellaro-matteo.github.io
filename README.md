@@ -105,7 +105,7 @@ it; touch targets are at least 44px.
 │   ├── lib/                typed, tested helpers (dates, paths, feeds, map, …)
 │   ├── pages/              routes and the RSS feed
 │   └── styles/             design tokens and global CSS
-├── scripts/                Python fetchers (one module per source + fetch_all)
+├── scripts/                Python fetchers (one per source + fetch_all), Spotify token helper
 ├── tests/                  pytest suite and saved API responses
 ├── public/media/           photos and cover art
 ├── docs/                   DESIGN, CONTENT and SETUP guides
