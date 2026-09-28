@@ -2,6 +2,7 @@
 // <Recipe slug="…" /> — links to one of my recipes (src/content/recipes/<slug>.mdx).
 import { getEntry } from 'astro:content';
 import EmbedCard from './EmbedCard.astro';
+import { routes } from '../../lib/paths';
 
 interface Props {
   slug: string;
@@ -23,6 +24,6 @@ if (!recipe) {
   imageAlt={recipe.data.title}
   imageHeight={72}
   linkText="recipe"
-  href={`/cooking/${recipe.id}`}
+  href={routes.recipe(recipe.id)}
   external={false}
 />

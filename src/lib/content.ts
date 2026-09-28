@@ -6,6 +6,15 @@ const visible = (entry: { data: { draft: boolean } }) => showDrafts || !entry.da
 const newestFirst = (a: { data: { date: Date } }, b: { data: { date: Date } }) =>
   b.data.date.getTime() - a.data.date.getTime();
 
+/** Shown where the rows would be while a section has nothing published. */
+export const emptyNotes = {
+  journal: 'First entry coming soon.',
+  cooking: 'Nothing cooked yet.',
+  lists: 'The first list arrives in December.',
+};
+
+const isYear = (id: string) => /^\d{4}$/.test(id);
+
 export type JournalEntry = CollectionEntry<'journal'>;
 export type Recipe = CollectionEntry<'recipes'>;
 export type List = CollectionEntry<'lists'>;
@@ -22,8 +31,10 @@ export async function getRecipes(): Promise<Recipe[]> {
 export async function getLists(): Promise<List[]> {
   const lists = await getCollection('lists', visible);
   for (const list of lists) {
-    if (!list.data.draft && !/^\d{4}$/.test(list.id)) {
-      throw new Error(`src/content/lists/${list.id}.yaml: list files must be named after their year, e.g. 2025.yaml`);
+    if (!list.data.draft && !isYear(list.id)) {
+      throw new Error(
+        `src/content/lists/${list.id}.yaml: list files must be named after their year, e.g. 2025.yaml`,
+      );
     }
   }
   return lists.sort((a, b) => b.id.localeCompare(a.id));
@@ -31,8 +42,8 @@ export async function getLists(): Promise<List[]> {
 
 /** Latest year that has a list file (drafts and non-year names excluded). */
 export async function latestListYear(): Promise<string | null> {
-  const years = (await getLists()).map((l) => l.id).filter((id) => /^\d{4}$/.test(id));
-  return years[0] ?? null;
+  const latest = (await getLists()).find((list) => isYear(list.id));
+  return latest?.id ?? null;
 }
 
 /** Number of distinct challenge countries cooked. */
@@ -43,7 +54,7 @@ export function cookedCount(recipes: Recipe[]): number {
 /** Reading time in minutes, at 200 words per minute. */
 export function readingTime(body: string | undefined): number {
   const words = (body ?? '')
-    .replace(/<[^>]+>/g, ' ')
+    .replace(/<[^<>]*>/g, ' ')
     .split(/\s+/)
     .filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));

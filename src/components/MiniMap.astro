@@ -1,13 +1,22 @@
 ---
-// Mini world map. Phase 3 replaces this placeholder with the real map
-// (Equal Earth, Antarctica removed, fitted to 1000 × 447 — same size).
+// Uncooked countries take the colour that contrasts with whatever the map sits on:
+// --kraft on paper or card, --card on a kraft band. Until the map itself is drawn,
+// the box shows that uncooked colour at the map's exact Equal Earth bounds (1000 × 447).
+interface Props {
+  ground: 'paper' | 'card' | 'kraft';
+}
+
+const { ground } = Astro.props;
 ---
 
-<div class="mini-map" aria-hidden="true"></div>
+<div class:list={['mini-map', { 'on-kraft': ground === 'kraft' }]} aria-hidden="true"></div>
 
 <style>
   .mini-map {
     aspect-ratio: 1000 / 447;
     background: var(--kraft);
+  }
+  .mini-map.on-kraft {
+    background: var(--card);
   }
 </style>

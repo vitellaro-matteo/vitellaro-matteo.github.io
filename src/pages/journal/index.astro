@@ -1,7 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import PageIntro from '../../components/PageIntro.astro';
-import { getJournal } from '../../lib/content';
+import { getJournal, emptyNotes } from '../../lib/content';
+import { routes } from '../../lib/paths';
 import { formatDate } from '../../lib/dates';
 
 const entries = await getJournal();
@@ -9,23 +10,31 @@ const entries = await getJournal();
 
 <Base title="Notes & essays" current="journal">
   <PageIntro label="journal" title="Notes & essays" />
-  <ul class="entries">
-    {entries.map((entry) => (
-      <li>
-        <a class="row" href={`/journal/${entry.id}`}>
-          <span class="mono muted">{formatDate(entry.data.date)}</span>
-          <span class="text">
-            <span class="title">{entry.data.title}</span>
-            <span class="summary muted">{entry.data.summary}</span>
-          </span>
-          <span class="tags mono muted">{entry.data.tags.join(', ')}</span>
-        </a>
-      </li>
-    ))}
-  </ul>
+  {entries.length === 0 ? (
+    <p class="empty empty-note">{emptyNotes.journal}</p>
+  ) : (
+    <ul>
+      {entries.map((entry) => (
+        <li>
+          <a class="row" href={routes.journalEntry(entry.id)}>
+            <span class="mono muted">{formatDate(entry.data.date)}</span>
+            <span class="text">
+              <span class="title">{entry.data.title}</span>
+              <span class="summary muted">{entry.data.summary}</span>
+            </span>
+            <span class="tags mono muted">{entry.data.tags.join(', ')}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
 </Base>
 
 <style>
+  .empty {
+    padding: 24px 0;
+    border-top: 1px solid var(--line-soft);
+  }
   .row {
     display: grid;
     grid-template-columns: 160px 1fr 200px;

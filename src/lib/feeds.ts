@@ -1,5 +1,21 @@
-// Shapes of the JSON files in src/data/feeds/, written by scripts/fetch_all.py.
-// Image fields are local paths under /media/feeds/… (never hotlinked), or null.
+// Feed data written by the fetchers (scripts/). The deploy workflow writes real
+// feeds to src/data/live/, which is gitignored; locally and in tests the committed
+// fixtures in src/data/feeds/ stand in, so the site always builds.
+// Image fields are paths under /media/feeds/… (downloaded, never hotlinked), or null.
+
+const live = import.meta.glob<unknown>('../data/live/*.json', { eager: true, import: 'default' });
+const fixtures = import.meta.glob<unknown>('../data/feeds/*.json', {
+  eager: true,
+  import: 'default',
+});
+
+function load<T>(name: string): T {
+  const data = live[`../data/live/${name}.json`] ?? fixtures[`../data/feeds/${name}.json`];
+  if (data === undefined) {
+    throw new Error(`No feed data for "${name}": expected src/data/feeds/${name}.json`);
+  }
+  return data as T;
+}
 
 export interface SpotifyFeed {
   fetched_at: string;
@@ -71,3 +87,9 @@ export interface GithubFeed {
     time: string;
   }[];
 }
+
+export const spotify = load<SpotifyFeed>('spotify');
+export const letterboxd = load<LetterboxdFeed>('letterboxd');
+export const goodreads = load<GoodreadsFeed>('goodreads');
+export const instagram = load<InstagramFeed>('instagram');
+export const github = load<GithubFeed>('github');

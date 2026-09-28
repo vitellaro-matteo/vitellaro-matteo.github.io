@@ -2,7 +2,7 @@
 // <Track id="…" /> — looks the track up in the Spotify feed by id.
 // Tracks that have left the feed need title and artist passed in directly.
 import EmbedCard from './EmbedCard.astro';
-import { spotify } from '../../lib/data';
+import { spotify } from '../../lib/feeds';
 
 interface Props {
   id: string;
@@ -19,7 +19,7 @@ const artist = given.artist ?? found?.artists.join(', ');
 
 if (!title || !artist) {
   throw new Error(
-    `<Track id="${id}"/>: track not found in src/data/feeds/spotify.json. ` +
+    `<Track id="${id}"/>: track not found in the Spotify feed. ` +
       `Pass title="…" and artist="…" (and optionally cover="/media/…") directly.`,
   );
 }

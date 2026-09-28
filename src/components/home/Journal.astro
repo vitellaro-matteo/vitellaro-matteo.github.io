@@ -1,22 +1,35 @@
 ---
 import Card from '../Card.astro';
 import { formatDate } from '../../lib/dates';
-import { getJournal } from '../../lib/content';
+import { getJournal, emptyNotes } from '../../lib/content';
+import { routes } from '../../lib/paths';
 
 const entries = (await getJournal()).slice(0, 3);
 ---
 
-<Card id="journal" class="span-5" label="06 — journal" title="notes & essays" linkText="all" href="/journal" external={false}>
-  <ul>
-    {entries.map((entry) => (
-      <li>
-        <a class="row" href={`/journal/${entry.id}`}>
-          <span class="mono muted">{formatDate(entry.data.date)}</span>
-          <span class="title">{entry.data.title}</span>
-        </a>
-      </li>
-    ))}
-  </ul>
+<Card
+  id="journal"
+  class="span-5"
+  label="06 — journal"
+  title="notes & essays"
+  linkText="all"
+  href={routes.journal}
+  external={false}
+>
+  {entries.length > 0 ? (
+    <ul>
+      {entries.map((entry) => (
+        <li>
+          <a class="row" href={routes.journalEntry(entry.id)}>
+            <span class="mono muted">{formatDate(entry.data.date)}</span>
+            <span class="title">{entry.data.title}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="row empty-note">{emptyNotes.journal}</p>
+  )}
 </Card>
 
 <style>

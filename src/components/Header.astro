@@ -1,5 +1,6 @@
 ---
 import { site } from '../../site.config';
+import { routes } from '../lib/paths';
 
 interface Props {
   current?: string;
@@ -7,22 +8,22 @@ interface Props {
 
 const { current } = Astro.props;
 
-// First six are anchors on the home page; journal and lists have their own pages.
+// The first six are sections of the home page; journal and lists are pages of their own.
 const nav = [
-  { key: 'listening', href: '/#listening' },
-  { key: 'watching', href: '/#watching' },
-  { key: 'reading', href: '/#reading' },
-  { key: 'seeing', href: '/#seeing' },
-  { key: 'making', href: '/#making' },
-  { key: 'cooking', href: '/#cooking' },
-  { key: 'journal', href: '/journal' },
-  { key: 'lists', href: '/lists' },
+  { key: 'listening', href: `${routes.home}#listening` },
+  { key: 'watching', href: `${routes.home}#watching` },
+  { key: 'reading', href: `${routes.home}#reading` },
+  { key: 'seeing', href: `${routes.home}#seeing` },
+  { key: 'making', href: `${routes.home}#making` },
+  { key: 'cooking', href: `${routes.home}#cooking` },
+  { key: 'journal', href: routes.journal },
+  { key: 'lists', href: routes.lists },
 ];
 ---
 
 <header class="site-header">
   <div class="container inner">
-    <a class="brand" href="/">
+    <a class="brand" href={routes.home}>
       <span class="wordmark display">{site.name}</span>
       <span class="tagline mono muted">{site.tagline}</span>
     </a>

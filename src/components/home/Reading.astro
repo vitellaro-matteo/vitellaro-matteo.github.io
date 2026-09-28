@@ -1,7 +1,8 @@
 ---
 import Card from '../Card.astro';
 import Frame from '../Frame.astro';
-import { goodreads, now } from '../../lib/data';
+import { goodreads } from '../../lib/feeds';
+import { now } from '../../lib/now';
 import { links } from '../../../site.config';
 
 const book = goodreads.currently_reading[0];
@@ -10,19 +11,42 @@ const progress = now.progress;
 const pct = progress ? Math.min(100, Math.max(0, (progress.page / progress.of) * 100)) : 0;
 ---
 
-<Card id="reading" class="span-5" label="03 — reading" title="on the nightstand" linkText="goodreads" href={links.goodreads}>
+<Card
+  id="reading"
+  class="span-5"
+  label="03 — reading"
+  title="on the nightstand"
+  linkText="goodreads"
+  href={links.goodreads}
+>
   {book && (
     <div class="current">
-      <Frame src={book.cover} alt={`Cover of ${book.title}`} width={120} height={180} tone={2} class="cover" />
+      <Frame
+        src={book.cover}
+        alt={`Cover of ${book.title}`}
+        width={120}
+        height={180}
+        tone={2}
+        class="cover"
+      />
       <div class="stack">
         <p class="title">{book.title}</p>
         <p class="author muted">{book.author}</p>
         {progress && (
           <>
-            <div class="bar" role="progressbar" aria-label="Reading progress" aria-valuemin={0} aria-valuemax={progress.of} aria-valuenow={progress.page}>
+            <div
+              class="bar"
+              role="progressbar"
+              aria-label="Reading progress"
+              aria-valuemin={0}
+              aria-valuemax={progress.of}
+              aria-valuenow={progress.page}
+            >
               <div class="fill" style={`width: ${pct}%`} />
             </div>
-            <p class="mono muted">page {progress.page} of {progress.of}</p>
+            <p class="mono muted">
+              page {progress.page} of {progress.of}
+            </p>
           </>
         )}
       </div>
@@ -32,7 +56,11 @@ const pct = progress ? Math.min(100, Math.max(0, (progress.page / progress.of) *
     <div class="finished">
       <p class="mono muted">finished lately</p>
       <ul>
-        {finished.map((b) => <li class="row">{b.title} — {b.author}</li>)}
+        {finished.map((b) => (
+          <li class="row">
+            {b.title} — {b.author}
+          </li>
+        ))}
       </ul>
     </div>
   )}

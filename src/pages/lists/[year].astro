@@ -3,6 +3,8 @@ import Base from '../../layouts/Base.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import Frame from '../../components/Frame.astro';
 import { getLists, type List } from '../../lib/content';
+import { routes } from '../../lib/paths';
+import { placeholderTone } from '../../lib/placeholder';
 
 export async function getStaticPaths() {
   return (await getLists()).map((list) => ({ params: { year: list.id }, props: { list } }));
@@ -45,13 +47,15 @@ const square = (cat: string) => cat === 'songs' || cat === 'albums';
       <ol>
         {list.data[cat].map((item, i) => (
           <li class="row">
-            <span class:list={['numeral', { first: i === 0 }]}>{String(i + 1).padStart(2, '0')}</span>
+            <span class:list={['numeral', { first: i === 0 }]}>
+              {String(i + 1).padStart(2, '0')}
+            </span>
             <Frame
               src={item.image}
               alt={`${item.title} — ${item.creator}`}
               width={104}
               height={square(cat) ? 104 : 156}
-              tone={((i % 3) + 1) as 1 | 2 | 3}
+              tone={placeholderTone(i)}
             />
             <div class="text">
               <p class="title">{item.title}</p>
@@ -65,7 +69,9 @@ const square = (cat: string) => cat === 'songs' || cat === 'albums';
   ))}
 
   <p class="archive">
-    <a class="mono" href="/lists">archive: earlier years →</a>
+    <a class="mono" href={routes.lists}>
+      archive: earlier years →
+    </a>
   </p>
 </Base>
 
@@ -76,14 +82,16 @@ const square = (cat: string) => cat === 'songs' || cat === 'albums';
 
   function show(name: string) {
     if (!names.includes(name)) name = names[0];
-    tabs.forEach((t) => t.setAttribute('aria-selected', String(t.getAttribute('aria-controls') === name)));
+    tabs.forEach((t) =>
+      t.setAttribute('aria-selected', String(t.getAttribute('aria-controls') === name)),
+    );
     panels.forEach((p) => (p.hidden = p.id !== name));
   }
 
   tabs.forEach((tab) =>
     tab.addEventListener('click', (event) => {
       event.preventDefault();
-      const name = tab.getAttribute('aria-controls')!;
+      const name = tab.hash.slice(1);
       history.replaceState(null, '', `#${name}`);
       show(name);
     }),

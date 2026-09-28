@@ -1,5 +1,5 @@
 ---
-// Shared card shape for MDX embeds — SITE_SPEC.md §3.3.
+// Shared card shape for MDX embeds — docs/DESIGN.md §4.3.
 import Frame from '../Frame.astro';
 
 interface Props {
@@ -15,7 +15,17 @@ interface Props {
   external?: boolean;
 }
 
-const { label, title, subtitle, image, imageAlt, imageHeight, linkText, href, external = true } = Astro.props;
+const {
+  label,
+  title,
+  subtitle,
+  image,
+  imageAlt,
+  imageHeight,
+  linkText,
+  href,
+  external = true,
+} = Astro.props;
 ---
 
 <div class="embed">
@@ -24,7 +34,10 @@ const { label, title, subtitle, image, imageAlt, imageHeight, linkText, href, ex
     <p class="mono accent">{label}</p>
     <p class="title">{title}</p>
     {subtitle && <p class="subtitle muted">{subtitle}</p>}
-    <a class="mono" href={href}>{linkText}{external ? ' ↗' : ' →'}</a>
+    <a class="mono" href={href}>
+      {linkText}
+      {external ? ' ↗' : ' →'}
+    </a>
   </div>
 </div>
 

@@ -1,5 +1,6 @@
 ---
-import { latestListYear } from '../../lib/content';
+import { latestListYear, emptyNotes } from '../../lib/content';
+import { routes } from '../../lib/paths';
 
 const year = await latestListYear();
 const categories = ['songs', 'albums', 'films', 'books'];
@@ -11,17 +12,21 @@ const categories = ['songs', 'albums', 'films', 'books'];
     <h2 id="lists-title">Top tens, every December</h2>
     <p class="muted">A yearly look back: ten songs, ten albums, ten films, ten books.</p>
   </div>
-  {year && (
+  {year ? (
     <ul class="tiles span-7">
       {categories.map((cat) => (
         <li>
-          <a class="tile" href={`/lists/${year}#${cat}`}>
+          <a class="tile" href={`${routes.listYear(year)}#${cat}`}>
             <span class="ten">10</span>
-            <span class="label muted">{cat} of {year}</span>
+            <span class="label muted">
+              {cat} of {year}
+            </span>
           </a>
         </li>
       ))}
     </ul>
+  ) : (
+    <p class="empty-note span-7">{emptyNotes.lists}</p>
   )}
 </section>
 

@@ -1,4 +1,4 @@
-// Content schemas — SITE_SPEC.md §4. A missing or invalid field fails the build,
+// Content schemas — docs/DESIGN.md §5. A missing or invalid field fails the build,
 // and Astro's error names the file and the field.
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -9,7 +9,9 @@ import { z } from 'astro/zod';
 /** A path under public/, e.g. `/media/recipes/ragu.jpg`, that must exist. */
 const localImage = z
   .string()
-  .startsWith('/media/', { message: 'image must be a path under public/media/, e.g. /media/recipes/photo.jpg' })
+  .startsWith('/media/', {
+    message: 'image must be a path under public/media/, e.g. /media/recipes/photo.jpg',
+  })
   .refine((p) => existsSync(join(process.cwd(), 'public', p)), {
     message: 'image file not found in public/ — check the path and file name',
   });
@@ -39,7 +41,9 @@ const recipes = defineCollection({
     challenge: z
       .union([z.number().int(), z.string()])
       .transform((v) => String(v).padStart(3, '0'))
-      .refine((v) => /^\d{3}$/.test(v), { message: 'challenge must be a 3-digit iso_n3 code, e.g. "380"' })
+      .refine((v) => /^\d{3}$/.test(v), {
+        message: 'challenge must be a 3-digit iso_n3 code, e.g. "380"',
+      })
       .optional(),
     time: z.string(),
     serves: z.union([z.number(), z.string()]).transform(String),
@@ -55,7 +59,8 @@ const listItem = z.object({
   note: z.string(),
   image: localImage,
 });
-const ten = (name: string) => z.array(listItem).length(10, { message: `${name} must have exactly 10 entries` });
+const ten = (name: string) =>
+  z.array(listItem).length(10, { message: `${name} must have exactly 10 entries` });
 
 const lists = defineCollection({
   loader: glob({ pattern: '*.yaml', base: './src/content/lists' }),

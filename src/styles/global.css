@@ -1,4 +1,4 @@
-/* Global styles — SITE_SPEC.md §2. */
+/* Global styles — docs/DESIGN.md §3. */
 
 *,
 *::before,
@@ -22,16 +22,28 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, p, ol, ul, figure, blockquote {
+h1,
+h2,
+h3,
+h4,
+p,
+ol,
+ul,
+figure,
+blockquote {
   margin: 0;
 }
 
-ol, ul {
+ol,
+ul {
   padding: 0;
   list-style: none;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: var(--font-display);
   font-weight: 400;
   line-height: 1.3;
@@ -66,10 +78,17 @@ a:hover {
   font-weight: 400;
 }
 
-.muted { color: var(--muted); }
-.accent { color: var(--accent); }
+.muted {
+  color: var(--muted);
+}
+.accent {
+  color: var(--accent);
+}
 
-a.muted:hover { color: var(--accent); }
+.empty-note {
+  font-size: 15px;
+  color: var(--muted);
+}
 
 /* ---------- layout ---------- */
 
@@ -92,13 +111,24 @@ a.muted:hover { color: var(--accent); }
   column-gap: 32px;
 }
 
-.span-2  { grid-column: span 2; }
-.span-3  { grid-column: span 3; }
-.span-4  { grid-column: span 4; }
-.span-5  { grid-column: span 5; }
-.span-7  { grid-column: span 7; }
-.span-8  { grid-column: span 8; }
-.span-12 { grid-column: span 12; }
+.span-3 {
+  grid-column: span 3;
+}
+.span-4 {
+  grid-column: span 4;
+}
+.span-5 {
+  grid-column: span 5;
+}
+.span-7 {
+  grid-column: span 7;
+}
+.span-8 {
+  grid-column: span 8;
+}
+.span-12 {
+  grid-column: span 12;
+}
 
 /* ---------- kraft band ---------- */
 
@@ -113,25 +143,15 @@ a.muted:hover { color: var(--accent); }
   background: var(--kraft);
   overflow: hidden;
 }
-.frame.tone-2 { background: var(--kraft-2); }
-.frame.tone-3 { background: var(--kraft-3); }
+.frame.tone-2 {
+  background: var(--kraft-2);
+}
+.frame.tone-3 {
+  background: var(--kraft-3);
+}
 
 .frame img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-/* ---------- accessibility ---------- */
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }

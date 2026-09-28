@@ -1,5 +1,8 @@
 ---
-// Image with a kraft background behind it while loading (or instead of it, if src is null).
+// The kraft background shows while the image loads, and stands in for it when src is null.
+import { url } from '../lib/paths';
+import type { PlaceholderTone } from '../lib/placeholder';
+
 interface Props {
   src: string | null | undefined;
   alt: string;
@@ -7,8 +10,8 @@ interface Props {
   ratio?: string;
   width?: number;
   height?: number;
-  /** placeholder tone: 1 = --kraft, 2 = --kraft-2, 3 = --kraft-3 */
-  tone?: 1 | 2 | 3;
+  /** 1 = --kraft, 2 = --kraft-2, 3 = --kraft-3 */
+  tone?: PlaceholderTone;
   class?: string;
 }
 
@@ -23,5 +26,5 @@ const style = [
 ---
 
 <div class:list={['frame', tone > 1 && `tone-${tone}`, className]} style={style || undefined}>
-  {src && <img src={src} alt={alt} loading="lazy" decoding="async" />}
+  {src && <img src={url(src)} alt={alt} loading="lazy" decoding="async" />}
 </div>

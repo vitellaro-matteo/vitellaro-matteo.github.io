@@ -1,11 +1,18 @@
 ---
 import Card from '../Card.astro';
-import { spotify } from '../../lib/data';
+import { spotify } from '../../lib/feeds';
 
 const tracks = spotify.tracks.slice(0, 10);
 ---
 
-<Card id="listening" class="span-7" label="01 — listening" title="last week's finds" linkText="spotify" href={spotify.playlist_url}>
+<Card
+  id="listening"
+  class="span-7"
+  label="01 — listening"
+  title="last week's finds"
+  linkText="spotify"
+  href={spotify.playlist_url}
+>
   <ol class="rows">
     {tracks.map((track, i) => (
       <li class="row">

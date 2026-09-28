@@ -1,7 +1,6 @@
 ---
-// Long-form entry layout — SITE_SPEC.md §3.3 (journal entries; recipes reuse it).
-// Left: meta pairs. Middle: title, lead, optional media, body, prev/next.
-// Right: margin notes — <Aside> floats into the two empty columns.
+// Long-form entry layout — docs/DESIGN.md §4.3, shared by journal entries and recipes.
+// The grid leaves the last two columns empty so <Aside> margin notes can float into them.
 interface MetaPair {
   label: string;
   value: string;
@@ -31,7 +30,14 @@ const { label, meta, title, lead, older, newer } = Astro.props;
       <div class="pair">
         <p class="mono muted">{pair.label}</p>
         <p class="value">
-          {pair.href ? <a href={pair.href}>{pair.value}{pair.external ? ' ↗' : ''}</a> : pair.value}
+          {pair.href ? (
+            <a href={pair.href}>
+              {pair.value}
+              {pair.external ? ' ↗' : ''}
+            </a>
+          ) : (
+            pair.value
+          )}
         </p>
       </div>
     ))}
@@ -50,7 +56,9 @@ const { label, meta, title, lead, older, newer } = Astro.props;
             <span class="mono muted">← older</span>
             <span class="title">{older.title}</span>
           </a>
-        ) : <span />}
+        ) : (
+          <span />
+        )}
         {newer && (
           <a class="newer" href={newer.href}>
             <span class="mono muted">newer →</span>
@@ -103,6 +111,21 @@ const { label, meta, title, lead, older, newer } = Astro.props;
   }
   .prose > :global(* + *) {
     margin-top: 28px;
+  }
+  /* Only links written in the body text (Markdown gives them no class) are underlined;
+     embed cards and other component links keep the site-wide link style. */
+  .prose :global(a:not([class])) {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--kraft-3);
+    transition:
+      color 120ms ease,
+      text-decoration-color 120ms ease;
+  }
+  .prose :global(a:not([class]):hover) {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
   }
   .prose :global(h2) {
     font-size: 28px;

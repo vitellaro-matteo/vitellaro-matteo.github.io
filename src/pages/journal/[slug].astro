@@ -5,6 +5,7 @@ import EntryLayout from '../../components/EntryLayout.astro';
 import { embeds } from '../../components/embeds';
 import { getJournal, neighbours, readingTime, type JournalEntry } from '../../lib/content';
 import { formatDate } from '../../lib/dates';
+import { routes } from '../../lib/paths';
 
 export async function getStaticPaths() {
   const entries = await getJournal();
@@ -22,7 +23,7 @@ interface Props {
 
 const { entry, older, newer } = Astro.props;
 const { Content } = await render(entry);
-const link = (e?: JournalEntry) => e && { title: e.data.title, href: `/journal/${e.id}` };
+const link = (e?: JournalEntry) => e && { title: e.data.title, href: routes.journalEntry(e.id) };
 
 const meta = [
   { label: 'written', value: formatDate(entry.data.date) },

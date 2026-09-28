@@ -6,6 +6,7 @@ import Frame from '../../components/Frame.astro';
 import { embeds } from '../../components/embeds';
 import { getRecipes, neighbours, type Recipe } from '../../lib/content';
 import { formatDate } from '../../lib/dates';
+import { routes } from '../../lib/paths';
 
 export async function getStaticPaths() {
   const recipes = await getRecipes();
@@ -24,13 +25,13 @@ interface Props {
 const { recipe, older, newer } = Astro.props;
 const { Content } = await render(recipe);
 const r = recipe.data;
-const link = (e?: Recipe) => e && { title: e.data.title, href: `/cooking/${e.id}` };
+const link = (e?: Recipe) => e && { title: e.data.title, href: routes.recipe(e.id) };
 
 const meta = [
   { label: 'cooked', value: formatDate(r.date) },
   { label: 'from', value: r.source_name, href: r.source_url, external: true },
   r.challenge
-    ? { label: 'country', value: r.country, href: '/cooking/around-the-world' }
+    ? { label: 'country', value: r.country, href: routes.challenge }
     : { label: 'country', value: r.country },
   { label: 'time', value: r.time },
   { label: 'serves', value: r.serves },
@@ -39,7 +40,14 @@ const meta = [
 ---
 
 <Base title={r.title} description={r.lead} current="cooking">
-  <EntryLayout label="cooking" meta={meta} title={r.title} lead={r.lead} older={link(older)} newer={link(newer)}>
+  <EntryLayout
+    label="cooking"
+    meta={meta}
+    title={r.title}
+    lead={r.lead}
+    older={link(older)}
+    newer={link(newer)}
+  >
     <Frame slot="media" src={r.image} alt={r.title} ratio="4 / 3" tone={2} />
     <Content components={embeds} />
   </EntryLayout>

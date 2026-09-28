@@ -1,5 +1,6 @@
 ---
 import { site, links } from '../../site.config';
+import { routes } from '../lib/paths';
 
 const items = [
   { label: 'spotify', href: links.spotify, external: true },
@@ -7,25 +8,25 @@ const items = [
   { label: 'goodreads', href: links.goodreads, external: true },
   { label: 'instagram', href: links.instagram, external: true },
   { label: 'github', href: links.github, external: true },
-  { label: 'rss', href: links.rss, external: false },
+  { label: 'rss', href: routes.rss, external: false },
 ];
 ---
 
 <footer class="container">
   <div class="site-footer">
-  <div class="left">
-    <span class="wordmark display">{site.name}</span>
-    <p class="line muted">Updated automatically, written slowly.</p>
-  </div>
-  <ul class="links">
-    {items.map((item) => (
-      <li>
-        <a class="mono muted" href={item.href}>
-          {item.external ? `${item.label} ↗` : item.label}
-        </a>
-      </li>
-    ))}
-  </ul>
+    <div class="left">
+      <span class="wordmark display">{site.name}</span>
+      <p class="line muted">Updated automatically, written slowly.</p>
+    </div>
+    <ul class="links">
+      {items.map((item) => (
+        <li>
+          <a class="mono muted" href={item.href}>
+            {item.external ? `${item.label} ↗` : item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
   </div>
 </footer>
 

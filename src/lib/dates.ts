@@ -3,15 +3,16 @@ import { site } from '../../site.config';
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 const DAY = 86_400_000;
 
-/** Today's calendar date in the site timezone, as a UTC-midnight Date. */
-function todayInTz(now: Date, timeZone: string): Date {
+/** The calendar date of `now` in the given timezone, as a UTC-midnight Date. */
+function calendarDate(now: Date, timeZone: string): Date {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
   }).formatToParts(now);
-  const get = (t: string) => Number(parts.find((p) => p.type === t)!.value);
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    Number(parts.find((p) => p.type === type)?.value);
   return new Date(Date.UTC(get('year'), get('month') - 1, get('day')));
 }
 
@@ -30,7 +31,7 @@ function isoWeek(date: Date): { week: number; year: number } {
  * e.g. `week 39 · 21–27 sep 2026`.
  */
 export function previousWeekMeta(now = new Date(), timeZone = site.timezone): string {
-  const today = todayInTz(now, timeZone);
+  const today = calendarDate(now, timeZone);
   const weekday = today.getUTCDay() || 7;
   const start = new Date(today.getTime() - (weekday - 1 + 7) * DAY);
   const end = new Date(start.getTime() + 6 * DAY);
@@ -52,7 +53,7 @@ export function formatDate(value: string | Date, timeZone = site.timezone): stri
     typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
       ? new Date(`${value}T12:00:00Z`)
       : new Date(value);
-  const d = todayInTz(date, timeZone);
+  const d = calendarDate(date, timeZone);
   return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 

@@ -1,6 +1,6 @@
 ---
 import Card from '../Card.astro';
-import { github } from '../../lib/data';
+import { github } from '../../lib/feeds';
 import { links } from '../../../site.config';
 import { relativeTime } from '../../lib/dates';
 
@@ -11,7 +11,8 @@ const nonZero = weeks
   .flatMap((w) => w.days.map((d) => d.count))
   .filter((c) => c > 0)
   .sort((a, b) => a - b);
-const quantile = (q: number) => nonZero[Math.min(nonZero.length - 1, Math.floor(q * nonZero.length))] ?? 0;
+const quantile = (q: number) =>
+  nonZero[Math.min(nonZero.length - 1, Math.floor(q * nonZero.length))] ?? 0;
 const q1 = quantile(0.25);
 const q3 = quantile(0.75);
 const level = (c: number) => (c === 0 ? 0 : c <= q1 ? 1 : c <= q3 ? 2 : 3);
@@ -19,11 +20,24 @@ const level = (c: number) => (c === 0 ? 0 : c <= q1 ? 1 : c <= q3 ? 2 : 3);
 const pushes = github.pushes.slice(0, 3);
 ---
 
-<Card id="making" class="span-7" label="05 — making" title="on github" linkText="github" href={links.github}>
-  <div class="calendar" role="img" aria-label={`${github.calendar.total} contributions in the last 30 weeks`}>
+<Card
+  id="making"
+  class="span-7"
+  label="05 — making"
+  title="on github"
+  linkText="github"
+  href={links.github}
+>
+  <div
+    class="calendar"
+    role="img"
+    aria-label={`${github.calendar.total} contributions in the last 30 weeks`}
+  >
     {weeks.map((week) => (
       <div class="week">
-        {week.days.map((day) => <span class={`day l${level(day.count)}`} />)}
+        {week.days.map((day) => (
+          <span class={`day l${level(day.count)}`} />
+        ))}
       </div>
     ))}
   </div>
@@ -53,9 +67,15 @@ const pushes = github.pushes.slice(0, 3);
     height: 14px;
     background: var(--kraft);
   }
-  .day.l1 { background: color-mix(in srgb, var(--accent) 30%, transparent); }
-  .day.l2 { background: color-mix(in srgb, var(--accent) 60%, transparent); }
-  .day.l3 { background: var(--accent); }
+  .day.l1 {
+    background: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .day.l2 {
+    background: color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+  .day.l3 {
+    background: var(--accent);
+  }
   .row {
     display: grid;
     grid-template-columns: 200px 1fr auto;

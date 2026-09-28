@@ -1,14 +1,12 @@
 ---
-// Page intro in the lists-page style — SITE_SPEC.md §3.4.
+// Page intro in the lists-page style — docs/DESIGN.md §4.4.
 interface Props {
   label: string;
   title: string;
-  /** right-hand text; or use the `right` slot instead */
   text?: string;
 }
 
 const { label, title, text } = Astro.props;
-const hasRight = Astro.slots.has('right');
 ---
 
 <div class="page-intro">
@@ -16,7 +14,7 @@ const hasRight = Astro.slots.has('right');
     <p class="mono accent">{label}</p>
     <h1>{title}</h1>
   </div>
-  {hasRight ? <div class="right"><slot name="right" /></div> : text && <p class="right text muted">{text}</p>}
+  {text && <p class="text muted">{text}</p>}
 </div>
 
 <style>

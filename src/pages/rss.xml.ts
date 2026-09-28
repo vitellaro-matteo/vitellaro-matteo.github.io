@@ -2,6 +2,7 @@ import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
 import { getCollection } from 'astro:content';
 import { site } from '../../site.config';
+import { routes } from '../lib/paths';
 
 // Journal entries and recipes, newest first. Drafts are never included.
 export async function GET(context: APIContext) {
@@ -13,20 +14,20 @@ export async function GET(context: APIContext) {
       title: e.data.title,
       pubDate: e.data.date,
       description: e.data.summary,
-      link: `/journal/${e.id}/`,
+      link: routes.journalEntry(e.id),
     })),
     ...recipes.map((e) => ({
       title: e.data.title,
       pubDate: e.data.date,
       description: e.data.lead,
-      link: `/cooking/${e.id}/`,
+      link: routes.recipe(e.id),
     })),
   ].sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
 
   return rss({
     title: site.name,
     description: site.tagline,
-    site: context.site!,
+    site: new URL(routes.home, context.site ?? site.url).href,
     items,
   });
 }

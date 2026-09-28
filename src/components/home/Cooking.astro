@@ -3,34 +3,50 @@ import Card from '../Card.astro';
 import Frame from '../Frame.astro';
 import MiniMap from '../MiniMap.astro';
 import { formatDate } from '../../lib/dates';
-import { getRecipes, cookedCount } from '../../lib/content';
+import { getRecipes, cookedCount, emptyNotes } from '../../lib/content';
+import { routes } from '../../lib/paths';
 
 const recipes = await getRecipes();
 const recipe = recipes[0];
 const cooked = cookedCount(recipes);
 ---
 
-<Card id="cooking" class="span-12" label="07 — cooking" title="last cooked" linkText="all" href="/cooking" external={false}>
+<Card
+  id="cooking"
+  class="span-12"
+  label="07 — cooking"
+  title="last cooked"
+  linkText="all"
+  href={routes.cooking}
+  external={false}
+>
   <div class="grid-12">
     <div class="span-5">
-      {recipe && (
-        <a class="recipe" href={`/cooking/${recipe.id}`}>
+      {recipe ? (
+        <a class="recipe" href={routes.recipe(recipe.id)}>
           <Frame src={recipe.data.image} alt={recipe.data.title} ratio="4 / 3" tone={2} />
           <span class="text">
-            <span class="mono muted">{formatDate(recipe.data.date)} · {recipe.data.country}</span>
+            <span class="mono muted">
+              {formatDate(recipe.data.date)} · {recipe.data.country}
+            </span>
             <span class="title">{recipe.data.title}</span>
             <span class="source muted">from {recipe.data.source_name}</span>
           </span>
         </a>
+      ) : (
+        <p class="empty-note">{emptyNotes.cooking}</p>
       )}
     </div>
     <div class="challenge span-7">
-      <MiniMap />
+      <MiniMap ground="card" />
       <div class="count">
         <p>
-          <span class="n accent">{cooked}</span><span class="of muted"> / 195 national dishes</span>
+          <span class="n accent">{cooked}</span>
+          <span class="of muted"> / 195 national dishes</span>
         </p>
-        <a class="mono" href="/cooking/around-the-world">the challenge →</a>
+        <a class="mono" href={routes.challenge}>
+          the challenge →
+        </a>
       </div>
     </div>
   </div>

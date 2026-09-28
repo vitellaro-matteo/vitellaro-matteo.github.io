@@ -3,42 +3,61 @@ import Base from '../../layouts/Base.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import Frame from '../../components/Frame.astro';
 import MiniMap from '../../components/MiniMap.astro';
-import { getRecipes, cookedCount } from '../../lib/content';
+import { getRecipes, cookedCount, emptyNotes } from '../../lib/content';
+import { routes } from '../../lib/paths';
 import { formatDate } from '../../lib/dates';
+import { placeholderTone } from '../../lib/placeholder';
 
 const recipes = await getRecipes();
 const cooked = cookedCount(recipes);
 ---
 
 <Base title="What I've been cooking" current="cooking">
-  <PageIntro label="cooking" title="What I've been cooking" text="Recipes I followed, with what I changed." />
+  <PageIntro
+    label="cooking"
+    title="What I've been cooking"
+    text="Recipes I followed, with what I changed."
+  />
 
   <section class="challenge kraft-band grid-12" aria-labelledby="challenge-title">
     <div class="intro span-5">
       <p class="mono accent">around the world</p>
       <h2 id="challenge-title">One national dish per country</h2>
       <p class="muted">{cooked} of 195 cooked</p>
-      <a class="mono" href="/cooking/around-the-world">the challenge →</a>
+      <a class="mono" href={routes.challenge}>
+        the challenge →
+      </a>
     </div>
     <div class="span-7">
-      <MiniMap />
+      <MiniMap ground="kraft" />
     </div>
   </section>
 
-  <ul class="recipes">
-    {recipes.map((recipe, i) => (
-      <li>
-        <a class="card" href={`/cooking/${recipe.id}`}>
-          <Frame src={recipe.data.image} alt={recipe.data.title} ratio="4 / 3" tone={((i % 3) + 1) as 1 | 2 | 3} />
-          <span class="text">
-            <span class="mono muted">{formatDate(recipe.data.date)} · {recipe.data.country}</span>
-            <span class="title">{recipe.data.title}</span>
-            <span class="source muted">from {recipe.data.source_name}</span>
-          </span>
-        </a>
-      </li>
-    ))}
-  </ul>
+  {recipes.length === 0 ? (
+    <p class="empty empty-note">{emptyNotes.cooking}</p>
+  ) : (
+    <ul class="recipes">
+      {recipes.map((recipe, i) => (
+        <li>
+          <a class="card" href={routes.recipe(recipe.id)}>
+            <Frame
+              src={recipe.data.image}
+              alt={recipe.data.title}
+              ratio="4 / 3"
+              tone={placeholderTone(i)}
+            />
+            <span class="text">
+              <span class="mono muted">
+                {formatDate(recipe.data.date)} · {recipe.data.country}
+              </span>
+              <span class="title">{recipe.data.title}</span>
+              <span class="source muted">from {recipe.data.source_name}</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
 </Base>
 
 <style>
@@ -58,6 +77,9 @@ const cooked = cookedCount(recipes);
     display: flex;
     align-items: center;
     min-height: 44px;
+  }
+  .empty {
+    margin-top: 64px;
   }
   .recipes {
     margin-top: 64px;
