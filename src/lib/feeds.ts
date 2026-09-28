@@ -5,6 +5,8 @@ export interface SpotifyFeed {
   fetched_at: string;
   playlist_url: string;
   tracks: {
+    /** Spotify track id */
+    id: string;
     title: string;
     artists: string[];
     url: string;
