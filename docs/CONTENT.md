@@ -4,8 +4,7 @@ Everything on the site that isn't fetched automatically is a file in this repo.
 Every file is checked against a schema when the site builds: a missing or wrong
 field stops the build with a message naming the file and the field.
 
-Run `npm run dev` while editing to see changes live at
-`http://localhost:4321/blog/`.
+Run `npm run dev` while editing to see changes live at `http://localhost:4321/`.
 
 ## Drafts and examples
 
@@ -74,12 +73,17 @@ These components work in any journal post or recipe without importing anything.
 <Recipe slug="my-recipe" />
 ```
 
-- `<Track>` looks the track up by its Spotify id. The fetcher also fetches every
-  track embedded anywhere in `src/content`, so an embed keeps working after the
-  song leaves the weekly playlist. You can still pass `title="…"`, `artist="…"`
-  and `cover="/media/…"` to override what the feed says.
+- `<Track>` looks the track up by its Spotify id in the weekly playlist feed.
+  For a song that isn't in the feed, pass `title="…"` and `artist="…"` (and
+  optionally `cover="/media/…"`); these also override what the feed says.
 - `<Recipe>` takes the file name of one of your recipes.
 - Every embed accepts `label="…"` to replace its small accent label.
+
+### Tracks that left the playlist (planned)
+
+The Spotify fetcher will also fetch every track embedded anywhere in
+`src/content` by its id, so `<Track id="…" />` keeps working on its own after the
+song leaves the weekly playlist.
 
 ### Margin notes
 
@@ -104,7 +108,7 @@ lead: One or two sentences about the dish and why you made it.
 source_name: Marcella Hazan
 source_url: https://example.com/recipe
 country: Italy
-challenge: 380 # optional: the country's iso_n3 code from countries.yaml
+challenge: '380' # optional: the country's iso_n3 code from countries.yaml
 time: 4 hours
 serves: 6
 again: yes # yes / no / maybe
@@ -179,16 +183,23 @@ updated: 2026-09-21
 ## The around-the-world challenge
 
 `src/data/countries.yaml` lists 195 countries (the 193 UN members, the Holy See
-and Palestine):
+and Palestine), grouped by continent:
 
 ```yaml
-- iso_n3: '380'
-  name: Italy
-  continent: Europe # Africa, Americas, Asia, Europe or Oceania
-  dish: Ragù alla bolognese
+- iso_n3: '380' # ISO 3166-1 numeric code, always quoted
+  name: 'Italy'
+  continent: Europe # Africa, Americas, Asia, Europe or Oceania (UN M49 regions)
+  dish: 'Pizza Margherita'
   dish_verified: false
+  note: 'no official national dish; most cited' # optional
 ```
 
-The dishes are seeded with the most commonly cited national dish. Check each one,
-change `dish` if you disagree, and set `dish_verified: true`. A country counts as
-cooked once a recipe has `challenge: <its iso_n3>`.
+- The dishes are seeded with the most commonly cited national dish. Where a
+  country has no clear one, `note` says so. Check each entry, change `dish` if
+  you disagree, and set `dish_verified: true`.
+- A country counts as cooked once a recipe has `challenge: '<its iso_n3>'`. A
+  code that isn't in this file fails the build.
+- The build checks that there are exactly 195 entries with unique codes.
+- Every country must be in the map geometry or have a `centroid: [lon, lat]`;
+  it is then drawn as a small dot. Tuvalu is the only one that needs it today.
+  Countries too small to see on the map get a dot automatically.

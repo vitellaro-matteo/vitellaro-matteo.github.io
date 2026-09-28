@@ -23,8 +23,8 @@ how to fill in each value and create each secret.
 | `TAGLINE`                                                             | site.config.ts  | `a slow feed`                                                                         |
 | `HERO_TITLE`                                                          | site.config.ts  | `A quiet shelf for the songs, films, books and small things I keep finding.`          |
 | `HERO_BIO`                                                            | site.config.ts  | 1–2 sentences about Matteo                                                            |
-| `SITE_URL`                                                            | site.config.ts  | origin only, e.g. `https://<user>.github.io` or a custom domain                       |
-| `BASE_PATH`                                                           | site.config.ts  | `/blog` (the repo name, as GitHub Pages serves project sites); `/` on a custom domain |
+| `SITE_URL`                                                            | site.config.ts  | `https://vitellaro-matteo.github.io` (origin only)                                    |
+| `BASE_PATH`                                                           | site.config.ts  | `/`: the repo is `vitellaro-matteo.github.io`, which Pages serves from the root       |
 | `TIMEZONE`                                                            | site.config.ts  | `Europe/Berlin` (week numbers and dates)                                              |
 | `SPOTIFY_PLAYLIST_ID`                                                 | site.config.ts  | the "last week's finds" playlist                                                      |
 | `LETTERBOXD_USERNAME`                                                 | site.config.ts  |                                                                                       |
@@ -40,8 +40,8 @@ how to fill in each value and create each secret.
 
 Every internal link and asset goes through one helper, `src/lib/paths.ts`
 (`url()` and `routes`). Markdown and MDX bodies get the same treatment from a
-hast plugin, so a body link written as `/cooking/` works under any base. Setting
-`BASE_PATH` to `/` needs no other change. Internal links end in a slash to match
+hast plugin, so a body link written as `/cooking/` works under any base. Moving
+the site to a sub-path (e.g. `/blog`) needs no other change. Internal links end in a slash to match
 the directory-style output, so GitHub Pages never redirects.
 
 ---
@@ -55,10 +55,12 @@ the directory-style output, so GitHub Pages never redirects.
   `PyYAML`, `python-dateutil`), configured in `pyproject.toml`, fully
   type-hinted, with `pytest` tests against saved fixture feeds for every parser.
   CI and deploy run Python 3.12.
-- **Map:** `d3-geo` + `topojson-client` + `world-atlas` (countries-50m),
-  rendered to static SVG **at build time**, with no client-side map library.
+- **Map:** `d3-geo` + `topojson-client` + `topojson-simplify` + `world-atlas`
+  (countries-50m), rendered to static SVG **at build time**, with no client-side
+  map library (§4.7).
 - **Quality:** ESLint (typescript-eslint, eslint-plugin-astro, jsx-a11y),
-  Prettier, `astro check`, ruff, mypy (strict), pytest, all run by CI.
+  Prettier, `astro check`, Vitest for every module in `src/lib`, ruff, mypy
+  (strict), pytest, all run by CI.
 - **Hosting:** GitHub Pages via `actions/deploy-pages`.
 - **Client JavaScript** is limited to the lists-page tabs, the map tooltips and
   the mobile menu. Everything else is static HTML.
@@ -328,19 +330,44 @@ Uses the journal entry layout (§4.3), including the older/newer footer.
   | kraft         | `--card`      | `--kraft-3`, 0.6px |
 
   Hover or focus on a country shows a small tooltip (card background, 1px line
-  border, padding 8px 12px): mono muted country name + display 16px dish name
-  (+ `cooked DATE` when done). Countries too small for the 50m geometry get a
-  3px dot at their centroid.
+  border, padding 8px 12px, gap 4px): mono muted country name + display 16px
+  dish name (+ mono muted `cooked DATE` when done). Escape and blur hide it. It
+  sits 12px below-right of the pointer (or the focused country's centre) and
+  flips left near the right edge. Countries whose projected area is under 4 px²,
+  or that are missing from the 50m geometry (only Tuvalu, placed by a
+  `centroid` in the data), get a 3px dot.
 
-- **Below:** a section heading per continent (Africa, Americas, Asia, Europe,
-  Oceania) over a 4-column grid of rows: country body 15px + dish body 14px
-  muted. Cooked rows are links with a small 8×8 accent square before the name;
+- **Accessibility:** the SVG has `role="img"` and an `aria-label` summary
+  (`N of 195 countries cooked`). Cooked countries are real `<a>` elements inside
+  it, with a label naming the country, dish and date. The continent list is the
+  full accessible alternative, and a visually hidden sentence after the intro
+  says so. Uncooked countries show their tooltip on hover only.
+- **Rendering:** the world topology is simplified once (topology-preserving, so
+  shared borders stay identical), projected with Equal Earth, snapped to a pixel
+  grid and written as relative path commands. The full map keeps 10% of the
+  points on a 0.5px grid (about 45 KB of path data); the mini map keeps 5% on a
+  1px grid (about 26 KB). The only script is the tooltip; the challenge page is
+  about 111 KB of HTML, 26 KB gzipped.
+- **Mini map** (home card, cooking band): the same drawing without links or
+  tooltips, hidden from screen readers because the cooked count sits beside it.
+
+- **Below**, 96px under the map: a section heading per continent (Africa,
+  Americas, Asia, Europe, Oceania), 64px apart, each over a 4-column grid
+  (column gap 32px) of rows (padding 14px 0, line-soft top border): country body
+  15px over dish body 14px muted, gap 4px, alphabetical. Cooked rows are links
+  with an 8×8 accent square before the name (and a visually hidden ", cooked");
   not-yet rows show the planned dish in muted.
 - **Data:** `src/data/countries.yaml`, 195 entries (193 UN members, the Holy See
-  and Palestine): `iso_n3`, `name`, `continent`, `dish`, `dish_verified: false`.
-  `dish` is seeded with the most commonly cited national dish and stays
-  `dish_verified: false` until Matteo has checked it. A recipe marks a country as
-  done with the frontmatter `challenge: <iso_n3>`.
+  and Palestine): `iso_n3`, `name`, `continent`, `dish`, `dish_verified: false`,
+  an optional `note` (e.g. "no official national dish; most cited") and, for
+  countries missing from the geometry, `centroid: [lon, lat]`. Continents follow
+  the UN M49 regions (so Cyprus, Türkiye and the Caucasus are in Asia, Russia in
+  Europe). `dish` is seeded with the most commonly cited national dish and stays
+  `dish_verified: false` until Matteo has checked it. Zod checks exactly 195
+  entries, unique codes, and geometry-or-centroid for each.
+- A recipe marks a country as done with the frontmatter `challenge: '<iso_n3>'`;
+  a code missing from the list fails the build. When several recipes share a
+  country, the most recent one is linked.
 
 ### 4.8 Mobile (below 768px)
 
@@ -392,13 +419,23 @@ public/media/…                  Matteo's photos (recipes, list covers)
 The automatic cards are fed by Python fetchers. `scripts/fetch_all.py` runs each
 fetcher, writes feed JSON to `src/data/live/` and downloads every image it needs
 into `public/media/feeds/`. Images are never hotlinked, because Instagram URLs
-expire. One failing fetcher never breaks the others: it logs a warning and the
-rest carry on.
+expire. One failing fetcher never breaks the others.
 
 **Feeds are not committed.** Both output paths are gitignored. `src/data/feeds/`
-holds only committed sample fixtures in the same shape, used for local
-development and tests. The site reads the real feed when it is present and the
-fixture otherwise, so it always builds.
+holds only committed sample fixtures in the same shape, for development and
+tests.
+
+**When a feed is missing:**
+
+1. The deploy workflow saves each fetcher's last good output in the GitHub
+   Actions cache and restores it when that fetcher fails.
+2. With no cached copy either, the build has no data for that feed, and the card
+   it fills is left out of the page. The build log names each hidden card, e.g.
+   `[feeds] no instagram feed: hiding the seeing card`. A `<Track>` embed is
+   likewise left out when the Spotify feed is missing.
+3. **Fixtures never reach production.** The site reads fixtures only in
+   `npm run dev` or when the build runs with `USE_FIXTURES=true` (CI does, so it
+   exercises every card).
 
 - **spotify.py:** refresh-token flow; reads the `SPOTIFY_PLAYLIST_ID` tracks
   (id, title, artists, album cover, url). It also scans `src/content` for
@@ -422,8 +459,11 @@ never overlap. Steps: set up Python → install → `pytest` →
 `python scripts/fetch_all.py` (writing into the build workspace) → build Astro →
 deploy to Pages. Nothing is committed back to the repo.
 
+The cache save and restore steps above belong to this workflow.
+
 **CI workflow, `.github/workflows/ci.yml`:** on every push and pull request, runs
-lint, `astro check` and the build from fixtures, plus ruff, mypy and pytest.
+lint, `astro check`, the Vitest suite and a build with `USE_FIXTURES=true`, plus
+ruff, mypy and pytest.
 
 The build also generates `/rss.xml` (journal entries and recipes) and a sitemap.
 
@@ -433,7 +473,7 @@ The build also generates `/rss.xml` (journal entries and recipes) and a sitemap.
 
 1. ✓ Scaffold, tokens, fonts, header/footer, home page on fixture data.
 2. ✓ Journal, lists and cooking pages, content schemas, example files.
-3. Challenge map and `countries.yaml`.
+3. ✓ Challenge map and `countries.yaml`.
 4. Python fetchers, tests and the deploy workflow.
 5. Mobile pass, accessibility pass (contrast, focus styles as a 2px accent
    outline offset 2px, alt text), Lighthouse ≥ 95 in every category.

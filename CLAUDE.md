@@ -30,8 +30,9 @@ engineers. Every file should look deliberate:
 - Accessible, semantic HTML (landmarks, heading order, alt text, real buttons/links).
 - All values from `site.config.ts`; every internal link and asset through
   `src/lib/paths.ts`.
-- `npm run build`, `npm run lint`, `npm run check`, and ruff, mypy and pytest must
-  all pass before you stop. Fetchers must run on Python 3.10+ (no 3.11+ syntax or
+- New logic in `src/lib/` comes with Vitest tests.
+- `npm run build`, `npm run lint`, `npm run check`, `npm test`, and ruff, mypy and
+  pytest must all pass before you stop. Fetchers must run on Python 3.10+ (no 3.11+ syntax or
   stdlib such as `tomllib`, `ExceptionGroup`, `typing.Self`).
 
 ## End-of-task report (required, every time you stop)
@@ -44,8 +45,8 @@ Finish every task with a report in exactly this shape:
 
 ### Build
 
-Result of `npm run build` (pass/fail, and any warnings), plus lint, check and the
-Python checks.
+Result of `npm run build` (pass/fail, and any warnings), plus lint, check, tests
+and the Python checks.
 
 ### Changes by logical unit
 
@@ -67,7 +68,7 @@ Anything you decided where the design is silent, and anything you need from Matt
 
 1. ✓ Scaffold, tokens, fonts, header/footer, home page on fixture data.
 2. ✓ Journal, lists, cooking pages, content schemas, example files.
-3. Challenge map + `countries.yaml`.
+3. ✓ Challenge map + `countries.yaml`.
 4. Python fetchers + tests + deploy workflow.
 5. Mobile pass, accessibility pass (contrast, focus = 2px accent outline offset 2px,
    alt text), Lighthouse ≥ 95 in all categories.
@@ -83,3 +84,7 @@ Keep these current with every change:
 - `docs/DESIGN.md`: the design specification, including every decision made.
 - `docs/CONTENT.md`: how to add and edit content.
 - `docs/SETUP.md`: every site value and how to create each token and secret.
+
+Update them at the end of every phase. README describes only what works now
+(plus its Roadmap); DESIGN may describe planned behaviour; in CONTENT and SETUP,
+sections for unbuilt features carry "(planned)" in the heading.

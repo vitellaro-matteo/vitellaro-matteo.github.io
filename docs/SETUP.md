@@ -9,10 +9,11 @@ Requires Node 22.12+ (`.nvmrc` pins the current LTS) and Python 3.10+.
 
 ```sh
 npm install
-npm run dev        # http://localhost:4321/blog/ — drafts are visible here
+npm run dev        # http://localhost:4321/ — drafts and sample feeds are visible here
 npm run build      # static site in dist/
 npm run preview    # serve dist/ locally
 npm run check      # type-check (astro check)
+npm test           # unit tests (Vitest)
 npm run lint       # ESLint + Prettier check
 npm run format     # format everything with Prettier
 ```
@@ -24,35 +25,41 @@ pip install -e ".[dev]"
 ruff check . && ruff format --check . && mypy && pytest
 ```
 
-Without any secrets, the site builds from the sample feeds in `src/data/feeds/`.
+The sample feeds in `src/data/feeds/` are for development only. `npm run dev`
+uses them automatically; a build uses them only when run with
+`USE_FIXTURES=true` (as CI does). A plain `npm run build` behaves like
+production: any feed card without real data is left out, and the build log
+lists which ones.
 
 ## Site values
 
 Every site-specific value is in [`site.config.ts`](../site.config.ts). Values
 still in CAPITALS are placeholders.
 
-| Field                | Value                                                                                                                                             |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`               | The lowercase wordmark, `matteo`.                                                                                                                 |
-| `tagline`            | `a slow feed`.                                                                                                                                    |
-| `heroTitle`          | The large line on the home page.                                                                                                                  |
-| `heroBio`            | One or two sentences about you, under the hero title.                                                                                             |
-| `url`                | The site's origin only, no path: `https://<user>.github.io`, or your custom domain.                                                               |
-| `basePath`           | `/blog` while the site is served at `https://<user>.github.io/blog/`. Set it to `/` if you move to a custom domain; nothing else needs to change. |
-| `timezone`           | An IANA zone such as `Europe/Berlin`. Used for dates and the "this week" range.                                                                   |
-| `spotifyPlaylistId`  | The id at the end of the playlist's share link, `open.spotify.com/playlist/<id>`.                                                                 |
-| `letterboxdUsername` | From `letterboxd.com/<username>/`.                                                                                                                |
-| `goodreadsUserId`    | The number in your profile URL, `goodreads.com/user/show/<id>-name`.                                                                              |
-| `instagramUsername`  | `fuzetea_esports`.                                                                                                                                |
-| `githubUsername`     | Your GitHub login.                                                                                                                                |
+| Field                | Value                                                                                                                                           |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`               | The lowercase wordmark, `matteo`.                                                                                                               |
+| `tagline`            | `a slow feed`.                                                                                                                                  |
+| `heroTitle`          | The large line on the home page.                                                                                                                |
+| `heroBio`            | One or two sentences about you, under the hero title.                                                                                           |
+| `url`                | The site's origin only, no path: `https://<user>.github.io`, or your custom domain.                                                             |
+| `basePath`           | `/`, since the repo is `<user>.github.io` and Pages serves it from the root. A project repo would need `/<repo>`; nothing else needs to change. |
+| `timezone`           | An IANA zone such as `Europe/Berlin`. Used for dates and the "this week" range.                                                                 |
+| `spotifyPlaylistId`  | The id at the end of the playlist's share link, `open.spotify.com/playlist/<id>`.                                                               |
+| `letterboxdUsername` | From `letterboxd.com/<username>/`.                                                                                                              |
+| `goodreadsUserId`    | The number in your profile URL, `goodreads.com/user/show/<id>-name`.                                                                            |
+| `instagramUsername`  | `fuzetea_esports`.                                                                                                                              |
+| `githubUsername`     | Your GitHub login.                                                                                                                              |
 
-## GitHub Pages
+## GitHub Pages (planned)
 
 In the repository's **Settings → Pages**, set **Source** to **GitHub Actions**.
 The deploy workflow builds and publishes the site; nothing is committed back to
 the repo.
 
-## Secrets
+## Secrets (planned)
+
+The fetchers and deploy workflow that use these arrive in the next phase.
 
 Add each secret in **Settings → Secrets and variables → Actions → New repository
 secret**, or from a terminal with `gh secret set NAME`. Never commit a token or a
