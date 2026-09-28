@@ -1,0 +1,21 @@
+---
+// <Aside>…</Aside> — a margin note. Put it directly before the paragraph it
+// belongs to; it floats into the right-hand columns, level with that paragraph.
+---
+
+<aside class="margin-note mono muted"><slot /></aside>
+
+<style>
+  .margin-note {
+    float: right;
+    clear: right;
+    /* two of the seven-column body's columns plus one gap, pushed past its right edge */
+    width: calc((100% - 6 * 32px) / 7 * 2 + 32px);
+    margin-right: calc(-1 * ((100% - 6 * 32px) / 7 * 2 + 32px) - 32px);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .margin-note :global(p) {
+    margin: 0;
+  }
+</style>

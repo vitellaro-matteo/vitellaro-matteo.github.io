@@ -1,0 +1,25 @@
+---
+// <Book title="…" author="…" url="…" cover="/media/…" />
+import EmbedCard from './EmbedCard.astro';
+
+interface Props {
+  title: string;
+  author: string;
+  url: string;
+  cover?: string;
+  label?: string;
+}
+
+const { title, author, url, cover, label = 'book' } = Astro.props;
+---
+
+<EmbedCard
+  label={label}
+  title={title}
+  subtitle={author}
+  image={cover}
+  imageAlt={`Cover of ${title}`}
+  imageHeight={144}
+  linkText="goodreads"
+  href={url}
+/>

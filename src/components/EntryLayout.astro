@@ -1,0 +1,149 @@
+---
+// Long-form entry layout — SITE_SPEC.md §3.3 (journal entries; recipes reuse it).
+// Left: meta pairs. Middle: title, lead, optional media, body, prev/next.
+// Right: margin notes — <Aside> floats into the two empty columns.
+interface MetaPair {
+  label: string;
+  value: string;
+  href?: string;
+  external?: boolean;
+}
+interface Neighbour {
+  title: string;
+  href: string;
+}
+interface Props {
+  label: string;
+  meta: MetaPair[];
+  title: string;
+  lead: string;
+  older?: Neighbour;
+  newer?: Neighbour;
+}
+
+const { label, meta, title, lead, older, newer } = Astro.props;
+---
+
+<article class="entry grid-12">
+  <aside class="meta span-3" aria-label="Details">
+    <p class="mono accent">{label}</p>
+    {meta.map((pair) => (
+      <div class="pair">
+        <p class="mono muted">{pair.label}</p>
+        <p class="value">
+          {pair.href ? <a href={pair.href}>{pair.value}{pair.external ? ' ↗' : ''}</a> : pair.value}
+        </p>
+      </div>
+    ))}
+  </aside>
+  <div class="main span-7">
+    <h1>{title}</h1>
+    <p class="lead muted">{lead}</p>
+    <slot name="media" />
+    <div class="prose">
+      <slot />
+    </div>
+    {(older || newer) && (
+      <nav class="pager" aria-label="More entries">
+        {older ? (
+          <a class="older" href={older.href}>
+            <span class="mono muted">← older</span>
+            <span class="title">{older.title}</span>
+          </a>
+        ) : <span />}
+        {newer && (
+          <a class="newer" href={newer.href}>
+            <span class="mono muted">newer →</span>
+            <span class="title">{newer.title}</span>
+          </a>
+        )}
+      </nav>
+    )}
+  </div>
+</article>
+
+<style>
+  .entry {
+    padding-top: 112px;
+  }
+  .meta {
+    padding-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .pair {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .value {
+    font-size: 15px;
+  }
+  .main {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    min-width: 0;
+  }
+  h1 {
+    font-size: 50px;
+    line-height: 1.25;
+  }
+  .lead {
+    font-family: var(--font-display);
+    font-size: 22px;
+    line-height: 1.6;
+  }
+
+  /* ---------- body ---------- */
+  .prose {
+    font-size: 18px;
+    line-height: 1.75;
+  }
+  .prose > :global(* + *) {
+    margin-top: 28px;
+  }
+  .prose :global(h2) {
+    font-size: 28px;
+  }
+  .prose :global(blockquote) {
+    font-family: var(--font-display);
+    font-size: 26px;
+    line-height: 1.5;
+    padding-left: 32px;
+  }
+  .prose :global(ul:not(.ingredients)),
+  .prose :global(ol) {
+    padding-left: 1.2em;
+  }
+  .prose :global(ul:not(.ingredients)) {
+    list-style: disc;
+  }
+  .prose :global(ol) {
+    list-style: decimal;
+  }
+
+  /* ---------- prev / next ---------- */
+  .pager {
+    border-top: 1px solid var(--ink);
+    padding-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    gap: 32px;
+  }
+  .pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 50%;
+  }
+  .newer {
+    text-align: right;
+  }
+  .pager .title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 1.4;
+  }
+</style>

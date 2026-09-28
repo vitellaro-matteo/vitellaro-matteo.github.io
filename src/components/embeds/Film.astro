@@ -1,0 +1,27 @@
+---
+// <Film title="…" year={1997} url="…" poster="/media/…" />
+import EmbedCard from './EmbedCard.astro';
+
+interface Props {
+  title: string;
+  year?: number;
+  director?: string;
+  url: string;
+  poster?: string;
+  label?: string;
+}
+
+const { title, year, director, url, poster, label = 'film' } = Astro.props;
+const subtitle = [director, year].filter(Boolean).join(' · ') || undefined;
+---
+
+<EmbedCard
+  label={label}
+  title={title}
+  subtitle={subtitle}
+  image={poster}
+  imageAlt={`Poster for ${title}`}
+  imageHeight={144}
+  linkText="letterboxd"
+  href={url}
+/>

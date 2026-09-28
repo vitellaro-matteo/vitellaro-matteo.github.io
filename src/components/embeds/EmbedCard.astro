@@ -1,0 +1,63 @@
+---
+// Shared card shape for MDX embeds — SITE_SPEC.md §3.3.
+import Frame from '../Frame.astro';
+
+interface Props {
+  label: string;
+  title: string;
+  subtitle?: string;
+  image: string | null | undefined;
+  imageAlt: string;
+  /** image height for a 96px-wide image: 96 square, 144 for 2:3, 72 for 4:3 */
+  imageHeight: number;
+  linkText: string;
+  href: string;
+  external?: boolean;
+}
+
+const { label, title, subtitle, image, imageAlt, imageHeight, linkText, href, external = true } = Astro.props;
+---
+
+<div class="embed">
+  <Frame src={image} alt={imageAlt} width={96} height={imageHeight} tone={2} class="embed-image" />
+  <div class="stack">
+    <p class="mono accent">{label}</p>
+    <p class="title">{title}</p>
+    {subtitle && <p class="subtitle muted">{subtitle}</p>}
+    <a class="mono" href={href}>{linkText}{external ? ' ↗' : ' →'}</a>
+  </div>
+</div>
+
+<style>
+  .embed {
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .embed :global(.embed-image) {
+    flex-shrink: 0;
+  }
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    line-height: 1.4;
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: 20px;
+  }
+  .subtitle {
+    font-size: 15px;
+  }
+  a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    margin: -8px 0;
+  }
+</style>

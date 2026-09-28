@@ -1,0 +1,28 @@
+---
+// <Recipe slug="…" /> — links to one of my recipes (src/content/recipes/<slug>.mdx).
+import { getEntry } from 'astro:content';
+import EmbedCard from './EmbedCard.astro';
+
+interface Props {
+  slug: string;
+  label?: string;
+}
+
+const { slug, label = 'recipe' } = Astro.props;
+const recipe = await getEntry('recipes', slug);
+if (!recipe) {
+  throw new Error(`<Recipe slug="${slug}"/>: no file src/content/recipes/${slug}.mdx`);
+}
+---
+
+<EmbedCard
+  label={label}
+  title={recipe.data.title}
+  subtitle={`from ${recipe.data.source_name}`}
+  image={recipe.data.image}
+  imageAlt={recipe.data.title}
+  imageHeight={72}
+  linkText="recipe"
+  href={`/cooking/${recipe.id}`}
+  external={false}
+/>

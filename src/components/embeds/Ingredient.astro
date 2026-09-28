@@ -1,0 +1,23 @@
+---
+interface Props {
+  qty?: string;
+}
+
+const { qty = '' } = Astro.props;
+---
+
+<li class="ingredient">
+  <span class="mono muted">{qty}</span>
+  <span><slot /></span>
+</li>
+
+<style>
+  .ingredient {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    align-items: baseline;
+    column-gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+</style>
