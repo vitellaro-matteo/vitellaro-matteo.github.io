@@ -144,31 +144,45 @@ The **Fetch feeds** step's log and summary quote Spotify's own error, followed b
 a hint, for example:
 
 ```
-spotify | failed | SpotifyAuthError: token refresh failed (HTTP 400): invalid_client: Invalid client secret. Hint: …
+spotify | failed | SpotifyAuthError: client ID + secret check failed (HTTP 400): invalid_client: Invalid client. Hint: …
 ```
 
 They never contain the client ID, the secret or a token. The log also warns when
 a secret had stray whitespace (it is stripped) or doesn't look like what it
 should be. It describes the problem without printing the value.
 
-To test the three values on your machine, run the same token refresh plus one
-playlist read:
+Spotify checks the refresh token before the client credentials, and answers
+`invalid_client` both when the secret is wrong and when the refresh token belongs
+to another app. So whenever a refresh fails with `invalid_client`, the fetcher
+also checks the client ID and secret on their own (the client credentials grant,
+which needs no refresh token) and reports whichever of the two it is.
+
+If a Spotify response ever doesn't match what the parser expects, the step
+summary shows the traceback, and `python -m scripts.spotify --dump` (same
+credentials as below) saves the raw playlist and track JSON to `.debug/spotify/`
+to compare against. It prints only the file paths.
+
+To test the three values on your machine:
 
 ```powershell
 python -m scripts.spotify --check
 ```
 
 It reads `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET` and `SPOTIFY_REFRESH_TOKEN`
-from the environment and asks, with hidden input, for any that aren't set. It
-prints only OK or failed, with Spotify's error code, its description and a hint.
+from the environment and asks, with hidden input, for any that aren't set. It then
+checks the client ID and secret, refreshes a token and reads one playlist item,
+printing only OK or failed for each step, with Spotify's error code, its
+description and a hint.
 
-| Spotify says             | What it means                                                                                                                             | Fix                                                                                                                                                                                                                                                                                |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `invalid_client`         | The client ID or secret is wrong, or the secret was rotated in the dashboard and the repo secret still holds the old one.                 | Copy both again from the app's **Settings** and re-save `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`. After rotating a secret, update it in every repo that uses the app.                                                                                                       |
-| `invalid_grant`          | The refresh token was revoked or has expired, or it was issued for a different client ID.                                                 | Create a new token with `python -m scripts.spotify_auth` (step 4) using the same client ID as the secret, and re-save `SPOTIFY_REFRESH_TOKEN`. Spotify can report `invalid_grant` even when the client ID is also wrong, so if a fresh token still fails, check the client ID too. |
-| anything else            | Shown exactly as Spotify worded it.                                                                                                       | Follow the description.                                                                                                                                                                                                                                                            |
-| playlist read `HTTP 403` | The account may not use the app: in development mode the owner needs Premium, and other accounts must be added under **User Management**. | Authorize with the account that owns the app and the playlist.                                                                                                                                                                                                                     |
-| playlist read `HTTP 404` | The playlist id is wrong or the playlist belongs to another account.                                                                      | Check `spotifyPlaylistId` in `site.config.ts`.                                                                                                                                                                                                                                     |
+| Step and message                                      | What it means                                                                                                                             | Fix                                                                                                                                                                                                          |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| client ID + secret: `Invalid client`                  | Spotify knows the client ID but rejects the secret: a typo, or the secret was rotated and this is the old one.                            | In the dashboard, open the app's **Settings**, click **View client secret** and copy the current one into `SPOTIFY_CLIENT_SECRET`. Rotating replaces the old secret, so update every repo that uses the app. |
+| client ID + secret: `Failed to get client`            | Spotify doesn't know the client ID.                                                                                                       | Copy the **Client ID** again from the app's **Settings**; check that the app still exists.                                                                                                                   |
+| token refresh: `invalid_client` after the pair passed | The ID and secret are fine together, so the refresh token was issued for a different app.                                                 | Create a token for this app with `python -m scripts.spotify_auth` (step 4) and re-save `SPOTIFY_REFRESH_TOKEN`.                                                                                              |
+| token refresh: `invalid_grant`                        | The refresh token was revoked or has expired, or Spotify doesn't recognise it at all.                                                     | Create a new token with `python -m scripts.spotify_auth` and re-save `SPOTIFY_REFRESH_TOKEN`.                                                                                                                |
+| anything else                                         | Shown exactly as Spotify worded it.                                                                                                       | Follow the description.                                                                                                                                                                                      |
+| playlist read `HTTP 403`                              | The account may not use the app: in development mode the owner needs Premium, and other accounts must be added under **User Management**. | Authorize with the account that owns the app and the playlist.                                                                                                                                               |
+| playlist read `HTTP 404`                              | The playlist id is wrong or the playlist belongs to another account.                                                                      | Check `spotifyPlaylistId` in `site.config.ts`.                                                                                                                                                               |
 
 A refresh token copied from WeeklySpotifyUpdate's `.spotify_cache` works only
 with that app's client ID and secret. The file is JSON, so copy just the

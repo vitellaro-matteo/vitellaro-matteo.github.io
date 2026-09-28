@@ -478,8 +478,22 @@ tests.
   for the common cases (`invalid_client`, `invalid_grant`, HTTP 403/404), in the
   log and the step summary. Credentials are never logged; malformed ones (stray
   whitespace, pasted JSON, an access token instead of a refresh token) are
-  described without their value. `python -m scripts.spotify --check` runs the
-  same refresh and one playlist read locally.
+  described without their value. Because Spotify answers `invalid_client` both for a
+  wrong secret and for a refresh token from another app, a failed refresh with
+  that error is followed by a client credentials check of the ID and secret
+  alone, and the error names whichever it is. `python -m scripts.spotify --check` runs the
+  same refresh and one playlist read locally, and `--dump` saves the raw
+  playlist and track JSON to `.debug/spotify/` (gitignored) for comparing
+  Spotify's real responses with the parser.
+  Although `/playlists/{id}/items` is documented to return a paging object, it
+  returns the whole playlist object with the paging nested under `items`; the
+  parser accepts both, and the pre-2026 `tracks` key. Every field is
+  type-checked: local files, podcast episodes, removed tracks (`item: null`) and
+  malformed entries are skipped with a warning naming the entry and the reason,
+  so one odd entry never costs the feed. `<Track>` ids that aren't 22-character
+  Spotify ids (like the draft example's placeholder) are skipped when scanning.
+  When any fetcher fails unexpectedly, the log and a collapsible block in the step
+  summary carry the full traceback, redacted, with repo-relative paths.
 - **letterboxd.py:** RSS `https://letterboxd.com/LETTERBOXD_USERNAME/rss/`, the
   10 latest diary entries (lists are skipped): film title, year, member rating,
   watched date, poster and review text. Letterboxd's boilerplate paragraphs
