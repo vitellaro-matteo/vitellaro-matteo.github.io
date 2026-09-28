@@ -1,0 +1,92 @@
+{
+  "href": "https://api.spotify.com/v1/playlists/5vxDxvkiXxa8SCCT0MgJMI/items?offset=0&limit=50",
+  "limit": 50,
+  "next": "https://api.spotify.com/v1/playlists/5vxDxvkiXxa8SCCT0MgJMI/items?offset=50&limit=50",
+  "offset": 0,
+  "previous": null,
+  "total": 60,
+  "items": [
+    {
+      "is_local": false,
+      "item": {
+        "type": "track",
+        "id": "0RfczquLPHCwq7FuNDVLWi",
+        "name": "Helpless",
+        "artists": [{ "name": "The Cleaners From Venus" }],
+        "album": {
+          "images": [
+            {
+              "url": "https://i.scdn.co/image/ab67616d00001e02c1539b93d32c06c2ef9efe18",
+              "width": 300,
+              "height": 300
+            }
+          ]
+        },
+        "external_urls": { "spotify": "https://open.spotify.com/track/0RfczquLPHCwq7FuNDVLWi" }
+      }
+    },
+    {
+      "is_local": true,
+      "item": {
+        "type": "track",
+        "id": null,
+        "name": "voice memo",
+        "is_local": true,
+        "artists": [],
+        "album": { "images": [] },
+        "external_urls": {}
+      }
+    },
+    {
+      "is_local": false,
+      "item": {
+        "type": "episode",
+        "id": "512ojhOuo1ktJprKbVcKyQ",
+        "name": "A podcast episode",
+        "external_urls": { "spotify": "https://open.spotify.com/episode/512ojhOuo1ktJprKbVcKyQ" }
+      }
+    },
+    { "is_local": false, "item": null },
+    {
+      "is_local": false,
+      "track": {
+        "type": "track",
+        "id": "2B8BmgVUQKTWIOwWGr13Mh",
+        "name": "My Ideal",
+        "artists": [{ "name": "Mei Semones" }],
+        "album": {
+          "images": [
+            {
+              "url": "https://i.scdn.co/image/ab67616d0000b2732f85ae8b43438af45adbbd51",
+              "width": 640,
+              "height": 640
+            },
+            {
+              "url": "https://i.scdn.co/image/ab67616d000048512f85ae8b43438af45adbbd51",
+              "width": 64,
+              "height": 64
+            }
+          ]
+        },
+        "external_urls": { "spotify": "https://open.spotify.com/track/2B8BmgVUQKTWIOwWGr13Mh" }
+      }
+    },
+    "not an entry",
+    {
+      "is_local": false,
+      "item": { "type": "track", "id": "5Aueq9Aii18prdITRbm8Zf", "name": null, "artists": [] }
+    },
+    {
+      "is_local": false,
+      "item": {
+        "type": "track",
+        "id": "2FB0FzUWRmVKNBNWPhre8d",
+        "name": "2close2farr - BBC Maida Vale Session",
+        "artists": [{ "name": null }, "Momoko Gill", { "name": "Momoko Gill" }],
+        "album": { "images": null },
+        "external_urls": null
+      }
+    },
+    { "is_local": false, "item": "spotify:track:6PJTplIUEvnEKg32kUZ478" }
+  ]
+}

@@ -1,0 +1,291 @@
+{
+  "type": "playlist",
+  "id": "5vxDxvkiXxa8SCCT0MgJMI",
+  "name": "last week's finds",
+  "items": {
+    "href": "https://api.spotify.com/v1/playlists/5vxDxvkiXxa8SCCT0MgJMI/items?offset=0&limit=100",
+    "limit": 100,
+    "next": null,
+    "offset": 0,
+    "previous": null,
+    "total": 7,
+    "items": [
+      {
+        "added_at": "2026-09-28T11:19:41Z",
+        "is_local": false,
+        "item": {
+          "type": "track",
+          "id": "7uIy4cNPvKpDYaXfCcmuSe",
+          "name": "Can II",
+          "track": true,
+          "episode": false,
+          "is_local": false,
+          "artists": [
+            {
+              "name": "Hana Stretton"
+            }
+          ],
+          "album": {
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273452734fc18ad0cd05db9aea5",
+                "width": 640,
+                "height": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02452734fc18ad0cd05db9aea5",
+                "width": 300,
+                "height": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851452734fc18ad0cd05db9aea5",
+                "width": 64,
+                "height": 64
+              }
+            ]
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/7uIy4cNPvKpDYaXfCcmuSe"
+          }
+        }
+      },
+      {
+        "added_at": "2026-09-28T11:19:41Z",
+        "is_local": false,
+        "item": {
+          "type": "track",
+          "id": "5Aueq9Aii18prdITRbm8Zf",
+          "name": "Captains Flat",
+          "track": true,
+          "episode": false,
+          "is_local": false,
+          "artists": [
+            {
+              "name": "Hana Stretton"
+            }
+          ],
+          "album": {
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273452734fc18ad0cd05db9aea5",
+                "width": 640,
+                "height": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02452734fc18ad0cd05db9aea5",
+                "width": 300,
+                "height": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851452734fc18ad0cd05db9aea5",
+                "width": 64,
+                "height": 64
+              }
+            ]
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/5Aueq9Aii18prdITRbm8Zf"
+          }
+        }
+      },
+      {
+        "added_at": "2026-09-28T11:19:41Z",
+        "is_local": false,
+        "item": {
+          "type": "track",
+          "id": "0lsj8PU1ANb1Vwb07CZuAS",
+          "name": "Wake Me if I'm Asleep",
+          "track": true,
+          "episode": false,
+          "is_local": false,
+          "artists": [
+            {
+              "name": "Allegra Krieger"
+            }
+          ],
+          "album": {
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b2733e281837c11d392e52916eec",
+                "width": 640,
+                "height": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e023e281837c11d392e52916eec",
+                "width": 300,
+                "height": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d000048513e281837c11d392e52916eec",
+                "width": 64,
+                "height": 64
+              }
+            ]
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/0lsj8PU1ANb1Vwb07CZuAS"
+          }
+        }
+      },
+      {
+        "added_at": "2026-09-28T11:19:41Z",
+        "is_local": false,
+        "item": {
+          "type": "track",
+          "id": "6PJTplIUEvnEKg32kUZ478",
+          "name": "I Lived in Trees",
+          "track": true,
+          "episode": false,
+          "is_local": false,
+          "artists": [
+            {
+              "name": "Mark Fry"
+            },
+            {
+              "name": "The A. Lords"
+            }
+          ],
+          "album": {
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273cfc914f2181aa0c179dbd368",
+                "width": 640,
+                "height": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02cfc914f2181aa0c179dbd368",
+                "width": 300,
+                "height": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851cfc914f2181aa0c179dbd368",
+                "width": 64,
+                "height": 64
+              }
+            ]
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/6PJTplIUEvnEKg32kUZ478"
+          }
+        }
+      },
+      {
+        "added_at": "2026-09-28T11:19:41Z",
+        "is_local": false,
+        "item": {
+          "type": "track",
+          "id": "2FB0FzUWRmVKNBNWPhre8d",
+          "name": "2close2farr - BBC Maida Vale Session",
+          "track": true,
+          "episode": false,
+          "is_local": false,
+          "artists": [
+            {
+              "name": "Momoko Gill"
+            }
+          ],
+          "album": {
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b2732cec7d6c4a35f324748d9116",
+                "width": 640,
+                "height": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e022cec7d6c4a35f324748d9116",
+                "width": 300,
+                "height": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d000048512cec7d6c4a35f324748d9116",
+                "width": 64,
+                "height": 64
+              }
+            ]
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/2FB0FzUWRmVKNBNWPhre8d"
+          }
+        }
+      },
+      {
+        "added_at": "2026-09-28T11:19:41Z",
+        "is_local": false,
+        "item": {
+          "type": "track",
+          "id": "2B8BmgVUQKTWIOwWGr13Mh",
+          "name": "My Ideal",
+          "track": true,
+          "episode": false,
+          "is_local": false,
+          "artists": [
+            {
+              "name": "Mei Semones"
+            }
+          ],
+          "album": {
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b2732f85ae8b43438af45adbbd51",
+                "width": 640,
+                "height": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e022f85ae8b43438af45adbbd51",
+                "width": 300,
+                "height": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d000048512f85ae8b43438af45adbbd51",
+                "width": 64,
+                "height": 64
+              }
+            ]
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/2B8BmgVUQKTWIOwWGr13Mh"
+          }
+        }
+      },
+      {
+        "added_at": "2026-09-28T11:19:41Z",
+        "is_local": false,
+        "item": {
+          "type": "track",
+          "id": "0RfczquLPHCwq7FuNDVLWi",
+          "name": "Helpless",
+          "track": true,
+          "episode": false,
+          "is_local": false,
+          "artists": [
+            {
+              "name": "The Cleaners From Venus"
+            }
+          ],
+          "album": {
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273c1539b93d32c06c2ef9efe18",
+                "width": 640,
+                "height": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02c1539b93d32c06c2ef9efe18",
+                "width": 300,
+                "height": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851c1539b93d32c06c2ef9efe18",
+                "width": 64,
+                "height": 64
+              }
+            ]
+          },
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/0RfczquLPHCwq7FuNDVLWi"
+          }
+        }
+      }
+    ]
+  }
+}

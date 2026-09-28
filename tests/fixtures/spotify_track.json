@@ -1,0 +1,38 @@
+{
+  "type": "track",
+  "id": "6PJTplIUEvnEKg32kUZ478",
+  "name": "I Lived in Trees",
+  "track": true,
+  "episode": false,
+  "is_local": false,
+  "artists": [
+    {
+      "name": "Mark Fry"
+    },
+    {
+      "name": "The A. Lords"
+    }
+  ],
+  "album": {
+    "images": [
+      {
+        "url": "https://i.scdn.co/image/ab67616d0000b273cfc914f2181aa0c179dbd368",
+        "width": 640,
+        "height": 640
+      },
+      {
+        "url": "https://i.scdn.co/image/ab67616d00001e02cfc914f2181aa0c179dbd368",
+        "width": 300,
+        "height": 300
+      },
+      {
+        "url": "https://i.scdn.co/image/ab67616d00004851cfc914f2181aa0c179dbd368",
+        "width": 64,
+        "height": 64
+      }
+    ]
+  },
+  "external_urls": {
+    "spotify": "https://open.spotify.com/track/6PJTplIUEvnEKg32kUZ478"
+  }
+}

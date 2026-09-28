@@ -5,8 +5,15 @@ working after a song leaves the playlist.
 
     python -m scripts.spotify --check
 
-checks the three Spotify secrets locally (one token refresh, one playlist read)
-and prints only OK/failed with Spotify's error and a hint, never the values.
+checks the three Spotify secrets locally (the client ID and secret on their own,
+then one token refresh and one playlist read) and prints only OK/failed with
+Spotify's error and a hint, never the values.
+
+    python -m scripts.spotify --dump
+
+saves the raw JSON of the playlist's first page and of one track to
+.debug/spotify/ (gitignored), for comparing Spotify's real responses with the
+parser. It prints only the file paths.
 """
 
 from __future__ import annotations
@@ -40,8 +47,11 @@ from scripts.site_config import load_site_config, require_setting
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 API = "https://api.spotify.com/v1"
 CONTENT_DIR = ROOT / "src" / "content"
+DEBUG_DIR = ROOT / ".debug" / "spotify"
 
 _TRACK_EMBED = re.compile(r"<Track\b[^>]*?\bid=[\"']([A-Za-z0-9]+)[\"']")
+# Spotify ids are 22 base62 characters; anything else gets "400 Invalid base62 id".
+_SPOTIFY_ID = re.compile(r"[0-9A-Za-z]{22}")
 _HEX_32 = re.compile(r"[0-9a-f]{32}")
 
 TOKEN_HINTS = {
@@ -54,6 +64,28 @@ TOKEN_HINTS = {
         "client ID; create a new one with `python -m scripts.spotify_auth`"
     ),
 }
+
+# The client credentials grant needs no user token, so its answer isolates the
+# client ID + secret pair. Spotify words the two failures differently.
+CLIENT_HINTS = {
+    "Failed to get client": (
+        "Spotify doesn't know this client ID: check SPOTIFY_CLIENT_ID for typos, and "
+        "that the app still exists in the dashboard"
+    ),
+    "Invalid client": (
+        "Spotify knows this client ID but rejects the secret: copy the current client "
+        "secret from the app's Settings in the dashboard (rotating it replaces the old "
+        "one) into SPOTIFY_CLIENT_SECRET"
+    ),
+}
+
+# The refresh was refused as invalid_client although the ID and secret pass on
+# their own: Spotify checks the token first, so the token belongs to another app.
+TOKEN_FROM_OTHER_APP = (
+    "the client ID and secret are valid together, so the refresh token was issued "
+    "for a different app (for example another repo's .spotify_cache): create one for "
+    "this app with `python -m scripts.spotify_auth`"
+)
 
 API_HINTS = {
     401: "the access token was rejected; run the check again",
@@ -84,14 +116,23 @@ class SpotifyFeed(TypedDict):
 
 
 class SpotifyAuthError(Exception):
-    """The token endpoint refused the refresh. Carries Spotify's error, never credentials."""
+    """The token endpoint refused a request. Carries Spotify's error, never credentials."""
 
-    def __init__(self, status: int, error: str, description: str) -> None:
+    def __init__(
+        self,
+        status: int,
+        error: str,
+        description: str,
+        *,
+        hint: str | None = None,
+        stage: str = "token refresh",
+    ) -> None:
         self.status = status
         self.error = error
         self.description = description
-        self.hint = TOKEN_HINTS.get(error, description)
-        message = f"token refresh failed (HTTP {status}): {error}: {description}"
+        self.stage = stage
+        self.hint = hint or TOKEN_HINTS.get(error, description)
+        message = f"{stage} failed (HTTP {status}): {error}: {description}"
         if self.hint != description:
             message += f". Hint: {self.hint}"
         super().__init__(message)
@@ -162,51 +203,185 @@ def credential_warnings(name: str, value: str) -> list[str]:
 
 
 def embedded_track_ids(content_dir: Path = CONTENT_DIR) -> list[str]:
-    """Ids from every <Track id="…"> in the content, in first-seen order."""
+    """
+    Ids from every <Track id="…"> in the content, in first-seen order. Ids that
+    can't be Spotify ids (like the draft example's placeholder) are skipped with
+    a warning rather than costing a failed request.
+    """
     ids: dict[str, None] = {}
     for path in sorted(content_dir.rglob("*.mdx")):
         for track_id in _TRACK_EMBED.findall(path.read_text(encoding="utf-8")):
-            ids.setdefault(track_id, None)
+            if _SPOTIFY_ID.fullmatch(track_id):
+                ids.setdefault(track_id, None)
+            else:
+                log.warning(
+                    'spotify: skipped <Track id="%s"> in %s: not a Spotify track id',
+                    track_id,
+                    path.name,
+                )
     return list(ids)
 
 
-def _cover_url(album: JsonObject) -> str | None:
+def _text(value: object) -> str | None:
+    """A non-empty string, or None for anything else (null, numbers, blanks)."""
+    return value.strip() if isinstance(value, str) and value.strip() else None
+
+
+def _cover_url(album: object) -> str | None:
     """The smallest album image that is still at least 300px, else the largest."""
-    images = sorted(
-        (image for image in album.get("images") or [] if image.get("url")),
-        key=lambda image: image.get("width") or 0,
-    )
-    for image in images:
-        if (image.get("width") or 0) >= 300:
-            return str(image["url"])
-    return str(images[-1]["url"]) if images else None
+    raw_images = album.get("images") if isinstance(album, dict) else None
+    images: list[tuple[int, str]] = []
+    for image in raw_images if isinstance(raw_images, list) else []:
+        url = _text(image.get("url")) if isinstance(image, dict) else None
+        if url:
+            width = image.get("width")
+            images.append((width if isinstance(width, int) else 0, url))
+    images.sort()
+    for width, url in images:
+        if width >= 300:
+            return url
+    return images[-1][1] if images else None
 
 
-def parse_track(raw: JsonObject, images: ImageSaver) -> Track | None:
-    """A track object from the Web API, or None for local files and podcast episodes."""
-    track_id = raw.get("id")
-    if raw.get("type", "track") != "track" or not track_id:
+def parse_track(raw: object, images: ImageSaver) -> Track | None:
+    """
+    A track object, from a playlist entry or /tracks/{id}. None when it isn't a
+    playable track (a podcast episode, a local file) or lacks an id or title.
+    """
+    if not isinstance(raw, dict):
         return None
+    if raw.get("type", "track") != "track" or raw.get("is_local") is True:
+        return None
+    track_id = _text(raw.get("id"))
+    title = _text(raw.get("name"))
+    if not track_id or not title:
+        return None
+    raw_artists = raw.get("artists")
+    artists = [
+        name
+        for artist in (raw_artists if isinstance(raw_artists, list) else [])
+        if isinstance(artist, dict) and (name := _text(artist.get("name")))
+    ]
+    links = raw.get("external_urls")
+    url = _text(links.get("spotify")) if isinstance(links, dict) else None
     return {
-        "id": str(track_id),
-        "title": str(raw.get("name", "")),
-        "artists": [str(artist["name"]) for artist in raw.get("artists") or []],
-        "url": str((raw.get("external_urls") or {}).get("spotify", "")),
-        "cover": images.save(_cover_url(raw.get("album") or {}), key=f"album:{track_id}"),
+        "id": track_id,
+        "title": title,
+        "artists": artists,
+        "url": url or f"https://open.spotify.com/track/{track_id}",
+        "cover": images.save(_cover_url(raw.get("album")), key=f"album:{track_id}"),
     }
 
 
-def parse_playlist_items(pages: Iterable[JsonObject], images: ImageSaver) -> list[Track]:
+def playlist_paging(page: object) -> JsonObject | None:
+    """
+    The paging object (`{"items": [...], "next": …, "total": …}`) in a playlist
+    response. /playlists/{id}/items is documented to return one, but in practice
+    it returns the whole playlist object with the paging nested under "items"
+    ("tracks" before February 2026), so all three shapes are accepted.
+    """
+    if not isinstance(page, dict):
+        return None
+    if isinstance(page.get("items"), list):
+        return page
+    for key in ("items", "tracks"):
+        nested = page.get(key)
+        if isinstance(nested, dict) and isinstance(nested.get("items"), list):
+            return nested
+    return None
+
+
+def _entry_track(entry: JsonObject) -> object:
+    """The track in a playlist entry: under "item" since February 2026, "track" before."""
+    raw = entry.get("item")
+    return raw if raw is not None else entry.get("track")
+
+
+def _skip_reason(entry: object) -> str:
+    """Why a playlist entry yields no track, for the warning."""
+    if not isinstance(entry, dict):
+        return f"not an object ({type(entry).__name__})"
+    if entry.get("is_local") is True:
+        return "a local file"
+    raw = _entry_track(entry)
+    if raw is None:
+        return "the track was removed or is unavailable"
+    if not isinstance(raw, dict):
+        return f"unexpected track value ({type(raw).__name__})"
+    kind = raw.get("type", "track")
+    if kind != "track":
+        return f"not a track (type: {kind})"
+    return "no id or title"
+
+
+def parse_playlist_items(pages: Iterable[object], images: ImageSaver) -> list[Track]:
+    """
+    Tracks from playlist responses, in order. An entry that isn't a usable track
+    is skipped with a warning; one odd entry never costs the whole feed.
+    """
     tracks: list[Track] = []
+    position = 0
     for page in pages:
-        for entry in page.get("items") or []:
-            # Since February 2026 each entry holds the track under "item"; apps on
-            # the older API shape still get "track".
-            raw = entry.get("item") or entry.get("track")
-            track = parse_track(raw, images) if raw else None
+        paging = playlist_paging(page)
+        if paging is None:
+            keys = sorted(page) if isinstance(page, dict) else type(page).__name__
+            raise ValueError(f"unexpected playlist response from Spotify: {keys}")
+        for entry in paging["items"]:
+            position += 1
+            raw = _entry_track(entry) if isinstance(entry, dict) else None
+            local = isinstance(entry, dict) and entry.get("is_local") is True
+            track = None if local else parse_track(raw, images)
             if track:
                 tracks.append(track)
+            else:
+                log.warning("spotify: skipped playlist entry %d: %s", position, _skip_reason(entry))
     return tracks
+
+
+def verify_client(
+    session: requests.Session, client_id: str, secret: str
+) -> SpotifyAuthError | None:
+    """
+    Checks the client ID and secret on their own with the client credentials
+    grant. Returns the error if Spotify rejects the pair, else None.
+    """
+    response = session.post(
+        TOKEN_URL,
+        data={"grant_type": "client_credentials"},
+        auth=(client_id, secret),
+        timeout=TIMEOUT_SECONDS,
+    )
+    if response.ok:
+        return None
+    error = parse_token_error(response.status_code, response.text)
+    return SpotifyAuthError(
+        error.status,
+        error.error,
+        error.description,
+        hint=CLIENT_HINTS.get(error.description, error.hint),
+        stage="client ID + secret check",
+    )
+
+
+def refresh_access_token(
+    session: requests.Session, client_id: str, secret: str, refresh: str
+) -> str:
+    """
+    An access token from the refresh token. When Spotify answers invalid_client,
+    it doesn't say whether the secret is wrong or the token belongs to another
+    app, so the pair is checked on its own to raise the error that says which.
+    """
+    try:
+        return access_token(session, client_id, secret, refresh)
+    except SpotifyAuthError as error:
+        if error.error != "invalid_client":
+            raise
+        client_error = verify_client(session, client_id, secret)
+        if client_error is not None:
+            raise client_error from error
+        raise SpotifyAuthError(
+            error.status, error.error, error.description, hint=TOKEN_FROM_OTHER_APP
+        ) from error
 
 
 def access_token(session: requests.Session, client_id: str, secret: str, refresh: str) -> str:
@@ -237,10 +412,13 @@ def _playlist_pages(
     session: requests.Session, playlist_id: str, headers: dict[str, str]
 ) -> Iterable[JsonObject]:
     url: str | None = f"{API}/playlists/{playlist_id}/items?limit=50"
-    while url:
+    seen: set[str] = set()
+    while url and url not in seen:
+        seen.add(url)
         page = _api_get(session, url, headers, "the playlist")
         yield page
-        url = page.get("next")
+        paging = playlist_paging(page)
+        url = _text(paging.get("next")) if paging else None
 
 
 def _credentials() -> tuple[str, str, str]:
@@ -257,7 +435,7 @@ def fetch(session: requests.Session, config: dict[str, str], images: ImageSaver)
     client_id, secret, refresh = _credentials()
 
     try:
-        token = access_token(session, client_id, secret, refresh)
+        token = refresh_access_token(session, client_id, secret, refresh)
     except SpotifyAuthError as error:
         log.error("spotify: hint: %s", error.hint)
         raise
@@ -280,6 +458,8 @@ def fetch(session: requests.Session, config: dict[str, str], images: ImageSaver)
         track = parse_track(raw, images)
         if track:
             embedded.append(track)
+        else:
+            log.warning("spotify: embedded track %s is not a playable track", track_id)
 
     feed: SpotifyFeed = {
         "fetched_at": utc_now(),
@@ -306,13 +486,23 @@ def _read_credential(name: str, prompt: Prompt, say: Callable[[str], None]) -> s
     return value
 
 
+def _report(say: Callable[[str], None], step: str, error: SpotifyAuthError) -> None:
+    say(f"{step}: failed")
+    say(f"  error: {error.error}")
+    say(f"  description: {error.description}")
+    say(f"  hint: {error.hint}")
+
+
 def run_check(
     session: requests.Session,
     playlist_id: str,
     prompt: Prompt = getpass.getpass,
     say: Callable[[str], None] = print,
 ) -> bool:
-    """Refreshes a token and reads one playlist item, reporting only outcomes."""
+    """
+    Checks the client ID and secret on their own, then refreshes a token and
+    reads one playlist item, reporting only outcomes.
+    """
     say("Spotify check (values are never printed)")
     names = ("SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN")
     values = [_read_credential(name, prompt, say) for name in names]
@@ -325,12 +515,23 @@ def run_check(
 
     client_id, secret, refresh = values
     try:
+        client_error = verify_client(session, client_id, secret)
+    except requests.RequestException as error:
+        say(f"client ID + secret: failed ({type(error).__name__}: could not reach Spotify)")
+        return False
+    if client_error is not None:
+        _report(say, "client ID + secret", client_error)
+        return False
+    say("client ID + secret: OK")
+
+    try:
         token = access_token(session, client_id, secret, refresh)
     except SpotifyAuthError as error:
-        say("token refresh: failed")
-        say(f"  error: {error.error}")
-        say(f"  description: {error.description}")
-        say(f"  hint: {error.hint}")
+        if error.error == "invalid_client":
+            error = SpotifyAuthError(
+                error.status, error.error, error.description, hint=TOKEN_FROM_OTHER_APP
+            )
+        _report(say, "token refresh", error)
         return False
     except requests.RequestException as error:
         say(f"token refresh: failed ({type(error).__name__}: could not reach Spotify)")
@@ -349,28 +550,103 @@ def run_check(
     except requests.RequestException as error:
         say(f"playlist read: failed ({type(error).__name__}: could not reach Spotify)")
         return False
-    say(f"playlist read: OK ({page.get('total', '?')} items)")
+    paging = playlist_paging(page)
+    if paging is None:
+        say("playlist read: failed (Spotify's response has no list of items)")
+        return False
+    say(f"playlist read: OK ({paging.get('total', '?')} items)")
     return True
+
+
+# ---------- raw responses: python -m scripts.spotify --dump ----------
+
+
+def first_track_id(page: object) -> str | None:
+    """The id of the first real track on a playlist page, in any of its shapes."""
+    paging = playlist_paging(page)
+    for entry in paging["items"] if paging else []:
+        raw = _entry_track(entry) if isinstance(entry, dict) else None
+        if isinstance(raw, dict) and raw.get("type", "track") == "track":
+            track_id = _text(raw.get("id"))
+            if track_id and _SPOTIFY_ID.fullmatch(track_id):
+                return track_id
+    return None
+
+
+def _save_raw(response: requests.Response, path: Path, say: Callable[[str], None]) -> None:
+    """Writes a response body as indented JSON (or as-is if it isn't JSON)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        body = json.dumps(response.json(), ensure_ascii=False, indent=2) + "\n"
+    except ValueError:
+        body = response.text
+    path.write_text(body, encoding="utf-8")
+    status = "" if response.ok else f" (HTTP {response.status_code})"
+    say(f"{path}{status}")
+
+
+def run_dump(
+    session: requests.Session,
+    playlist_id: str,
+    out_dir: Path = DEBUG_DIR,
+    prompt: Prompt = getpass.getpass,
+    say: Callable[[str], None] = print,
+) -> bool:
+    """
+    Saves the raw playlist page and one track response. Credentials come from
+    the environment or a hidden prompt and are never printed or written.
+    """
+    names = ("SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN")
+    client_id, secret, refresh = (_read_credential(name, prompt, lambda _: None) for name in names)
+    try:
+        token = refresh_access_token(session, client_id, secret, refresh)
+    except SpotifyAuthError as error:
+        say(f"failed: {error}")
+        return False
+    headers = {"Authorization": f"Bearer {token}"}
+
+    playlist = session.get(
+        f"{API}/playlists/{playlist_id}/items?limit=50", headers=headers, timeout=TIMEOUT_SECONDS
+    )
+    _save_raw(playlist, out_dir / "playlist_items.json", say)
+
+    try:
+        page: object = playlist.json()
+    except ValueError:
+        page = None
+    track_id = first_track_id(page) or next(iter(embedded_track_ids()), None)
+    if track_id is None:
+        say("no track id found in the playlist or the content; skipped /tracks/{id}")
+        return playlist.ok
+    track = session.get(f"{API}/tracks/{track_id}", headers=headers, timeout=TIMEOUT_SECONDS)
+    _save_raw(track, out_dir / f"track_{track_id}.json", say)
+    return playlist.ok and track.ok
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="python -m scripts.spotify",
-        description="Check the Spotify secrets without printing them.",
+        description="Check the Spotify secrets or save raw responses, without printing secrets.",
     )
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument(
         "--check",
         action="store_true",
-        required=True,
-        help="refresh a token and read the playlist from site.config.ts",
+        help="check the credentials, refresh a token and read the playlist from site.config.ts",
     )
-    parser.parse_args(argv)
+    mode.add_argument(
+        "--dump",
+        action="store_true",
+        help=f"save the raw playlist and track JSON to {DEBUG_DIR.relative_to(ROOT).as_posix()}/",
+    )
+    args = parser.parse_args(argv)
     try:
         playlist_id = require_setting(load_site_config(), "spotifyPlaylistId")
     except SkipFetcher as reason:
         print(f"failed: {reason}")
         return 1
-    return 0 if run_check(http_session(), playlist_id) else 1
+    run = run_dump if args.dump else run_check
+    return 0 if run(http_session(), playlist_id) else 1
 
 
 if __name__ == "__main__":

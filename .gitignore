@@ -9,6 +9,9 @@ node_modules/
 src/data/live/
 public/media/feeds/
 
+# local debugging output (e.g. python -m scripts.spotify --dump)
+.debug/
+
 # python
 __pycache__/
 *.pyc

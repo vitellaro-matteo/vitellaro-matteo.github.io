@@ -16,8 +16,12 @@ from scripts.spotify import (
     api_error_message,
     credential_warnings,
     fetch,
+    first_track_id,
     parse_token_error,
+    refresh_access_token,
     run_check,
+    run_dump,
+    verify_client,
 )
 from tests.conftest import fixture_text
 
@@ -28,18 +32,35 @@ ACCESS = "BQ" + "a" * 100
 PLAYLIST = "37i9dQZF1DXexample"
 
 
-class SpotifyStub(requests.Session):
-    """Answers Spotify URLs with canned responses and keeps every prepared request."""
+OK_CLIENT = (200, '{"access_token": "client-only", "token_type": "Bearer"}')
 
-    def __init__(self, token: tuple[int, str], playlist: tuple[int, str] | None = None) -> None:
+
+class SpotifyStub(requests.Session):
+    """
+    Answers Spotify URLs with canned responses and keeps every prepared request.
+    `client` answers the client credentials grant, `token` the refresh token grant.
+    """
+
+    def __init__(
+        self,
+        token: tuple[int, str],
+        playlist: tuple[int, str] | None = None,
+        client: tuple[int, str] = OK_CLIENT,
+    ) -> None:
         super().__init__()
         self.token = token
+        self.client = client
         self.playlist = playlist or (200, '{"total": 12, "items": [], "next": null}')
         self.sent: list[requests.PreparedRequest] = []
 
     def send(self, request: requests.PreparedRequest, **kwargs: Any) -> requests.Response:  # noqa: ANN401
         self.sent.append(request)
-        status, body = self.token if "accounts.spotify.com" in str(request.url) else self.playlist
+        if "accounts.spotify.com" not in str(request.url):
+            status, body = self.playlist
+        elif "grant_type=client_credentials" in str(request.body):
+            status, body = self.client
+        else:
+            status, body = self.token
         response = requests.Response()
         response.status_code = status
         response._content = body.encode()
@@ -59,11 +80,10 @@ def ok_token() -> tuple[int, str]:
 def test_invalid_client_points_at_the_client_id_or_rotated_secret() -> None:
     error = parse_token_error(400, fixture_text("spotify_token_invalid_client.json"))
     assert error.error == "invalid_client"
-    assert error.description == "Invalid client secret"
+    assert error.description == "Invalid client"
     assert "secret was rotated" in error.hint
     assert str(error) == (
-        "token refresh failed (HTTP 400): invalid_client: Invalid client secret. "
-        f"Hint: {error.hint}"
+        f"token refresh failed (HTTP 400): invalid_client: Invalid client. Hint: {error.hint}"
     )
 
 
@@ -115,6 +135,65 @@ def test_failed_refresh_raises_with_spotifys_error_and_no_credentials() -> None:
     assert "invalid_client" in message
     for value in (CLIENT_ID, SECRET, REFRESH):
         assert value not in message
+
+
+def test_client_check_uses_the_client_credentials_grant() -> None:
+    session = SpotifyStub(ok_token())
+    assert verify_client(session, CLIENT_ID, SECRET) is None
+
+    [request] = session.sent
+    assert request.body == "grant_type=client_credentials"
+    expected = base64.b64encode(f"{CLIENT_ID}:{SECRET}".encode()).decode()
+    assert request.headers["Authorization"] == f"Basic {expected}"
+
+
+def test_refresh_diagnoses_a_rejected_secret() -> None:
+    invalid = (400, fixture_text("spotify_token_invalid_client.json"))
+    session = SpotifyStub(invalid, client=invalid)
+    with pytest.raises(SpotifyAuthError) as caught:
+        refresh_access_token(session, CLIENT_ID, SECRET, REFRESH)
+    assert caught.value.stage == "client ID + secret check"
+    assert "rejects the secret" in caught.value.hint
+    assert len(session.sent) == 2
+
+
+def test_refresh_diagnoses_a_token_from_another_app() -> None:
+    session = SpotifyStub((400, fixture_text("spotify_token_invalid_client.json")))
+    with pytest.raises(SpotifyAuthError) as caught:
+        refresh_access_token(session, CLIENT_ID, SECRET, REFRESH)
+    assert caught.value.stage == "token refresh"
+    assert "issued for a different app" in caught.value.hint
+
+
+def test_refresh_skips_the_client_check_for_other_errors() -> None:
+    session = SpotifyStub((400, fixture_text("spotify_token_invalid_grant.json")))
+    with pytest.raises(SpotifyAuthError, match="invalid_grant"):
+        refresh_access_token(session, CLIENT_ID, SECRET, REFRESH)
+    assert len(session.sent) == 1
+
+
+def test_step_summary_names_a_rejected_secret(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("SPOTIFY_CLIENT_ID", CLIENT_ID)
+    monkeypatch.setenv("SPOTIFY_CLIENT_SECRET", SECRET)
+    monkeypatch.setenv("SPOTIFY_REFRESH_TOKEN", REFRESH)
+    invalid = (400, fixture_text("spotify_token_invalid_client.json"))
+    session = SpotifyStub(invalid, client=invalid)
+
+    outcome = run_fetcher(
+        Fetcher("spotify", fetch),
+        session,
+        {"spotifyPlaylistId": PLAYLIST},
+        tmp_path / "live",
+        tmp_path / "media",
+    )
+
+    table = summary_table([outcome])
+    assert "client ID + secret check failed (HTTP 400): invalid_client: Invalid client" in table
+    assert "rejects the secret" in table
+    for value in (CLIENT_ID, SECRET, REFRESH):
+        assert value not in table
 
 
 def test_step_summary_and_log_show_the_error_and_hint(
@@ -224,19 +303,50 @@ def test_check_prints_spotifys_error_and_hint(monkeypatch: pytest.MonkeyPatch) -
     monkeypatch.setenv("SPOTIFY_CLIENT_ID", CLIENT_ID)
     monkeypatch.delenv("SPOTIFY_CLIENT_SECRET", raising=False)
     monkeypatch.delenv("SPOTIFY_REFRESH_TOKEN", raising=False)
-    session = SpotifyStub((400, fixture_text("spotify_token_invalid_client.json")))
+    invalid = (400, fixture_text("spotify_token_invalid_client.json"))
+    session = SpotifyStub(invalid, client=invalid)
 
     ok, output = run(session, {"SPOTIFY_CLIENT_SECRET": SECRET, "SPOTIFY_REFRESH_TOKEN": REFRESH})
 
     assert not ok
     assert "SPOTIFY_CLIENT_SECRET: entered at the prompt" in output
-    assert "token refresh: failed" in output
+    assert "client ID + secret: failed" in output
     assert "  error: invalid_client" in output
-    assert "  description: Invalid client secret" in output
-    assert "  hint: the client ID or secret is wrong" in output
-    assert "playlist read" not in output
+    assert "  description: Invalid client" in output
+    assert "  hint: Spotify knows this client ID but rejects the secret" in output
+    assert "token refresh" not in output
     for value in (CLIENT_ID, SECRET, REFRESH):
         assert value not in output
+
+
+def test_check_names_an_unknown_client_id(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SPOTIFY_CLIENT_ID", CLIENT_ID)
+    monkeypatch.setenv("SPOTIFY_CLIENT_SECRET", SECRET)
+    monkeypatch.setenv("SPOTIFY_REFRESH_TOKEN", REFRESH)
+    unknown = (400, fixture_text("spotify_token_unknown_client.json"))
+
+    ok, output = run(SpotifyStub(ok_token(), client=unknown))
+
+    assert not ok
+    assert "  description: Failed to get client" in output
+    assert "  hint: Spotify doesn't know this client ID" in output
+
+
+def test_check_blames_the_refresh_token_when_the_pair_is_valid(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SPOTIFY_CLIENT_ID", CLIENT_ID)
+    monkeypatch.setenv("SPOTIFY_CLIENT_SECRET", SECRET)
+    monkeypatch.setenv("SPOTIFY_REFRESH_TOKEN", REFRESH)
+    session = SpotifyStub((400, fixture_text("spotify_token_invalid_client.json")))
+
+    ok, output = run(session)
+
+    assert not ok
+    assert "client ID + secret: OK" in output
+    assert "token refresh: failed" in output
+    assert "  hint: the client ID and secret are valid together" in output
+    assert "issued for a different app" in output
 
 
 def test_check_reports_a_failed_playlist_read(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -250,3 +360,88 @@ def test_check_reports_a_failed_playlist_read(monkeypatch: pytest.MonkeyPatch) -
     assert "token refresh: OK" in output
     assert "playlist read: failed (HTTP 403)" in output
     assert "hint: this Spotify account may not use the app" in output
+
+
+# ---------- python -m scripts.spotify --dump ----------
+
+
+def test_first_track_id_skips_entries_it_cannot_read() -> None:
+    page = {
+        "items": [
+            "not an entry",
+            {"item": None},
+            {"item": {"type": "episode", "id": "episode1"}},
+            {"track": {"type": "track", "id": None}},
+            {"track": {"type": "track", "id": "4uLU6hMCjMI75M1A2tKUQC"}},
+        ]
+    }
+    assert first_track_id(page) == "4uLU6hMCjMI75M1A2tKUQC"
+    assert first_track_id({"items": "oops"}) is None
+    assert first_track_id("not a page") is None
+
+
+def test_dump_writes_raw_responses_and_prints_only_paths(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("SPOTIFY_CLIENT_ID", CLIENT_ID)
+    monkeypatch.setenv("SPOTIFY_CLIENT_SECRET", SECRET)
+    monkeypatch.setenv("SPOTIFY_REFRESH_TOKEN", REFRESH)
+    page = fixture_text("spotify_playlist.json")
+    lines: list[str] = []
+
+    ok = run_dump(SpotifyStub(ok_token(), (200, page)), PLAYLIST, tmp_path, say=lines.append)
+
+    assert ok
+    assert lines == [
+        str(tmp_path / "playlist_items.json"),
+        str(tmp_path / "track_7uIy4cNPvKpDYaXfCcmuSe.json"),
+    ]
+    assert (tmp_path / "playlist_items.json").read_text(encoding="utf-8").startswith("{")
+    written = "".join(p.read_text(encoding="utf-8") for p in tmp_path.iterdir())
+    for value in (CLIENT_ID, SECRET, REFRESH, ACCESS):
+        assert value not in written
+        assert all(value not in line for line in lines)
+
+
+def test_dump_reports_a_failed_refresh_without_values(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("SPOTIFY_CLIENT_ID", CLIENT_ID)
+    monkeypatch.setenv("SPOTIFY_CLIENT_SECRET", SECRET)
+    monkeypatch.setenv("SPOTIFY_REFRESH_TOKEN", REFRESH)
+    lines: list[str] = []
+
+    session = SpotifyStub((400, fixture_text("spotify_token_invalid_grant.json")))
+    assert not run_dump(session, PLAYLIST, tmp_path, say=lines.append)
+
+    assert lines[0].startswith("failed: token refresh failed (HTTP 400): invalid_grant")
+    assert not tmp_path.joinpath("playlist_items.json").exists()
+
+
+# ---------- regression: the real playlist shape through fetch and fetch_all ----------
+
+
+def test_fetch_handles_the_real_playlist_shape(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("SPOTIFY_CLIENT_ID", CLIENT_ID)
+    monkeypatch.setenv("SPOTIFY_CLIENT_SECRET", SECRET)
+    monkeypatch.setenv("SPOTIFY_REFRESH_TOKEN", REFRESH)
+    session = SpotifyStub(ok_token(), (200, fixture_text("spotify_playlist.json")))
+
+    outcome = run_fetcher(
+        Fetcher("spotify", fetch),
+        session,
+        {"spotifyPlaylistId": PLAYLIST},
+        tmp_path / "live",
+        tmp_path / "media",
+    )
+
+    assert outcome.status == "updated", outcome.detail
+    assert outcome.detail.startswith("7 tracks")
+
+
+def test_reads_the_real_invalid_id_error() -> None:
+    assert (
+        api_error_message(fixture_text("spotify_api_error_invalid_id.json")) == "Invalid base62 id"
+    )
