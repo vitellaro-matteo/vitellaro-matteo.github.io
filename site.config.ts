@@ -6,11 +6,11 @@ export const site = {
   /** {{SITE_NAME}} — lowercase wordmark */
   name: 'matteo',
   /** {{TAGLINE}} */
-  tagline: 'a slow feed',
+  tagline: 'my slow feed',
   /** {{HERO_TITLE}} */
-  heroTitle: 'A quiet shelf for the songs, films, books and small things I keep finding.',
+  heroTitle: 'A shelf for the small things I keep finding.',
   /** {{HERO_BIO}} — 1–2 sentences about me */
-  heroBio: 'HERO_BIO — one or two sentences about me go here.',
+  heroBio: 'Hello! I like to share the things I find interesting, from music to movies and books.',
   /** {{SITE_URL}} — origin only, e.g. https://<user>.github.io or a custom domain */
   url: 'https://vitellaro-matteo.github.io',
   /** {{BASE_PATH}} — "/" for a user site or custom domain, "/<repo>" for a project site */
@@ -19,15 +19,15 @@ export const site = {
   timezone: 'Europe/Berlin',
 
   /** {{SPOTIFY_PLAYLIST_ID}} — the "last week's finds" playlist */
-  spotifyPlaylistId: 'SPOTIFY_PLAYLIST_ID',
+  spotifyPlaylistId: '5vxDxvkiXxa8SCCT0MgJMI?si=afdc784d9f024ba2',
   /** {{LETTERBOXD_USERNAME}} */
-  letterboxdUsername: 'LETTERBOXD_USERNAME',
+  letterboxdUsername: 'matte0vit',
   /** {{GOODREADS_USER_ID}} — numeric id from the profile URL */
-  goodreadsUserId: 'GOODREADS_USER_ID',
+  goodreadsUserId: 'matteovit',
   /** {{INSTAGRAM_USERNAME}} */
   instagramUsername: 'fuzetea_esports',
   /** {{GITHUB_USERNAME}} */
-  githubUsername: 'GITHUB_USERNAME',
+  githubUsername: 'vitellaro-matteo',
 };
 
 export const links = {
