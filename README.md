@@ -1,110 +1,140 @@
 # a slow feed
 
-Matteo's personal site: an Astro static site. The full design and behaviour spec
-is in [SITE_SPEC.md](SITE_SPEC.md).
+A personal site that quietly collects what I listen to, watch, read, photograph,
+build and cook, and updates itself every morning.
 
-## Setup
+**Live:** [vitellaro-matteo.github.io/blog](https://vitellaro-matteo.github.io/blog/) (launching soon)
 
-Requires Node 22.12+.
+[![CI](https://github.com/vitellaro-matteo/blog/actions/workflows/ci.yml/badge.svg)](https://github.com/vitellaro-matteo/blog/actions/workflows/ci.yml)
+
+![The home page](docs/screenshot.png)
+
+## Features
+
+- **Self-updating home page:** last week's Spotify finds, recent Letterboxd films,
+  the book on the nightstand, Instagram photos and a GitHub contribution
+  calendar, refreshed daily with no manual work.
+- **Journal** of notes and essays in MDX, with embeddable tracks, films, books
+  and recipes, and margin notes that sit beside the paragraph they annotate.
+- **Cooking log** of recipes followed from elsewhere, always credited, with my
+  own notes and what I changed.
+- **Around-the-world challenge:** one national dish per country, tracked on a
+  world map rendered to static SVG at build time.
+- **Yearly top tens** of songs, albums, films and books, written each December.
+- **RSS feed and sitemap**, validated content (a typo in frontmatter fails the
+  build with a clear message), and a site that works without JavaScript.
+
+## How the data flows
+
+```mermaid
+flowchart LR
+  subgraph Sources
+    S[Spotify API]
+    L[Letterboxd RSS]
+    G[Goodreads RSS]
+    I[Instagram API]
+    H[GitHub GraphQL]
+  end
+  subgraph Deploy workflow
+    F[Python fetchers<br/>scripts/] --> J[Feed JSON + images<br/>build workspace only]
+    J --> A[Astro build]
+    C[Content<br/>MDX + YAML] --> A
+  end
+  S & L & G & I & H --> F
+  A --> P[GitHub Pages]
+```
+
+Feeds are fetched on every deploy (daily, on push and on demand) and never
+committed. Locally and in CI the site builds from sample fixtures of the same
+shape.
+
+## Design system
+
+A warm, paper-like palette, one serif for display, one sans for reading and a
+mono for metadata. The full specification, with every value and page layout,
+is in **[docs/DESIGN.md](docs/DESIGN.md)**.
+
+| Token      | Hex       | Use                                     |
+| ---------- | --------- | --------------------------------------- |
+| `--paper`  | `#F3EFE7` | Page background                         |
+| `--card`   | `#FAF8F4` | Card background                         |
+| `--kraft`  | `#E6DECF` | Bands, placeholders, uncooked countries |
+| `--line`   | `#DDD5C6` | Borders and rules                       |
+| `--ink`    | `#2A2724` | Text                                    |
+| `--muted`  | `#5F5850` | Secondary text                          |
+| `--accent` | `#9C4A32` | Labels, active states, cooked countries |
+
+| Role    | Typeface            | Sizes                                        |
+| ------- | ------------------- | -------------------------------------------- |
+| Display | Shippori Mincho 400 | 72 · 56 · 50 · 40 · 32 · 26 · 22 · 20 · 18px |
+| Body    | Instrument Sans 400 | 18 · 16 · 15 · 14px                          |
+| Meta    | IBM Plex Mono 400   | 12px, 0.06em tracking, always lowercase      |
+
+**Principles:** no radii, shadows, gradients, emoji or icons; one accent colour;
+hover changes colour and nothing else; every image has a kraft placeholder behind
+it; touch targets are at least 44px.
+
+## Tech stack
+
+- **[Astro](https://astro.build)**: static output, content collections, MDX
+- **TypeScript** (strict) and **Zod** schemas for all content
+- **Plain CSS** with custom properties; no UI framework
+- **Python 3.10+** fetchers, checked with ruff, mypy (strict) and pytest
+- **d3-geo + topojson** for a build-time SVG world map
+- **GitHub Actions** for CI and deploys, **GitHub Pages** for hosting
+- ESLint (typescript-eslint, astro, jsx-a11y) and Prettier
+
+## Project structure
+
+```
+.
+├── site.config.ts          every site-specific value
+├── astro.config.ts
+├── src/
+│   ├── components/         layout pieces, home cards, MDX embeds
+│   ├── content/            journal posts, recipes, yearly lists
+│   ├── content.config.ts   Zod schemas for all content
+│   ├── data/               now.yaml and sample feed fixtures
+│   ├── layouts/            the page shell
+│   ├── lib/                typed helpers: feeds, dates, paths, content queries
+│   ├── pages/              routes and the RSS feed
+│   └── styles/             design tokens and global CSS
+├── scripts/                Python fetchers
+├── public/media/           photos and cover art
+├── docs/                   DESIGN, CONTENT and SETUP guides
+└── .github/workflows/      CI
+```
+
+## Decisions
+
+- **Static over SSR.** Everything on the site changes at most once a day, so a
+  daily static build is simpler, faster and free to host. There is no server to
+  keep alive or secure.
+- **Feeds fetched at build time, not committed.** Committing daily data would
+  bury real changes under bot commits and force a rebase before every push.
+  Fetching in the deploy workflow keeps history clean; committed fixtures keep
+  local builds and CI working without any secrets.
+- **No UI framework.** The site ships almost no JavaScript (tabs, map tooltips,
+  a mobile menu), so plain CSS and Astro components are enough. The design
+  system is a handful of custom properties rather than a dependency.
+- **Build-time map rendering.** The world map is projected and drawn to SVG
+  during the build, so visitors download a small static image instead of a map
+  library and 50m country geometry.
+- **One place for configuration.** Every username, URL and path lives in
+  `site.config.ts`, and every internal link goes through one path helper, so
+  moving from `/blog/` to a custom domain is a one-line change.
+
+## Quick start
 
 ```sh
 npm install
-npm run dev      # http://localhost:4321 — drafts and example files are visible here
-npm run build    # static site in dist/ — drafts are left out
-npm run preview  # serve dist/ locally
+npm run dev
 ```
 
-The data fetchers (added in a later phase) run on **Python 3.10+**; the GitHub
-workflow uses 3.12.
+Open <http://localhost:4321/blog/>. See [docs/SETUP.md](docs/SETUP.md) for
+configuration and secrets, and [docs/CONTENT.md](docs/CONTENT.md) for writing
+posts, recipes and lists.
 
-## Where the blanks live
+## License
 
-Every site-specific value lives in **[site.config.ts](site.config.ts)**, and nowhere else:
-
-| Blank | Field in `site.config.ts` |
-|---|---|
-| `{{SITE_NAME}}` | `name` |
-| `{{TAGLINE}}` | `tagline` |
-| `{{HERO_TITLE}}` | `heroTitle` |
-| `{{HERO_BIO}}` | `heroBio` |
-| `{{SITE_URL}}` | `url` |
-| `{{TIMEZONE}}` | `timezone` |
-| `{{SPOTIFY_PLAYLIST_ID}}` | `spotifyPlaylistId` |
-| `{{LETTERBOXD_USERNAME}}` | `letterboxdUsername` |
-| `{{GOODREADS_USER_ID}}` | `goodreadsUserId` |
-| `{{INSTAGRAM_USERNAME}}` | `instagramUsername` |
-| `{{GITHUB_USERNAME}}` | `githubUsername` |
-
-Values still in CAPITALS are placeholders. Tokens (Spotify, Instagram, GitHub) are
-GitHub Actions secrets, never files in the repo; how to create them will be
-documented here with the fetchers.
-
-## Editing content
-
-Everything is checked against a schema when the site builds. A missing or wrong
-field stops the build with a message naming the file and the field.
-
-Each content type has one example file marked `draft: true`. Drafts show in
-`npm run dev` but are never published. Copy the example, rename it, fill it in,
-and remove `draft: true` (or set it to `false`) to publish.
-
-### The "now" box
-
-Edit [src/data/now.yaml](src/data/now.yaml): `on_repeat`, `thinking_about`,
-`updated` (a date), and optionally `reading` (left empty, it uses the current
-Goodreads book) and `progress: { page, of }` (shows a progress bar on the reading card).
-
-### A journal post
-
-Copy [src/content/journal/example-entry.mdx](src/content/journal/example-entry.mdx)
-to `src/content/journal/<slug>.mdx`. The file name becomes the URL
-(`/journal/<slug>`).
-
-Frontmatter: `title`, `date`, `lead`, `summary`, `tags` (list), `draft`.
-
-The body is Markdown. These components work without importing anything:
-
-- `<Track id="…" />` — a Spotify track. The id is looked up in the weekly
-  playlist feed; for a track that has left the playlist, add
-  `title="…" artist="…"` (and optionally `cover="/media/…"`). `label="…"`
-  replaces the default "from last week's finds".
-- `<Film title="…" year={1997} director="…" url="…" poster="/media/…" />`
-- `<Book title="…" author="…" url="…" cover="/media/…" />`
-- `<Recipe slug="…" />` — one of your recipes, by file name.
-- `<Aside>…</Aside>` — a margin note. Put it on its own line **directly before**
-  the paragraph it belongs to.
-
-### A recipe
-
-Copy [src/content/recipes/example-recipe.mdx](src/content/recipes/example-recipe.mdx)
-to `src/content/recipes/<slug>.mdx` (URL: `/cooking/<slug>`).
-
-Frontmatter: `title`, `date`, `lead`, `source_name`, `source_url`, `country`,
-`challenge` (optional), `time`, `serves`, `again` (`yes` / `no` / `maybe`),
-`image`, `draft`.
-
-- Put the photo in `public/media/…` and set `image: /media/…`.
-- `challenge: <iso_n3>` (e.g. `380`) marks that country as cooked in the
-  around-the-world challenge.
-- Always credit and link the source. Don't copy its method; write your own notes.
-- The body can have `## What I changed`, an ingredients list, and your notes:
-
-  ```mdx
-  <Ingredients>
-    <Ingredient qty="200 g">plain flour</Ingredient>
-  </Ingredients>
-  ```
-
-### A year's list
-
-Copy [src/content/lists/example.yaml](src/content/lists/example.yaml) to
-`src/content/lists/<YEAR>.yaml` (e.g. `2025.yaml`; the file name must be the
-year). It needs exactly ten `songs`, `albums`, `films` and `books`, each with
-`title`, `creator`, `note` and `image`. Cover images go in `public/media/…`:
-square for songs and albums, 2:3 for films and books. The home page links to the
-latest year.
-
-## Git
-
-Automated data commits land on `main` (from the workflow added in a later phase),
-so pull with `git pull --rebase` before pushing.
+[MIT](LICENSE) © Matteo Vitellaro
