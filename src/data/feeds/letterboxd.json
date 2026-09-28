@@ -1,8 +1,32 @@
 {
   "fetched_at": "2026-09-28T05:00:00Z",
   "films": [
-    { "title": "Placeholder film", "year": 1997, "rating": 4.5, "watched_date": "2026-09-26", "url": "https://letterboxd.com/LETTERBOXD_USERNAME/film/placeholder-1/", "poster": null, "review": "A placeholder review whose first sentence is quoted on the home page. Everything after it is left out." },
-    { "title": "Another film title", "year": 2024, "rating": null, "watched_date": "2026-09-22", "url": "https://letterboxd.com/LETTERBOXD_USERNAME/film/placeholder-2/", "poster": null, "review": null },
-    { "title": "Third film", "year": 1962, "rating": 3.5, "watched_date": "2026-09-19", "url": "https://letterboxd.com/LETTERBOXD_USERNAME/film/placeholder-3/", "poster": null, "review": null }
+    {
+      "title": "Placeholder film",
+      "year": 1997,
+      "rating": 4.5,
+      "watched_date": "2026-09-26",
+      "url": "https://letterboxd.com/LETTERBOXD_USERNAME/film/placeholder-1/",
+      "poster": null,
+      "review": "A placeholder review whose first sentence is quoted on the home page. Everything after it is left out."
+    },
+    {
+      "title": "Another film title",
+      "year": 2024,
+      "rating": null,
+      "watched_date": "2026-09-22",
+      "url": "https://letterboxd.com/LETTERBOXD_USERNAME/film/placeholder-2/",
+      "poster": null,
+      "review": null
+    },
+    {
+      "title": "Third film",
+      "year": 1962,
+      "rating": 3.5,
+      "watched_date": "2026-09-19",
+      "url": "https://letterboxd.com/LETTERBOXD_USERNAME/film/placeholder-3/",
+      "poster": null,
+      "review": null
+    }
   ]
 }

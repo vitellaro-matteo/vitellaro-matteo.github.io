@@ -22,7 +22,10 @@ const headingId = id ? `${id}-title` : undefined;
       <p class="mono accent">{label}</p>
       <h3 id={headingId}>{title}</h3>
     </div>
-    <a class="source mono muted" href={href}>{linkText}{external ? ' ↗' : ' →'}</a>
+    <a class="source mono muted" href={href}>
+      {linkText}
+      {external ? ' ↗' : ' →'}
+    </a>
   </header>
   <slot />
 </section>

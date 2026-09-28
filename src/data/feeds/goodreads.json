@@ -1,10 +1,28 @@
 {
   "fetched_at": "2026-09-28T05:00:00Z",
   "currently_reading": [
-    { "title": "Placeholder book title", "author": "Author name", "url": "https://www.goodreads.com/book/show/placeholder-1", "cover": null, "pages": 312 }
+    {
+      "title": "Placeholder book title",
+      "author": "Author name",
+      "url": "https://www.goodreads.com/book/show/placeholder-1",
+      "cover": null,
+      "pages": 312
+    }
   ],
   "read": [
-    { "title": "A finished book", "author": "Author name", "url": "https://www.goodreads.com/book/show/placeholder-2", "cover": null, "pages": 240 },
-    { "title": "Another finished book", "author": "Another author", "url": "https://www.goodreads.com/book/show/placeholder-3", "cover": null, "pages": 188 }
+    {
+      "title": "A finished book",
+      "author": "Author name",
+      "url": "https://www.goodreads.com/book/show/placeholder-2",
+      "cover": null,
+      "pages": 240
+    },
+    {
+      "title": "Another finished book",
+      "author": "Another author",
+      "url": "https://www.goodreads.com/book/show/placeholder-3",
+      "cover": null,
+      "pages": 188
+    }
   ]
 }

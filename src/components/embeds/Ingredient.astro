@@ -8,7 +8,9 @@ const { qty = '' } = Astro.props;
 
 <li class="ingredient">
   <span class="mono muted">{qty}</span>
-  <span><slot /></span>
+  <span>
+    <slot />
+  </span>
 </li>
 
 <style>
