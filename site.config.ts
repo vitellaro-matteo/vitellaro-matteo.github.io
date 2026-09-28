@@ -23,7 +23,7 @@ export const site = {
   /** {{LETTERBOXD_USERNAME}} */
   letterboxdUsername: 'matte0vit',
   /** {{GOODREADS_USER_ID}} — numeric id from the profile URL */
-  goodreadsUserId: 'matteovit',
+  goodreadsUserId: '182900584-matteo-vitellaro',
   /** {{INSTAGRAM_USERNAME}} */
   instagramUsername: 'fuzetea_esports',
   /** {{GITHUB_USERNAME}} */
