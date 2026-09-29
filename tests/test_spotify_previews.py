@@ -13,8 +13,8 @@ from scripts.spotify import (
     Track,
     add_previews,
     base_title,
-    lookup_preview,
-    match_preview,
+    lookup_deezer_id,
+    match_deezer_id,
     normalise,
     playlist_id_from,
 )
@@ -46,7 +46,7 @@ def track(title: str, *artists: str) -> Track:
         "artists": list(artists),
         "url": "",
         "cover": None,
-        "preview": None,
+        "deezer_id": None,
     }
 
 
@@ -88,48 +88,60 @@ def test_base_title_drops_versions() -> None:
 
 
 def test_matches_the_exact_title_and_artist() -> None:
-    preview = match_preview(fixture_json("deezer_search_can_ii.json"), "Can II", ["Hana Stretton"])
-    assert preview is not None
+    deezer_id = match_deezer_id(
+        fixture_json("deezer_search_can_ii.json"), "Can II", ["Hana Stretton"]
+    )
     first = fixture_json("deezer_search_can_ii.json")["data"][0]
     assert first["title"] == "Can II"
-    assert preview == first["preview"]
+    assert deezer_id == first["id"] == 2113267347
 
 
 def test_does_not_confuse_similar_titles() -> None:
     results = fixture_json("deezer_search_can_ii.json")
-    assert match_preview(results, "Can I", ["Hana Stretton"]) == results["data"][1]["preview"]
-    assert match_preview(results, "Can III", ["Hana Stretton"]) is None
+    assert match_deezer_id(results, "Can I", ["Hana Stretton"]) == results["data"][1]["id"]
+    assert match_deezer_id(results, "Can III", ["Hana Stretton"]) is None
 
 
 def test_prefers_the_same_version_over_the_plain_title() -> None:
     results = fixture_json("deezer_search_2close2farr.json")
     session_version = results["data"][1]
     assert session_version["title"] == "2close2farr (BBC Maida Vale Session)"
-    preview = match_preview(results, "2close2farr - BBC Maida Vale Session", ["Momoko Gill"])
-    assert preview == session_version["preview"]
+    deezer_id = match_deezer_id(results, "2close2farr - BBC Maida Vale Session", ["Momoko Gill"])
+    assert deezer_id == session_version["id"]
 
 
 def test_falls_back_to_the_title_without_its_version() -> None:
     results = fixture_json("deezer_search_2close2farr.json")
-    preview = match_preview(results, "2close2farr - Live at Home", ["Momoko Gill"])
-    assert preview == results["data"][0]["preview"]
+    deezer_id = match_deezer_id(results, "2close2farr - Live at Home", ["Momoko Gill"])
+    assert deezer_id == results["data"][0]["id"]
 
 
 def test_any_credited_artist_can_match() -> None:
     results = fixture_json("deezer_search_lived_in_trees.json")
-    preview = match_preview(results, "I Lived in Trees", ["Mark Fry", "The A. Lords"])
-    assert preview == results["data"][0]["preview"]
+    deezer_id = match_deezer_id(results, "I Lived in Trees", ["Mark Fry", "The A. Lords"])
+    assert deezer_id == results["data"][0]["id"]
 
 
 def test_the_artist_must_match() -> None:
     results = fixture_json("deezer_search_can_ii.json")
-    assert match_preview(results, "Can II", ["Someone Else"]) is None
+    assert match_deezer_id(results, "Can II", ["Someone Else"]) is None
 
 
-def test_no_results_means_no_preview() -> None:
-    assert match_preview(fixture_json("deezer_search_no_match.json"), "Tune", ["Nobody"]) is None
-    assert match_preview({"data": "oops"}, "Tune", ["Nobody"]) is None
-    assert match_preview(None, "Tune", ["Nobody"]) is None
+def test_only_results_with_a_preview_and_a_real_id_count() -> None:
+    results = fixture_json("deezer_search_can_ii.json")
+    exact, other = results["data"][0], results["data"][1]
+    exact["preview"] = ""
+    # With the exact recording unplayable, "Can II" doesn't fall back to "Can I".
+    assert match_deezer_id(results, "Can II", ["Hana Stretton"]) is None
+    for bad_id in (True, 0, -5, "2113267337", None):
+        other["id"] = bad_id
+        assert match_deezer_id(results, "Can I", ["Hana Stretton"]) is None
+
+
+def test_no_results_means_no_match() -> None:
+    assert match_deezer_id(fixture_json("deezer_search_no_match.json"), "Tune", ["Nobody"]) is None
+    assert match_deezer_id({"data": "oops"}, "Tune", ["Nobody"]) is None
+    assert match_deezer_id(None, "Tune", ["Nobody"]) is None
 
 
 # ---------- lookups ----------
@@ -139,27 +151,26 @@ def test_searches_by_first_artist_and_base_title() -> None:
     session = DeezerStub(
         {"Momoko Gill 2close2farr": fixture_text("deezer_search_2close2farr.json")}
     )
-    preview = lookup_preview(session, "2close2farr - BBC Maida Vale Session", ["Momoko Gill"])
+    deezer_id = lookup_deezer_id(session, "2close2farr - BBC Maida Vale Session", ["Momoko Gill"])
     assert session.queries == ["Momoko Gill 2close2farr"]
-    assert preview is not None
-    assert preview.startswith("https://cdnt-preview.dzcdn.net/")
+    assert deezer_id == 3951051531
 
 
-def test_deezer_errors_mean_no_preview(caplog: pytest.LogCaptureFixture) -> None:
+def test_deezer_errors_mean_no_match(caplog: pytest.LogCaptureFixture) -> None:
     session = DeezerStub({"Hana Stretton Can II": fixture_text("deezer_error_quota.json")})
-    assert lookup_preview(session, "Can II", ["Hana Stretton"]) is None
+    assert lookup_deezer_id(session, "Can II", ["Hana Stretton"]) is None
     assert "Quota limit exceeded" in caplog.text
 
 
-def test_network_failures_mean_no_preview() -> None:
+def test_network_failures_mean_no_match() -> None:
     class Offline(requests.Session):
         def send(self, request: requests.PreparedRequest, **kwargs: Any) -> requests.Response:  # noqa: ANN401
             raise requests.ConnectionError("offline")
 
-    assert lookup_preview(Offline(), "Can II", ["Hana Stretton"]) is None
+    assert lookup_deezer_id(Offline(), "Can II", ["Hana Stretton"]) is None
 
 
-def test_add_previews_fills_matches_and_leaves_misses_empty() -> None:
+def test_add_previews_stores_ids_never_expiring_urls() -> None:
     session = DeezerStub(
         {
             "Hana Stretton Can II": fixture_text("deezer_search_can_ii.json"),
@@ -175,7 +186,8 @@ def test_add_previews_fills_matches_and_leaves_misses_empty() -> None:
 
     assert add_previews(session, tracks, pause=pauses.append) == 2
 
-    assert [t["preview"] is not None for t in tracks] == [True, True, False]
+    assert [t["deezer_id"] for t in tracks] == [2113267347, 68024456, None]
+    assert "preview" not in tracks[0]
     assert len(pauses) == 2  # between requests, not before the first
     assert session.queries[0] == "Hana Stretton Can II"
     assert json.loads(fixture_text("deezer_search_no_match.json"))["total"] == 0

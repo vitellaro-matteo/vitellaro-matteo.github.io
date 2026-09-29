@@ -2,8 +2,10 @@
 Spotify: the tracks of the "last week's finds" playlist, plus every track
 embedded with <Track id="…"> anywhere in src/content, so those embeds keep
 working after a song leaves the playlist. Spotify no longer gives new apps
-preview clips, so each playlist track's 30-second preview is looked up on
-Deezer's public search API instead.
+preview clips, so each playlist track is matched on Deezer's public search API
+instead. Only the Deezer track id is stored: Deezer's preview URLs are signed
+and expire 15 minutes after they're issued, so the site asks for a fresh one
+when a preview is played.
 
     python -m scripts.spotify --check
 
@@ -113,8 +115,8 @@ class Track(TypedDict):
     artists: list[str]
     url: str
     cover: str | None
-    #: A 30-second MP3 from Deezer (signed, expires within days), or None.
-    preview: str | None
+    #: The same recording on Deezer, for its 30-second preview, or None.
+    deezer_id: int | None
 
 
 class SpotifyFeed(TypedDict):
@@ -279,7 +281,7 @@ def parse_track(raw: object, images: ImageSaver) -> Track | None:
         "artists": artists,
         "url": url or f"https://open.spotify.com/track/{track_id}",
         "cover": images.save(_cover_url(raw.get("album")), key=f"album:{track_id}"),
-        "preview": None,
+        "deezer_id": None,
     }
 
 
@@ -376,36 +378,46 @@ def base_title(title: str) -> str:
     return base or title
 
 
-def match_preview(results: object, title: str, artists: list[str]) -> str | None:
+def _deezer_id(value: object) -> int | None:
+    # bool is an int subclass, and JSON true is never an id.
+    if isinstance(value, int) and not isinstance(value, bool) and value > 0:
+        return value
+    return None
+
+
+def match_deezer_id(results: object, title: str, artists: list[str]) -> int | None:
     """
-    The preview URL of the Deezer search result that is the same recording: the
-    artist must match, and the exact title wins over one that only matches
-    without its version (so "Song - Live" prefers "Song (Live)" to "Song").
+    The id of the Deezer search result that is the same recording and has a
+    preview: the artist must match, and the exact title wins over one that only
+    matches without its version (so "Song - Live" prefers "Song (Live)" to "Song").
     """
     data = results.get("data") if isinstance(results, dict) else None
     wanted_artists = {normalise(artist) for artist in artists}
     full, base = normalise(title), normalise(base_title(title))
-    candidates: list[tuple[str, str, str]] = []
+    candidates: list[tuple[str, str, int]] = []
     for item in data if isinstance(data, list) else []:
         if not isinstance(item, dict):
             continue
         artist = item.get("artist")
         name = _text(artist.get("name")) if isinstance(artist, dict) else None
-        preview = _text(item.get("preview"))
+        deezer_id = _deezer_id(item.get("id"))
+        has_preview = _text(item.get("preview")) is not None
         found_title = _text(item.get("title"))
-        if name and preview and found_title and normalise(name) in wanted_artists:
-            candidates.append((normalise(found_title), normalise(base_title(found_title)), preview))
-    for found_full, _, preview in candidates:
+        if name and deezer_id and has_preview and found_title and normalise(name) in wanted_artists:
+            candidates.append(
+                (normalise(found_title), normalise(base_title(found_title)), deezer_id)
+            )
+    for found_full, _, deezer_id in candidates:
         if found_full == full:
-            return preview
-    for _, found_base, preview in candidates:
+            return deezer_id
+    for _, found_base, deezer_id in candidates:
         if found_base == base:
-            return preview
+            return deezer_id
     return None
 
 
-def lookup_preview(session: requests.Session, title: str, artists: list[str]) -> str | None:
-    """A Deezer preview for the track, or None when there's no match or Deezer fails."""
+def lookup_deezer_id(session: requests.Session, title: str, artists: list[str]) -> int | None:
+    """The track's Deezer id, or None when there's no match or Deezer fails."""
     query = " ".join([*artists[:1], base_title(title)])
     try:
         response = session.get(DEEZER_SEARCH, params={"q": query}, timeout=TIMEOUT_SECONDS)
@@ -417,7 +429,7 @@ def lookup_preview(session: requests.Session, title: str, artists: list[str]) ->
     if isinstance(error_body, dict):
         log.warning("spotify: no preview for %s (Deezer: %s)", title, error_body.get("message"))
         return None
-    return match_preview(results, title, artists)
+    return match_deezer_id(results, title, artists)
 
 
 def add_previews(
@@ -425,13 +437,13 @@ def add_previews(
     tracks: list[Track],
     pause: Callable[[float], None] = time.sleep,
 ) -> int:
-    """Fills in each track's preview; returns how many were found."""
+    """Fills in each track's Deezer id; returns how many were found."""
     found = 0
     for index, track in enumerate(tracks):
         if index:
             pause(DEEZER_PAUSE_SECONDS)
-        track["preview"] = lookup_preview(session, track["title"], track["artists"])
-        found += track["preview"] is not None
+        track["deezer_id"] = lookup_deezer_id(session, track["title"], track["artists"])
+        found += track["deezer_id"] is not None
     return found
 
 
