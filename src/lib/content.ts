@@ -1,8 +1,10 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { isYear } from './entries';
 
-// Drafts (including the example files) show in `npm run dev` only, never in the build.
-const showDrafts = import.meta.env.DEV;
+// Drafts (including the example files) are sample content: they show in
+// `npm run dev` and in a sample build (USE_FIXTURES=true, as CI and the
+// Lighthouse runs use), never in the production build.
+const showDrafts = import.meta.env.DEV || process.env.USE_FIXTURES === 'true';
 const visible = (entry: { data: { draft: boolean } }) => showDrafts || !entry.data.draft;
 const newestFirst = (a: { data: { date: Date } }, b: { data: { date: Date } }) =>
   b.data.date.getTime() - a.data.date.getTime();
