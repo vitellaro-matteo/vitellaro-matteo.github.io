@@ -1,4 +1,4 @@
-"""GitHub: the last 30 weeks of contributions and the latest public pushes."""
+"""GitHub: the last 52 weeks of contributions and the latest public pushes."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from scripts.common import (
 from scripts.site_config import require_setting
 
 API = "https://api.github.com"
-WEEKS = 30
+WEEKS = 52
 PUSHES = 3
 
 CALENDAR_QUERY = """

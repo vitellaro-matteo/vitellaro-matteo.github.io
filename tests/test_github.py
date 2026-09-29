@@ -26,11 +26,13 @@ def test_graphql_errors_raise() -> None:
         parse_calendar({"errors": [{"message": "Could not resolve to a User"}], "data": None})
 
 
-def test_calendar_starts_on_a_sunday_thirty_weeks_back() -> None:
+def test_calendar_starts_on_a_sunday_a_year_back() -> None:
     start = calendar_start(date(2026, 9, 28))  # a Monday
     assert start.weekday() == 6
-    assert start == date(2026, 3, 8)
-    assert calendar_start(date(2026, 9, 27)) == date(2026, 3, 8)  # Sunday itself
+    assert start == date(2025, 10, 5)  # 51 full weeks before this one, plus this one
+    assert calendar_start(date(2026, 9, 27)) == date(2025, 10, 5)  # Sunday itself
+    # GitHub rejects windows longer than a year; the longest one here is 52 weeks.
+    assert (date(2026, 10, 3) - calendar_start(date(2026, 10, 3))).days < 365
 
 
 def test_selects_the_latest_push_per_repository() -> None:
