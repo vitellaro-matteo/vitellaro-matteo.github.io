@@ -13,8 +13,10 @@ interface Props {
 
 const { span, alone } = Astro.props;
 
-const weeks = github?.calendar.weeks.slice(-30) ?? [];
+const weeks = github?.calendar.weeks.slice(-52) ?? [];
 const level = contributionLevels(weeks.flatMap((w) => w.days.map((d) => d.count)));
+// Newest first: the grid lays weeks out right to left and drops the oldest that don't fit.
+const newestFirst = [...weeks].reverse();
 const pushes = github?.pushes.slice(0, 3) ?? [];
 ---
 
@@ -23,7 +25,7 @@ const pushes = github?.pushes.slice(0, 3) ?? [];
     id="making"
     span={span}
     alone={alone}
-    label="05 — making"
+    label="04 — making"
     title="on github"
     linkText="github"
     href={links.github}
@@ -31,9 +33,9 @@ const pushes = github?.pushes.slice(0, 3) ?? [];
     <div
       class="calendar"
       role="img"
-      aria-label={`${github.calendar.total} contributions in the last 30 weeks`}
+      aria-label={`${github.calendar.total} contributions in the last 52 weeks`}
     >
-      {weeks.map((week) => (
+      {newestFirst.map((week) => (
         <div class="week">
           {week.days.map((day) => (
             <span class={`day l${level(day.count)}`} />
@@ -46,7 +48,7 @@ const pushes = github?.pushes.slice(0, 3) ?? [];
         <li class="row">
           <span class="repo">{push.repo}</span>
           <span class="message muted">{push.message}</span>
-          <span class="mono muted">{relativeTime(push.time)}</span>
+          <span class="time mono muted">{relativeTime(push.time)}</span>
         </li>
       ))}
     </ul>
@@ -54,18 +56,26 @@ const pushes = github?.pushes.slice(0, 3) ?? [];
 )}
 
 <style>
+  /* One column tall (7 × 12px + 6 × 3px) with overflow hidden. Weeks run right to
+     left from the newest; the ones that don't fit wrap onto a second, hidden line,
+     so the card always shows whole weeks, the most recent that fit, at any width. */
   .calendar {
+    height: 102px;
+    overflow: hidden;
     display: flex;
-    gap: 4px;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    column-gap: 3px;
+    row-gap: 102px;
   }
   .week {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
   }
   .day {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     background: var(--kraft);
   }
   .day.l1 {
@@ -79,7 +89,7 @@ const pushes = github?.pushes.slice(0, 3) ?? [];
   }
   .row {
     display: grid;
-    grid-template-columns: 200px 1fr auto;
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr) auto;
     align-items: baseline;
     column-gap: 16px;
     padding: 12px 0;
@@ -91,5 +101,25 @@ const pushes = github?.pushes.slice(0, 3) ?? [];
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  @media (max-width: 767px) {
+    .row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'repo time'
+        'message message';
+      row-gap: 2px;
+    }
+    .repo {
+      grid-area: repo;
+    }
+    .time {
+      grid-area: time;
+    }
+    .message {
+      grid-area: message;
+      font-size: 14px;
+    }
   }
 </style>

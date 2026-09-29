@@ -1,28 +1,38 @@
-import { load as loadYaml } from 'js-yaml';
-import { z } from 'astro/zod';
-import { goodreads } from './feeds';
-import nowRaw from '../data/now.yaml?raw';
+import type { GoodreadsFeed, LastfmFeed } from './feeds';
 
-const nowSchema = z.object({
-  on_repeat: z.string(),
-  reading: z.string().nullish(),
-  thinking_about: z.string(),
-  progress: z
-    .object({ page: z.number().int().nonnegative(), of: z.number().int().positive() })
-    .nullish(),
-  updated: z.coerce.date(),
-});
-
-const parsed = nowSchema.safeParse(loadYaml(nowRaw) ?? {});
-if (!parsed.success) {
-  throw new Error(`src/data/now.yaml is invalid:\n${z.prettifyError(parsed.error)}`);
+export interface NowRow {
+  label: string;
+  value: string;
 }
 
-const currentBook = goodreads?.currently_reading[0];
+export interface NowBox {
+  rows: NowRow[];
+  /** When the newest feed behind the rows was fetched (ISO timestamp). */
+  updated: string;
+}
 
-/** The hand-edited "now" box, with `reading` falling back to the current Goodreads book. */
-export const now = {
-  ...parsed.data,
-  reading: parsed.data.reading || (currentBook?.title ?? ''),
-  progress: parsed.data.progress ?? null,
-};
+/**
+ * The home page's "now" box, built entirely from feeds: my most played track of
+ * the week (Last.fm) and the book I'm reading (Goodreads). A row without data is
+ * left out, and with no rows at all there is no box.
+ */
+export function nowBox(lastfm: LastfmFeed | null, goodreads: GoodreadsFeed | null): NowBox | null {
+  const rows: NowRow[] = [];
+  const sources: string[] = [];
+
+  const track = lastfm?.top_track;
+  if (lastfm && track) {
+    rows.push({ label: 'on repeat', value: `${track.title} — ${track.artist}` });
+    sources.push(lastfm.fetched_at);
+  }
+  const book = goodreads?.currently_reading[0];
+  if (goodreads && book) {
+    rows.push({ label: 'reading', value: `${book.title} — ${book.author}` });
+    sources.push(goodreads.fetched_at);
+  }
+
+  if (rows.length === 0) return null;
+  // ISO timestamps in UTC sort chronologically as text.
+  const updated = sources.reduce((latest, time) => (time > latest ? time : latest));
+  return { rows, updated };
+}

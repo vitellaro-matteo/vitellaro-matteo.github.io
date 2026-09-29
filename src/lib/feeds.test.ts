@@ -25,6 +25,6 @@ describe('selectFeed', () => {
   });
 
   it('returns null when there is neither', () => {
-    expect(selectFeed('instagram', { live, fixtures, useFixtures: true })).toBeNull();
+    expect(selectFeed('lastfm', { live, fixtures, useFixtures: true })).toBeNull();
   });
 });

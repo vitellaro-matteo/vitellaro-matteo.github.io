@@ -1,33 +1,32 @@
 ---
 import { site } from '../../../site.config';
-import { now } from '../../lib/now';
+import { goodreads, lastfm } from '../../lib/feeds';
+import { nowBox } from '../../lib/now';
 import { formatDate } from '../../lib/dates';
 
-const rows = [
-  { label: 'on repeat', value: now.on_repeat },
-  { label: 'reading', value: now.reading },
-  { label: 'thinking about', value: now.thinking_about },
-];
+const box = nowBox(lastfm, goodreads);
 ---
 
 <section class="hero grid-12">
-  <div class="intro span-8">
+  <div class:list={['intro', box ? 'span-8' : 'span-12']}>
     <p class="mono accent">hello</p>
     <h1>{site.heroTitle}</h1>
     <p class="bio muted">{site.heroBio}</p>
   </div>
-  <aside class="now span-4" aria-label="Now">
-    <p class="mono muted">now</p>
-    <dl>
-      {rows.map((row) => (
-        <div class="row">
-          <dt class="muted">{row.label}</dt>
-          <dd>{row.value}</dd>
-        </div>
-      ))}
-    </dl>
-    {now.updated && <p class="updated mono muted">updated {formatDate(now.updated)}</p>}
-  </aside>
+  {box && (
+    <aside class="now span-4" aria-label="Now">
+      <p class="mono muted">now</p>
+      <dl>
+        {box.rows.map((row) => (
+          <div class="row">
+            <dt class="muted">{row.label}</dt>
+            <dd>{row.value}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="updated mono muted">updated {formatDate(box.updated)}</p>
+    </aside>
+  )}
 </section>
 
 <style>
@@ -71,9 +70,39 @@ const rows = [
   dd {
     margin: 0;
     text-align: right;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
   .updated {
     padding-top: 14px;
     border-top: 1px solid var(--kraft-3);
+  }
+
+  /* Tablet: the now box moves under the hero text. */
+  @media (max-width: 1023px) {
+    .hero {
+      padding: 96px 0 88px;
+      row-gap: 40px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .hero {
+      padding: 56px 0 48px;
+      row-gap: 32px;
+    }
+    .intro {
+      gap: 20px;
+    }
+    h1 {
+      font-size: 32px;
+      line-height: 1.35;
+    }
+    .bio {
+      font-size: 16px;
+    }
+    .now {
+      padding: 24px;
+    }
   }
 </style>

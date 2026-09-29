@@ -1,0 +1,39 @@
+---
+// A film or book tile: cover, title and meta as one link to its page. The link's
+// name comes from `label`, so the cover's alt text is left empty.
+import Frame from '../Frame.astro';
+import type { PlaceholderTone } from '../../lib/placeholder';
+
+interface Props {
+  href: string;
+  label: string;
+  image: string | null;
+  title: string;
+  meta?: string | null;
+  tone: PlaceholderTone;
+}
+
+const { href, label, image, title, meta, tone } = Astro.props;
+---
+
+<a class="tile" href={href} aria-label={label}>
+  <Frame src={image} alt="" ratio="2 / 3" tone={tone} />
+  <span class="title">{title}</span>
+  {meta && <span class="meta mono muted">{meta}</span>}
+</a>
+
+<style>
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  .title {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+  .tile:hover .title {
+    color: var(--accent);
+  }
+</style>

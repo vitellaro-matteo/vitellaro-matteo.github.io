@@ -7,70 +7,80 @@
       "title": "Placeholder track one",
       "artists": ["Artist name"],
       "url": "https://open.spotify.com/track/placeholder1",
-      "cover": null
+      "cover": null,
+      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-1.mp3"
     },
     {
       "id": "placeholder2",
       "title": "A slightly longer placeholder track title",
       "artists": ["Another artist"],
       "url": "https://open.spotify.com/track/placeholder2",
-      "cover": null
+      "cover": null,
+      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-2.mp3"
     },
     {
       "id": "placeholder3",
       "title": "Track three",
       "artists": ["Artist name", "Featured artist"],
       "url": "https://open.spotify.com/track/placeholder3",
-      "cover": null
+      "cover": null,
+      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-3.mp3"
     },
     {
       "id": "placeholder4",
       "title": "Placeholder track four",
       "artists": ["Band name"],
       "url": "https://open.spotify.com/track/placeholder4",
-      "cover": null
+      "cover": null,
+      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-4.mp3"
     },
     {
       "id": "placeholder5",
       "title": "Five",
       "artists": ["Solo artist"],
       "url": "https://open.spotify.com/track/placeholder5",
-      "cover": null
+      "cover": null,
+      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-5.mp3"
     },
     {
       "id": "placeholder6",
       "title": "Placeholder track six (live)",
       "artists": ["Artist name"],
       "url": "https://open.spotify.com/track/placeholder6",
-      "cover": null
+      "cover": null,
+      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-6.mp3"
     },
     {
       "id": "placeholder7",
       "title": "Track seven",
       "artists": ["Duo name"],
       "url": "https://open.spotify.com/track/placeholder7",
-      "cover": null
+      "cover": null,
+      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-7.mp3"
     },
     {
       "id": "placeholder8",
       "title": "Placeholder track eight",
       "artists": ["Another artist"],
       "url": "https://open.spotify.com/track/placeholder8",
-      "cover": null
+      "cover": null,
+      "preview": null
     },
     {
       "id": "placeholder9",
       "title": "Track nine",
       "artists": ["Ensemble name"],
       "url": "https://open.spotify.com/track/placeholder9",
-      "cover": null
+      "cover": null,
+      "preview": null
     },
     {
       "id": "placeholder10",
       "title": "Placeholder track ten",
       "artists": ["Artist name"],
       "url": "https://open.spotify.com/track/placeholder10",
-      "cover": null
+      "cover": null,
+      "preview": null
     }
   ],
   "embedded": []

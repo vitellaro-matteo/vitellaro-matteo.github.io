@@ -13,16 +13,16 @@ const fixtures = import.meta.glob<unknown>('../data/feeds/*.json', {
 /** Fixtures are allowed in `npm run dev`, and in any build run with USE_FIXTURES=true (CI). */
 const useFixtures = import.meta.env.DEV || process.env.USE_FIXTURES === 'true';
 
-/** The home-page card each feed fills, used when reporting hidden cards. */
-export const cardForFeed = {
-  spotify: 'listening',
-  letterboxd: 'watching',
-  goodreads: 'reading',
-  instagram: 'seeing',
-  github: 'making',
+/** What each feed fills on the home page, named when the build reports what it hides. */
+export const usedBy = {
+  spotify: 'the listening card',
+  lastfm: 'the "on repeat" row of the now box',
+  letterboxd: 'the watching card',
+  goodreads: 'the reading card and the "reading" row of the now box',
+  github: 'the making card',
 } as const;
 
-export type FeedName = keyof typeof cardForFeed;
+export type FeedName = keyof typeof usedBy;
 
 export interface FeedSources {
   live: Record<string, unknown>;
@@ -41,7 +41,7 @@ export function selectFeed(name: FeedName, sources: FeedSources): unknown {
 function load<T>(name: FeedName): T | null {
   const data = selectFeed(name, { live, fixtures, useFixtures });
   if (data === null) {
-    console.warn(`[feeds] no ${name} feed: hiding the ${cardForFeed[name]} card`);
+    console.warn(`[feeds] no ${name} feed: hiding ${usedBy[name]}`);
   }
   return data as T | null;
 }
@@ -53,6 +53,8 @@ export interface SpotifyTrack {
   artists: string[];
   url: string;
   cover: string | null;
+  /** A 30-second MP3 from Deezer; signed, so it expires within days. */
+  preview: string | null;
 }
 
 export interface SpotifyFeed {
@@ -85,33 +87,28 @@ export interface GoodreadsBook {
   author: string;
   url: string;
   cover: string | null;
-  pages: number | null;
+  /** my rating, 1–5 stars, or null when unrated */
+  rating: number | null;
 }
 
 export interface GoodreadsFeed {
   fetched_at: string;
   currently_reading: GoodreadsBook[];
-  /** latest two finished books */
+  /** the six most recently finished books, newest first */
   read: GoodreadsBook[];
 }
 
-export interface InstagramFeed {
+export interface LastfmFeed {
   fetched_at: string;
-  posts: {
-    id: string;
-    permalink: string;
-    media_type: 'IMAGE' | 'CAROUSEL_ALBUM' | 'VIDEO';
-    image: string | null;
-    caption: string | null;
-    timestamp: string;
-  }[];
+  /** my most played track of the last seven days, or null for a silent week */
+  top_track: { title: string; artist: string; url: string; playcount: number } | null;
 }
 
 export interface GithubFeed {
   fetched_at: string;
   calendar: {
     total: number;
-    /** last 30 weeks, oldest first; each week Sunday → Saturday */
+    /** last 52 weeks, oldest first; each week Sunday → Saturday */
     weeks: { days: { date: string; count: number }[] }[];
   };
   pushes: {
@@ -123,7 +120,7 @@ export interface GithubFeed {
 }
 
 export const spotify = load<SpotifyFeed>('spotify');
+export const lastfm = load<LastfmFeed>('lastfm');
 export const letterboxd = load<LetterboxdFeed>('letterboxd');
 export const goodreads = load<GoodreadsFeed>('goodreads');
-export const instagram = load<InstagramFeed>('instagram');
 export const github = load<GithubFeed>('github');

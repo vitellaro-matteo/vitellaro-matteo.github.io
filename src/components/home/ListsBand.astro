@@ -8,7 +8,7 @@ const categories = ['songs', 'albums', 'films', 'books'];
 
 <section class="lists kraft-band grid-12" aria-labelledby="lists-title">
   <div class="intro span-5">
-    <p class="mono accent">08 — lists</p>
+    <p class="mono accent">07 — lists</p>
     <h2 id="lists-title">Top tens, every December</h2>
     <p class="muted">A yearly look back: ten songs, ten albums, ten films, ten books.</p>
   </div>
@@ -71,5 +71,20 @@ const categories = ['songs', 'albums', 'films', 'books'];
   }
   .label {
     font-size: 14px;
+  }
+
+  @media (max-width: 1023px) {
+    .lists {
+      row-gap: 32px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    h2 {
+      font-size: 26px;
+    }
+    .tiles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 </style>

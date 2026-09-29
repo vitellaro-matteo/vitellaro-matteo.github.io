@@ -6,7 +6,7 @@
       "author": "Author name",
       "url": "https://www.goodreads.com/book/show/placeholder-1",
       "cover": null,
-      "pages": 312
+      "rating": null
     }
   ],
   "read": [
@@ -15,14 +15,42 @@
       "author": "Author name",
       "url": "https://www.goodreads.com/book/show/placeholder-2",
       "cover": null,
-      "pages": 240
+      "rating": 5
     },
     {
       "title": "Another finished book",
       "author": "Another author",
       "url": "https://www.goodreads.com/book/show/placeholder-3",
       "cover": null,
-      "pages": 188
+      "rating": 4
+    },
+    {
+      "title": "A long title for a finished book that wraps",
+      "author": "Author name",
+      "url": "https://www.goodreads.com/book/show/placeholder-4",
+      "cover": null,
+      "rating": null
+    },
+    {
+      "title": "Short",
+      "author": "Someone",
+      "url": "https://www.goodreads.com/book/show/placeholder-5",
+      "cover": null,
+      "rating": 3
+    },
+    {
+      "title": "The fifth finished book",
+      "author": "Author name",
+      "url": "https://www.goodreads.com/book/show/placeholder-6",
+      "cover": null,
+      "rating": 4
+    },
+    {
+      "title": "Sixth",
+      "author": "Another author",
+      "url": "https://www.goodreads.com/book/show/placeholder-7",
+      "cover": null,
+      "rating": null
     }
   ]
 }

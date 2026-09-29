@@ -18,14 +18,14 @@ export const site = {
   /** {{TIMEZONE}} — used for week numbers and dates */
   timezone: 'Europe/Berlin',
 
-  /** {{SPOTIFY_PLAYLIST_ID}} — the "last week's finds" playlist */
-  spotifyPlaylistId: '5vxDxvkiXxa8SCCT0MgJMI?si=afdc784d9f024ba2',
+  /** {{SPOTIFY_PLAYLIST_ID}} — the "last week's finds" playlist (the id, or its share link) */
+  spotifyPlaylistId: '5vxDxvkiXxa8SCCT0MgJMI',
+  /** {{LASTFM_USERNAME}} — for the now box's "on repeat" row */
+  lastfmUsername: 'LASTFM_USERNAME',
   /** {{LETTERBOXD_USERNAME}} */
   letterboxdUsername: 'matte0vit',
   /** {{GOODREADS_USER_ID}} — numeric id from the profile URL */
   goodreadsUserId: '182900584-matteo-vitellaro',
-  /** {{INSTAGRAM_USERNAME}} */
-  instagramUsername: 'fuzetea_esports',
   /** {{GITHUB_USERNAME}} */
   githubUsername: 'vitellaro-matteo',
 };
@@ -34,6 +34,5 @@ export const links = {
   spotify: `https://open.spotify.com/playlist/${site.spotifyPlaylistId}`,
   letterboxd: `https://letterboxd.com/${site.letterboxdUsername}/`,
   goodreads: `https://www.goodreads.com/user/show/${site.goodreadsUserId}`,
-  instagram: `https://www.instagram.com/${site.instagramUsername}/`,
   github: `https://github.com/${site.githubUsername}`,
 };

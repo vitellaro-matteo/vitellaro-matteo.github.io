@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { packCards } from './layout';
 
-const ALL = ['listening', 'watching', 'reading', 'seeing', 'making', 'journal'] as const;
+const ALL = ['listening', 'watching', 'reading', 'making', 'journal', 'cooking'] as const;
 const spans = (keys: readonly string[]) =>
   packCards(keys).map(({ key, span, alone }) => `${key}:${span}${alone ? ' alone' : ''}`);
 
@@ -11,9 +11,9 @@ describe('packCards', () => {
       'listening:7',
       'watching:5',
       'reading:5',
-      'seeing:7',
       'making:7',
       'journal:5',
+      'cooking:7',
     ]);
   });
 
@@ -30,23 +30,32 @@ describe('packCards', () => {
     expect(packCards(ALL.filter((key) => key !== 'reading')).map((p) => p.key)).toEqual([
       'listening',
       'watching',
-      'seeing',
       'making',
       'journal',
+      'cooking',
     ]);
+  });
+
+  it('gives the last card the wide slot when the last row is full', () => {
+    expect(spans(['listening', 'watching', 'journal', 'cooking'])).toEqual([
+      'listening:7',
+      'watching:5',
+      'journal:5',
+      'cooking:7',
+    ]);
+    expect(spans(['journal', 'cooking'])).toEqual(['journal:5', 'cooking:7']);
   });
 
   it('handles several missing cards', () => {
-    expect(spans(['watching', 'seeing', 'journal'])).toEqual([
+    expect(spans(['watching', 'journal', 'cooking'])).toEqual([
       'watching:7',
-      'seeing:5',
-      'journal:12 alone',
+      'journal:5',
+      'cooking:12 alone',
     ]);
-    expect(spans(['reading', 'journal'])).toEqual(['reading:7', 'journal:5']);
   });
 
   it('lets a single card span the full width', () => {
-    expect(spans(['journal'])).toEqual(['journal:12 alone']);
+    expect(spans(['cooking'])).toEqual(['cooking:12 alone']);
     expect(packCards([])).toEqual([]);
   });
 });

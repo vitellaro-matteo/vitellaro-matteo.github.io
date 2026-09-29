@@ -21,10 +21,8 @@ const headingId = id ? `${id}-title` : undefined;
 
 <section class:list={['card', `span-${span}`, { alone }]} id={id} aria-labelledby={headingId}>
   <header class="card-head">
-    <div class="card-titles">
-      <p class="mono accent">{label}</p>
-      <h3 id={headingId}>{title}</h3>
-    </div>
+    <p class="label mono accent">{label}</p>
+    <h3 id={headingId}>{title}</h3>
     <a class="source mono muted" href={href}>
       {linkText}
       {external ? ' ↗' : ' →'}
@@ -50,24 +48,49 @@ const headingId = id ? `${id}-title` : undefined;
     max-width: calc((100% + 72px - 11 * 32px) * 7 / 12 + 6 * 32px - 72px);
   }
   .card-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'label source'
+      'title source';
+    column-gap: 24px;
+    row-gap: 10px;
   }
-  .card-titles {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-width: 0;
+  .label {
+    grid-area: label;
   }
   h3 {
+    grid-area: title;
     font-size: 26px;
   }
   .source {
+    grid-area: source;
     display: flex;
     align-items: center;
     height: 44px;
     white-space: nowrap;
+  }
+
+  /* Below desktop the cards stack, so none is ever "alone" among others. */
+  @media (max-width: 1023px) {
+    .card.alone > :global(*) {
+      max-width: none;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .card {
+      padding: 24px;
+    }
+    .card-head {
+      grid-template-areas:
+        'label source'
+        'title title';
+      row-gap: 0;
+      align-items: center;
+    }
+    h3 {
+      font-size: 22px;
+    }
   }
 </style>
