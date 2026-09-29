@@ -9,6 +9,7 @@
       <book_large_image_url><![CDATA[https://i.gr-assets.com/books/111._SY475_.jpg]]></book_large_image_url>
       <book id="111"><num_pages></num_pages></book>
       <author_name>Old Author</author_name>
+      <user_rating>0</user_rating>
       <user_read_at></user_read_at>
     </item>
     <item>
@@ -17,6 +18,7 @@
       <book_large_image_url><![CDATA[https://i.gr-assets.com/books/54120408._SY475_.jpg]]></book_large_image_url>
       <book id="54120408"><num_pages>303</num_pages></book>
       <author_name>Kazuo Ishiguro</author_name>
+      <user_rating>4</user_rating>
       <user_read_at><![CDATA[Sun, 30 Aug 2026 00:00:00 -0700]]></user_read_at>
     </item>
     <item>
@@ -26,6 +28,7 @@
       <book_medium_image_url><![CDATA[https://i.gr-assets.com/books/28921._SX98_.jpg]]></book_medium_image_url>
       <book id="28921"><num_pages>258</num_pages></book>
       <author_name>Kazuo Ishiguro</author_name>
+      <user_rating>5</user_rating>
       <user_read_at><![CDATA[Fri, 11 Sep 2026 00:00:00 -0700]]></user_read_at>
     </item>
   </channel>

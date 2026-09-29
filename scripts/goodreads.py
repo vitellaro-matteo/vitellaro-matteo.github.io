@@ -1,4 +1,4 @@
-"""Goodreads: the currently-reading shelf and the latest finished books, from RSS."""
+"""Goodreads: the currently-reading shelf and the six latest finished books, from RSS."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from scripts.common import FeedResult, ImageSaver, get, utc_now
 from scripts.site_config import require_setting
 
 RSS_URL = "https://www.goodreads.com/review/list_rss/{user_id}"
-FINISHED = 2
+FINISHED = 6
 _EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
 
@@ -23,7 +23,8 @@ class Book(TypedDict):
     author: str
     url: str
     cover: str | None
-    pages: int | None
+    #: My rating, 1 to 5 stars, or None when unrated (Goodreads sends 0).
+    rating: int | None
 
 
 class GoodreadsFeed(TypedDict):
@@ -37,7 +38,7 @@ class ShelfEntry(NamedTuple):
     title: str
     author: str
     cover_url: str | None
-    pages: int | None
+    rating: int | None
     read_at: datetime
 
 
@@ -57,7 +58,7 @@ def _cover_url(item: Element) -> str | None:
 def parse_shelf(xml: str) -> list[ShelfEntry]:
     entries: list[ShelfEntry] = []
     for item in ElementTree.fromstring(xml).iterfind("channel/item"):
-        pages = _text(item, "book/num_pages")
+        rating = _text(item, "user_rating")
         read_at = _text(item, "user_read_at")
         entries.append(
             ShelfEntry(
@@ -65,7 +66,7 @@ def parse_shelf(xml: str) -> list[ShelfEntry]:
                 title=_text(item, "title"),
                 author=_text(item, "author_name"),
                 cover_url=_cover_url(item),
-                pages=int(pages) if pages.isdigit() else None,
+                rating=int(rating) if rating.isdigit() and rating != "0" else None,
                 read_at=parsedate_to_datetime(read_at) if read_at else _EPOCH,
             )
         )
@@ -83,7 +84,7 @@ def to_book(entry: ShelfEntry, images: ImageSaver) -> Book:
         "author": entry.author,
         "url": f"https://www.goodreads.com/book/show/{entry.book_id}",
         "cover": images.save(entry.cover_url, key=f"book:{entry.book_id}"),
-        "pages": entry.pages,
+        "rating": entry.rating,
     }
 
 
