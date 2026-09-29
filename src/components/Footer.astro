@@ -1,9 +1,13 @@
 ---
 import { site, links } from '../../site.config';
 import { routes } from '../lib/paths';
+import { isFilled } from '../lib/config';
 
 const items = [
   { label: 'spotify', href: links.spotify, external: true },
+  ...(isFilled(site.lastfmUsername)
+    ? [{ label: 'last.fm', href: links.lastfm, external: true }]
+    : []),
   { label: 'letterboxd', href: links.letterboxd, external: true },
   { label: 'goodreads', href: links.goodreads, external: true },
   { label: 'github', href: links.github, external: true },

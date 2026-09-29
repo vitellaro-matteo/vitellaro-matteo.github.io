@@ -6,9 +6,9 @@ export const site = {
   /** {{SITE_NAME}} — lowercase wordmark */
   name: 'matteo',
   /** {{TAGLINE}} */
-  tagline: 'my slow feed',
+  tagline: 'my feed',
   /** {{HERO_TITLE}} */
-  heroTitle: 'A shelf for the small things I keep finding.',
+  heroTitle: 'A shelf for the things I keep finding.',
   /** {{HERO_BIO}} — 1–2 sentences about me */
   heroBio: 'Hello! I like to share the things I find interesting, from music to movies and books.',
   /** {{SITE_URL}} — origin only, e.g. https://<user>.github.io or a custom domain */
@@ -21,7 +21,7 @@ export const site = {
   /** {{SPOTIFY_PLAYLIST_ID}} — the "last week's finds" playlist (the id, or its share link) */
   spotifyPlaylistId: '5vxDxvkiXxa8SCCT0MgJMI',
   /** {{LASTFM_USERNAME}} — for the now box's "on repeat" row */
-  lastfmUsername: 'LASTFM_USERNAME',
+  lastfmUsername: 'matteo2601',
   /** {{LETTERBOXD_USERNAME}} */
   letterboxdUsername: 'matte0vit',
   /** {{GOODREADS_USER_ID}} — numeric id from the profile URL */
@@ -32,6 +32,7 @@ export const site = {
 
 export const links = {
   spotify: `https://open.spotify.com/playlist/${site.spotifyPlaylistId}`,
+  lastfm: `https://www.last.fm/user/${site.lastfmUsername}`,
   letterboxd: `https://letterboxd.com/${site.letterboxdUsername}/`,
   goodreads: `https://www.goodreads.com/user/show/${site.goodreadsUserId}`,
   github: `https://github.com/${site.githubUsername}`,
