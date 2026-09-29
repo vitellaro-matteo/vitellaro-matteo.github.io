@@ -11,10 +11,15 @@ and cook, one quiet shelf at a time.
 
 ## Features
 
-- **Self-updating home page:** last week's Spotify finds, recent Letterboxd
-  films, the book on the nightstand, Instagram photos and a GitHub contribution
-  calendar, refreshed every morning by Python fetchers. If a source fails, the
-  card shows the last good copy, or steps aside and the grid repacks itself.
+- **Self-updating home page:** last week's Spotify finds with playable
+  30-second previews, recent Letterboxd films, what I'm reading and have read on
+  Goodreads, a year of GitHub contributions, and a "now" box with my most played
+  track of the week (Last.fm), all refreshed every morning by Python fetchers. If
+  a source fails, the card shows the last good copy, or steps aside and the grid
+  repacks itself.
+- **Works as well on a phone as on a desktop:** dedicated tablet and mobile
+  layouts, a full-screen menu with a focus trap, and touch-friendly previews,
+  tabs and map tooltips, checked at 360, 390, 768 and 1024px.
 - **Journal** of notes and essays in MDX, with embeddable tracks, films, books
   and recipes, and margin notes that sit beside the paragraph they annotate.
 - **Cooking log** of recipes followed from elsewhere, always credited, with my
@@ -34,7 +39,8 @@ flowchart LR
     S[Spotify API]
     L[Letterboxd RSS]
     G[Goodreads RSS]
-    I[Instagram API]
+    M[Last.fm API]
+    D[Deezer search]
     H[GitHub GraphQL]
   end
   subgraph Deploy workflow
@@ -42,7 +48,7 @@ flowchart LR
     J --> A[Astro build]
     C[Content<br/>MDX + YAML] --> A
   end
-  S & L & G & I & H --> F
+  S & M & D & L & G & H --> F
   A --> P[GitHub Pages]
 ```
 
@@ -100,7 +106,7 @@ it; touch targets are at least 44px.
 │   ├── components/         layout pieces, home cards, map, MDX embeds
 │   ├── content/            journal posts, recipes, yearly lists
 │   ├── content.config.ts   Zod schemas for all content
-│   ├── data/               now.yaml, countries.yaml, sample feed fixtures
+│   ├── data/               countries.yaml and sample feed fixtures
 │   ├── layouts/            the page shell
 │   ├── lib/                typed, tested helpers (dates, paths, feeds, map, …)
 │   ├── pages/              routes and the RSS feed
@@ -121,8 +127,9 @@ it; touch targets are at least 44px.
   bury real changes under bot commits and force a rebase before every push.
   Fetching in the deploy workflow keeps history clean. Committed fixtures keep
   development and CI working without secrets, but never reach production.
-- **No UI framework.** The site ships almost no JavaScript (list tabs and the
-  map tooltip so far), so plain CSS and Astro components are enough. The design
+- **No UI framework.** The site ships almost no JavaScript (the preview
+  player, list tabs, map tooltips and the menu, each a few dozen lines), so plain
+  CSS and Astro components are enough. The design
   system is a handful of custom properties rather than a dependency.
 - **Build-time map rendering.** The world map is simplified, projected and
   written as compact SVG paths during the build. Visitors get about 45 KB of
@@ -137,7 +144,8 @@ it; touch targets are at least 44px.
 - [x] Design system, home page, journal, lists and cooking pages
 - [x] Around-the-world map and challenge page
 - [x] Python fetchers and the deploy workflow (daily refresh, cached fallbacks)
-- [ ] Mobile layout and accessibility pass (Lighthouse ≥ 95)
+- [x] Mobile and tablet layouts, menu, focus styles
+- [ ] Accessibility audit (contrast) and Lighthouse ≥ 95
 
 ## Quick start
 

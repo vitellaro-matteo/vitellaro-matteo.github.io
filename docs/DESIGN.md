@@ -17,24 +17,23 @@ Every site-specific value lives in one file, `site.config.ts`. Tokens are
 GitHub Actions secrets and never touch the repo. [SETUP.md](SETUP.md) explains
 how to fill in each value and create each secret.
 
-| Value                                                                 | Where           | Notes                                                                                 |
-| --------------------------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------- |
-| `SITE_NAME`                                                           | site.config.ts  | `matteo` (lowercase wordmark)                                                         |
-| `TAGLINE`                                                             | site.config.ts  | `a slow feed`                                                                         |
-| `HERO_TITLE`                                                          | site.config.ts  | `A quiet shelf for the songs, films, books and small things I keep finding.`          |
-| `HERO_BIO`                                                            | site.config.ts  | 1–2 sentences about Matteo                                                            |
-| `SITE_URL`                                                            | site.config.ts  | `https://vitellaro-matteo.github.io` (origin only)                                    |
-| `BASE_PATH`                                                           | site.config.ts  | `/`: the repo is `vitellaro-matteo.github.io`, which Pages serves from the root       |
-| `TIMEZONE`                                                            | site.config.ts  | `Europe/Berlin` (week numbers and dates)                                              |
-| `SPOTIFY_PLAYLIST_ID`                                                 | site.config.ts  | the "last week's finds" playlist                                                      |
-| `LETTERBOXD_USERNAME`                                                 | site.config.ts  |                                                                                       |
-| `GOODREADS_USER_ID`                                                   | site.config.ts  | numeric id from the profile URL                                                       |
-| `INSTAGRAM_USERNAME`                                                  | site.config.ts  | `fuzetea_esports`                                                                     |
-| `GITHUB_USERNAME`                                                     | site.config.ts  |                                                                                       |
-| `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN` | Actions secrets | same kind as in the WeeklySpotifyUpdate repo                                          |
-| `INSTAGRAM_TOKEN`                                                     | Actions secret  | long-lived token (§6)                                                                 |
-| `GH_STATS_TOKEN`                                                      | Actions secret  | fine-grained PAT, read-only, for the contribution calendar                            |
-| `GH_SECRETS_TOKEN`                                                    | Actions secret  | fine-grained PAT that may write this repo's secrets, used to rotate `INSTAGRAM_TOKEN` |
+| Value                                                                 | Where           | Notes                                                                             |
+| --------------------------------------------------------------------- | --------------- | --------------------------------------------------------------------------------- |
+| `SITE_NAME`                                                           | site.config.ts  | `matteo` (lowercase wordmark)                                                     |
+| `TAGLINE`                                                             | site.config.ts  | `a slow feed`                                                                     |
+| `HERO_TITLE`                                                          | site.config.ts  | `A quiet shelf for the songs, films, books and small things I keep finding.`      |
+| `HERO_BIO`                                                            | site.config.ts  | 1–2 sentences about Matteo                                                        |
+| `SITE_URL`                                                            | site.config.ts  | `https://vitellaro-matteo.github.io` (origin only)                                |
+| `BASE_PATH`                                                           | site.config.ts  | `/`: the repo is `vitellaro-matteo.github.io`, which Pages serves from the root   |
+| `TIMEZONE`                                                            | site.config.ts  | `Europe/Berlin` (week numbers and dates)                                          |
+| `SPOTIFY_PLAYLIST_ID`                                                 | site.config.ts  | the "last week's finds" playlist: the id, or its share link (`?si=…` is stripped) |
+| `LASTFM_USERNAME`                                                     | site.config.ts  | for the now box's "on repeat" row                                                 |
+| `LETTERBOXD_USERNAME`                                                 | site.config.ts  |                                                                                   |
+| `GOODREADS_USER_ID`                                                   | site.config.ts  | numeric id from the profile URL                                                   |
+| `GITHUB_USERNAME`                                                     | site.config.ts  |                                                                                   |
+| `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN` | Actions secrets | same kind as in the WeeklySpotifyUpdate repo                                      |
+| `LASTFM_API_KEY`                                                      | Actions secret  | a free Last.fm API key, for user.getTopTracks                                     |
+| `GH_STATS_TOKEN`                                                      | Actions secret  | fine-grained PAT, read-only, for the contribution calendar                        |
 
 ### Base path
 
@@ -61,8 +60,9 @@ the directory-style output, so GitHub Pages never redirects.
   Prettier, `astro check`, Vitest for every module in `src/lib`, ruff, mypy
   (strict), pytest, all run by CI.
 - **Hosting:** GitHub Pages via `actions/deploy-pages`.
-- **Client JavaScript** is limited to the lists-page tabs, the map tooltips and
-  the mobile menu. Everything else is static HTML.
+- **Client JavaScript** is limited to the listening previews, the lists-page
+  tabs, the map tooltips and the menu below desktop width, each a few dozen
+  lines with no dependencies. Everything else is static HTML.
 
 ---
 
@@ -105,7 +105,9 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
 ### Principles
 
 - Border radius **0** everywhere. **No shadows, no gradients, no emoji, no
-  icons**, except the one inline stroke SVG (the mobile menu).
+  icons**, except the one inline stroke SVG (the menu button). The preview
+  controls are text glyphs, `▶︎` (U+25B6 + U+FE0E, so iOS keeps it as text) and
+  `■` (U+25A0).
 - Links are ink with no underline; hover turns them `--accent`. No other hover
   effects, no transition longer than 120ms, no scroll animations.
 - **Links inside journal and recipe body text** are the exception: underlined,
@@ -115,6 +117,9 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
 - External links end with ` ↗` (a text glyph). Internal "more" links end with ` →`.
   The footer's `rss` link is internal and has no glyph.
 - Touch targets are at least 44px tall.
+- **Focus:** every focusable element shows a 2px `--accent` outline, offset 2px
+  (`:focus-visible`), on the whole element, e.g. a whole film tile. Taps show no
+  browser tap highlight; hover and focus colours are the feedback.
 - Images always have a `--kraft` / `--kraft-2` / `--kraft-3` background behind
   them while loading, and use `object-fit: cover`. With no image, the kraft box
   stands in for it.
@@ -123,18 +128,22 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
 ### Layout
 
 - Container 1120px wide, centred; below a 1200px viewport, 40px side padding;
-  below 768px, the mobile layout (§4.8).
+  below 768px, 24px.
 - 12-column grid, `column-gap: 32px` (row gap 32px for card grids).
+- **Breakpoints:** desktop from 1024px; **tablet** 768–1023px; **mobile** below
+  768px. Below desktop every 12-column grid becomes a single column (twelve
+  columns would still reserve eleven 32px gaps, wider than a phone). §4.8 has the
+  details.
 
 ### Components
 
 - **Header:** 112px tall, `border-bottom: 1px solid var(--line)`. Left: the
   wordmark (display 28px) and the tagline (mono, muted), baseline-aligned, gap
   14px; the whole thing links home. Right: nav in body 15px, gap 30px:
-  `listening · watching · reading · seeing · making · cooking · journal · lists`.
-  The first six are anchors to the home-page sections; journal and lists link to
+  `listening · watching · reading · making · cooking · journal · lists`.
+  The first five are anchors to the home-page sections; journal and lists link to
   their pages. On the journal, lists and cooking pages the matching item is
-  `--accent`.
+  `--accent`. Below desktop the nav becomes the menu (§4.8).
 - **Section heading:** display 32px `<h2>` on the left, mono muted meta on the
   right, baseline-aligned, `padding-bottom: 20px; border-bottom: 1px solid var(--ink)`;
   content starts 40px below.
@@ -142,6 +151,12 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
   flex column, gap 24px. Card header: a left stack (gap 10px) of the mono label in
   accent (`0N — name`) and a display 26px `<h3>`; on the right a mono muted source
   link (`spotify ↗`, `letterboxd ↗`, …) vertically centred in a 44px box.
+- **Media tile** (films and books): one link wrapping the 2:3 cover, the title
+  (body 14px) and a mono muted meta line. Hover turns the title `--accent`, with
+  no image effect; focus outlines the whole tile. It opens the Letterboxd entry
+  or Goodreads book page in the same tab, and its accessible name is
+  `Title (year), rated N stars on Letterboxd` or `Title by Author on Goodreads`
+  (the cover's alt text is empty, since the link names it).
 - **Rows inside a card:** each row has `border-top: 1px solid var(--line-soft)`,
   including the first, so every list starts with a hairline under the card
   header. Padding 14px 0 (12px for GitHub rows, 16px for journal rows).
@@ -154,8 +169,7 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
 - **Footer:** `margin-top: 96px; padding: 40px 0 64px; border-top: 1px solid var(--ink)`.
   Left: wordmark (display 22px) and `Updated automatically, written slowly.`
   (body 14px, muted) side by side, baseline-aligned, gap 14px, like the header.
-  Right: mono muted links, gap 24px: spotify, letterboxd, goodreads, instagram,
-  github, rss.
+  Right: mono muted links, gap 24px: spotify, letterboxd, goodreads, github, rss.
 
 ### Formats
 
@@ -177,56 +191,78 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
    - Left, span 8, gap 32px: mono accent `hello`; `<h1>` display 56px / 1.28
      `HERO_TITLE`; `<p>` body 18px / 1.7 muted, max-width 580px, `HERO_BIO`.
    - Right, span 4: the **now box**, kraft background, padding 32px, gap 18px:
-     mono muted `now`; three rows (body 15px, muted label left, value right):
-     `on repeat`, `reading`, `thinking about`; then mono muted `updated [date]`
-     with `padding-top: 14px; border-top: 1px solid var(--kraft-3)`. Values come
-     from `src/data/now.yaml`; `reading`, if left empty, falls back to the
-     current Goodreads book.
+     mono muted `now`; up to two rows (body 15px, muted label left, value right),
+     both automatic:
+     - `on repeat`: my most played track of the last seven days on Last.fm,
+       `Title — Artist`;
+     - `reading`: the first book on the Goodreads currently-reading shelf,
+       `Title — Author`.
+
+     Then mono muted `updated [date]` with `padding-top: 14px; border-top: 1px
+solid var(--kraft-3)`: the date of the newest successful fetch behind the
+     rows shown. A row without data is hidden; with neither, there is no box and
+     the hero text spans all 12 columns. `nowBox` in `src/lib/now.ts` builds it.
 3. **Section heading** `This week`, meta `week NN · D–D mon YYYY`: the previous
    ISO week (Mon–Sun) in `TIMEZONE`, matching the playlist.
-4. **Card grid** (12 columns, gap 32px), in this order:
-   - **01 — listening** (span 7), h3 `last week's finds`, link `spotify ↗`.
-     Up to 10 rows, grid `44px 1fr auto`: mono index `01`, track title body 16px,
-     artist body 15px muted. Titles are plain text, not links. Footer line body
-     14px muted: `Every Monday, the songs I liked the week before move into one playlist.`
-   - **02 — watching** (span 5), h3 `recently watched`, link `letterboxd ↗`.
-     The 3 most recent films in a 3-column grid, gap 16px: poster 2:3, title body
-     14px, mono muted `YEAR · ★ RATING` (the rating part is left out when there is
-     none). Below, with `padding-top: 20px; border-top: 1px solid var(--line-soft)`:
-     the first sentence of the latest review in “curly quotes”, display 18px / 1.6
-     (hidden when there is no review).
-   - **03 — reading** (span 5), h3 `on the nightstand`, link `goodreads ↗`.
-     Cover 120×180 and, 24px to its right, a bottom-aligned stack (gap 8px): title
-     display 20px, author body 15px muted, then a progress bar (2px tall, track
-     `--kraft`, fill `--accent`, margin-top 16px) and mono muted `page X of Y`.
-     **The bar and its label only render when `progress` is set in now.yaml.**
-     Below, divided by line-soft: mono muted `finished lately`, then 2 rows body
-     15px `Title — Author`.
-   - **04 — seeing** (span 7), h3 `@INSTAGRAM_USERNAME`, link `instagram ↗`.
-     A 3×2 grid of square photos, gap 8px, each linking to its post. Caption body
-     14px muted: `The quieter account — photos I don't post anywhere else.`
-   - **05 — making** (span 7), h3 `on github`, link `github ↗`. Contribution
-     calendar for the last 30 weeks: columns of 7 squares, 14×14, gap 4px.
-     Level 0 is `--kraft`; levels 1/2/3 are `--accent` at opacity 0.3/0.6/1,
-     split by quartiles of the non-zero days (up to Q1 → 1, up to Q3 → 2,
-     above Q3 → 3). Below: 2–3 rows, grid `200px 1fr auto`: repo name body 15px
-     (plain text), latest commit message muted, mono muted relative time.
-   - **06 — journal** (span 5), h3 `notes & essays`, link `all →` to `/journal`.
-     The 3 latest entries, each row a link: mono muted date, display 19px title.
-   - **07 — cooking** (span 12), h3 `last cooked`, link `all →` to `/cooking`.
-     Inside, a 12-column grid. Left, span 5: the latest recipe photo 4:3, then
-     mono muted `DATE · COUNTRY`, display 22px title, body 14px muted
-     `from SOURCE`. Right, span 7: the mini world map (§4.7 styling, no tooltips)
-     and, 24px below it, a row: display 32px `N` in accent + body 15px muted
-     ` / 195 national dishes`, and a right-aligned mono link `the challenge →`.
-     **When feed cards are hidden** (§6), the visible cards keep their order and
-     are packed into rows of two that alternate 7 + 5 and 5 + 7, exactly as above,
-     so the grid never has a hole. A card left alone on the last row spans all 12
-     columns, and its content keeps the width it would have at span 7, aligned
-     left. `packCards` in `src/lib/layout.ts` does the packing; cooking always
-     follows on its own row.
+4. **Card grid** (12 columns, gap 32px), in this order and, with every card
+   visible, these rows: listening 7 + watching 5, reading 5 + making 7,
+   journal 5 + cooking 7.
+   - **01 — listening**, h3 `last week's finds`, link `spotify ↗`. Up to 10 rows,
+     grid `44px 1fr auto`: the index, track title body 16px, artist body 15px
+     muted. **Previews:** in a row with a preview, the index is a `<button>`
+     (44px tall): it shows the number, `▶︎` on hover or focus, and `■` in
+     `--accent` while playing, when a 2px `--accent` line grows along the bottom
+     of the row. One preview plays at a time; starting another stops the first;
+     a preview ends at 30 seconds or when the clip ends; nothing autoplays. The
+     button's `aria-label` is `Play preview of Title by Artist` (or
+     `Stop preview` while playing) and `aria-pressed` follows playback. A
+     preview that fails to load (the signed Deezer links expire) turns its row
+     back into a plain number. Rows without a preview keep a plain number.
+     Under the list, body 14px muted: `30-second previews via Deezer. Full songs
+on Spotify ↗` (the second part links to the playlist; only when some row
+     has a preview), then `Every Monday, the songs I liked the week before move
+into one playlist.`
+   - **02 — watching**, h3 `recently watched`, link `letterboxd ↗`. The 3 most
+     recent films as media tiles in a 3-column grid, gap 16px, meta
+     `YEAR · ★ RATING` (the rating part is left out when there is none). Below,
+     with `padding-top: 20px; border-top: 1px solid var(--line-soft)`: the first
+     sentence of the latest review in “curly quotes”, display 18px / 1.6 (hidden
+     when there is no review).
+   - **03 — reading**, h3 `on the nightstand`, link `goodreads ↗`. When I'm
+     reading something, the first book on that shelf comes first as one link:
+     cover 120×180 and, 24px to its right, a bottom-aligned stack (gap 8px) of
+     mono muted `now`, title display 20px and author body 15px muted. Below,
+     divided by line-soft: mono muted `finished lately`, then the six most
+     recently finished books as media tiles in a 3-column grid, gap 16px, meta
+     `★ N` (left out when unrated).
+   - **04 — making**, h3 `on github`, link `github ↗`. Contribution calendar of
+     the last 52 weeks: columns of 7 squares, 12×12, gap 3px, aligned right in a
+     box one column tall (102px) with overflow hidden. Weeks run right to left
+     from the newest, and those that don't fit wrap onto a hidden second line,
+     so the card shows the most recent whole weeks that fit at any width,
+     including span 5 and phones. Level 0 is `--kraft`; levels 1/2/3 are
+     `--accent` at opacity 0.3/0.6/1, split by quartiles of the non-zero days
+     (up to Q1 → 1, up to Q3 → 2, above Q3 → 3). Below: 2–3 rows, grid
+     `200px 1fr auto`: repo name body 15px (plain text), latest commit message
+     muted, mono muted relative time.
+   - **05 — journal**, h3 `notes & essays`, link `all →` to `/journal`. The 3
+     latest entries, each row a link: mono muted date, display 19px title.
+   - **06 — cooking**, h3 `last cooked`, link `all →` to `/cooking`. A compact
+     card: the mini world map (§4.7 styling, no tooltips) at full card width;
+     below it (gap 16px) the latest recipe as one link, a 120×90 photo and, 16px
+     to its right, mono muted `DATE · COUNTRY` over a display 20px title; then,
+     divided by line-soft, display 32px `N` in accent + body 15px muted
+     ` / 195 national dishes` and a right-aligned mono link `the challenge →`.
+
+   **When feed cards are hidden** (§6), the visible cards keep their order and
+   are packed into rows of two. Rows alternate 7 + 5 and 5 + 7, except that the
+   last full row is always 5 + 7, so the card that closes the grid (cooking) gets
+   the wide slot. A card left alone on the last row spans all 12 columns, and its
+   content keeps the width it would have at span 7, aligned left. `packCards` in
+   `src/lib/layout.ts` does the packing.
+
 5. **Lists band** (kraft band, `margin-top: 96px`). Left, span 5, gap 18px: mono
-   accent `08 — lists`, display 40px / 1.25 `Top tens, every December`, body 16px
+   accent `07 — lists`, display 40px / 1.25 `Top tens, every December`, body 16px
    / 1.7 muted `A yearly look back: ten songs, ten albums, ten films, ten books.`
    Right, span 7: a 4-column grid, gap 12px, of equal-height tiles (card
    background, padding 24px 20px, gap 8px): display 44px `10` + body 14px muted
@@ -374,30 +410,70 @@ Uses the journal entry layout (§4.3), including the older/newer footer.
   a code missing from the list fails the build. When several recipes share a
   country, the most recent one is linked.
 
-### 4.8 Mobile (below 768px)
+### 4.8 Tablet and mobile
 
-Side padding 24px. Header 72px tall: wordmark display 24px on the left, a menu
-button (44×44, inline stroke SVG of two lines, `aria-label="Open menu"`) on the
-right, opening a full-screen paper-coloured nav list in display 28px. Hero
-`padding: 56px 0 48px`, gap 20px, h1 display 32px / 1.35, bio body 16px. Section
-heading h2 24px. Cards stack in one column, gap 16px, padding 24px; the card label
-row is the mono label on the left and the source link on the right; h3 display
-22px. Listening shows 5 rows as grid `32px 1fr`, with the title 15px over the
-artist 13px muted. Watching posters stay 3 columns, gap 10px. Seeing grid gap
-6px. Lists band padding 28px 24px, h2 26px. Footer links wrap, gap 16px. Lists
-page rows collapse to `48px 72px 1fr` with the note under the title. The map
-stays full width.
+Checked on every page at 360, 390, 768 and 1024px wide: no horizontal scrolling,
+nothing overflows its card or the viewport, touch targets are at least 44px
+(except the shapes inside the map, whose continent list is the full-size
+alternative), and the previews, the lists tabs and the map tooltips work by touch.
+
+**Below desktop (under 1024px, tablet and mobile):**
+
+- Every 12-column grid is a single column: the cards stack, the now box moves
+  under the hero text (row gap 40px), and bands stack their two halves (row gap
+  32px). The span-7 content limit of a lone card no longer applies.
+- **Header** 72px tall: wordmark display 24px on the left, a menu button on the
+  right (44×44, the inline stroke SVG of two lines, `aria-label="Open menu"`,
+  `aria-expanded`, `aria-controls="site-menu"`). The bar nav is hidden: its seven
+  items don't fit a 768px header. The button opens a full-screen, paper-coloured
+  dialog (`role="dialog"`, `aria-modal`) with its own 72px bar (wordmark, and a
+  mono `close` button) and the nav list in display 28px, items at least 56px
+  tall, the current page in `--accent`. While it is open, focus is trapped in
+  it, the page behind can't scroll, and focus starts on `close`. Escape and
+  `close` shut it and return focus to the menu button; following a link shuts
+  it too, and widening the window to desktop closes it.
+- Hero `padding: 96px 0 88px`. Page intros stack (the right-hand text or count
+  goes under the title), `padding: 72px 0 48px`, h1 56px.
+- Journal entries and recipes: one column. The details become a wrapped row
+  above the title (gap 16px 32px), h1 40px, and margin notes become indented
+  blocks (`padding-left: 24px`).
+- Lists page rows: `72px 104px 1fr`, numeral 48px, the note under the title.
+- Kraft bands `padding: 40px`. Cooking recipe grid: 2 columns. Challenge list:
+  3 columns.
+
+**Mobile (under 768px), in addition:**
+
+- Side padding 24px; mono 11px; the header tagline is hidden.
+- Hero `padding: 56px 0 48px`, gap 20px, h1 display 32px / 1.35, bio body 16px;
+  now box padding 24px. Section heading h2 24px (the meta wraps under it).
+- Cards stack with a 16px gap and padding 24px; the card header is the mono label
+  on the left and the source link on the right on one row, then the h3 display
+  22px.
+- Listening shows 5 rows as grid `32px 1fr`, title 15px over artist 13px muted.
+  Watching and reading tiles stay 3 columns, gap 10px. GitHub rows put the repo
+  and the time on one line and the message (14px) below.
+- Lists band padding 28px 24px, h2 26px, tiles 2 × 2.
+- Page intros `padding: 48px 0 40px`, h1 40px / 1.15. Journal index rows stack
+  (date, title 22px and summary 15px, tags). Entries: h1 32px, lead 19px, body
+  17px, h2 24px, blockquote 22px with `padding-left: 20px`; embed cards padding
+  16px; ingredient rows `88px 1fr`.
+- Lists page rows `48px 72px 1fr`, numeral 32px, title 20px, tabs gap 24px.
+- Cooking recipes: 1 column, gap 16px; the challenge band h2 26px. Challenge
+  list: 2 columns, count 40px.
+- Footer: the wordmark line above the links; links wrap, gap 16px.
+- The map stays full width. On touch, a first tap on a country shows its
+  tooltip, a second tap on a cooked country follows its link, and a tap anywhere
+  else hides it. The tooltip is kept inside the map.
 
 ---
 
 ## 5. Content model
 
-Everything below is edited by hand. [CONTENT.md](CONTENT.md) is the how-to.
+Everything below is edited by hand; the now box is filled from Last.fm and
+Goodreads (§4.1). [CONTENT.md](CONTENT.md) is the how-to.
 
 ```
 site.config.ts                  every value from §1
-src/data/now.yaml               on_repeat, reading (optional), thinking_about,
-                                progress: {page, of} (optional), updated
 src/data/countries.yaml         the challenge list (§4.7)
 src/content/journal/*.mdx       title, date, lead, summary, tags[], draft
 src/content/recipes/*.mdx       title, date, lead, source_name, source_url,
@@ -424,8 +500,9 @@ public/media/…                  Matteo's photos (recipes, list covers)
 The automatic cards are fed by Python fetchers in `scripts/`. Running
 `python -m scripts.fetch_all` runs each fetcher in turn; a fetcher that succeeds
 writes its feed to `src/data/live/<name>.json` and downloads every image it needs
-into `public/media/feeds/<name>/`. Images are never hotlinked, because Instagram
-URLs expire. Files are named by a hash of a stable key (post id, album id, …), so
+into `public/media/feeds/<name>/`. Images are never hotlinked, so a source's
+CDN can't break the site. Files are named by a hash of a stable key (album id,
+book id, …), so
 an image already on disk is not downloaded again, and images the latest fetch no
 longer uses are removed.
 
@@ -457,7 +534,7 @@ tests.
 2. With no cached copy either, the build has no data for that feed, and the card
    it fills is left out of the page (the other cards are repacked, §4.1). The
    build log names each hidden card, e.g.
-   `[feeds] no instagram feed: hiding the seeing card`. A `<Track>` embed is
+   `[feeds] no lastfm feed: hiding the "on repeat" row of the now box`. A `<Track>` embed is
    likewise left out when the Spotify feed is missing.
 3. **Fixtures never reach production.** The site reads fixtures only in
    `npm run dev` or when the build runs with `USE_FIXTURES=true` (CI does, so it
@@ -467,7 +544,19 @@ tests.
 
 - **spotify.py:** exchanges `SPOTIFY_REFRESH_TOKEN` for an access token, then
   reads the `SPOTIFY_PLAYLIST_ID` playlist with `GET /playlists/{id}/items`
-  (id, title, artists, album cover of at least 300px, url). It also scans
+  (id, title, artists, album cover of at least 300px, url). The setting may be
+  the id, a share link or a URI; anything after `?` is stripped, because a
+  leftover `?si=…` turns the request into a different one.
+  **Previews:** Spotify no longer gives new apps preview clips, so each playlist
+  track's 30-second preview is looked up on Deezer's public search API (no key):
+  it searches `first artist + title without its version`, then takes the first
+  result whose artist matches one of the track's artists and whose title matches
+  exactly, or else matches once both titles lose their version suffix
+  (`Song - Live` / `Song (Live)`). Titles and names are compared normalised:
+  case, accents, punctuation and a leading "The" are ignored. The preview URL
+  is stored, or null when nothing matches or Deezer errors; the links are signed
+  and expire within days, which the daily redeploy covers. Requests are paced to
+  stay under Deezer's 50 per 5 seconds. It also scans
   `src/content` for `<Track id="…">` embeds and fetches any that aren't in the
   playlist with `GET /tracks/{id}`, one by one, since the batch endpoint was
   removed for development-mode apps in February 2026. They are written to the
@@ -485,9 +574,9 @@ tests.
   same refresh and one playlist read locally, and `--dump` saves the raw
   playlist and track JSON to `.debug/spotify/` (gitignored) for comparing
   Spotify's real responses with the parser.
-  Although `/playlists/{id}/items` is documented to return a paging object, it
-  returns the whole playlist object with the paging nested under `items`; the
-  parser accepts both, and the pre-2026 `tracks` key. Every field is
+  The parser accepts the documented paging object, the whole playlist object
+  with the paging nested under `items` (what a request with a stray `?si=…` in
+  the id returns), and the pre-2026 `tracks` key. Every field is
   type-checked: local files, podcast episodes, removed tracks (`item: null`) and
   malformed entries are skipped with a warning naming the entry and the reason,
   so one odd entry never costs the feed. `<Track>` ids that aren't 22-character
@@ -499,20 +588,17 @@ tests.
   watched date, poster and review text. Letterboxd's boilerplate paragraphs
   ("Watched on …", "This review may contain spoilers") are dropped, so an entry
   without a real review has none.
+- **lastfm.py:** `user.getTopTracks` for `LASTFM_USERNAME` with `period=7day`,
+  `limit=1`, authenticated with `LASTFM_API_KEY`: title, artist, url and play
+  count of my most played track of the week, or null for a silent week. Last.fm's
+  own error code and message are reported; the key is never logged.
 - **goodreads.py:** RSS `https://www.goodreads.com/review/list_rss/GOODREADS_USER_ID`
-  with `?shelf=currently-reading`, and `?shelf=read` sorted by finish date to
-  keep the latest 2: title, author, the largest real cover (never the "no photo"
-  placeholder) and page count if present.
-- **instagram.py:** Instagram API with Instagram Login (the account must be
-  Business or Creator; it stays public). Gets the latest 6 posts of any type,
-  using `thumbnail_url` for videos, with timestamps normalised to UTC. On every
-  run it refreshes the long-lived token; when Instagram returns a new one, it is
-  masked in the log and written to the `INSTAGRAM_TOKEN` secret with
-  `gh secret set`, authenticated with `GH_SECRETS_TOKEN`, passing the token on
-  stdin. Without `GH_SECRETS_TOKEN` the refresh still works for that run and a
-  warning says to update the secret by hand.
-- **github.py:** GraphQL `contributionsCollection` from the Sunday 29 weeks
-  before the current week until now (30 columns), authenticated with
+  with `?shelf=currently-reading` (every book on it), and `?shelf=read` sorted by
+  finish date to keep the latest 6: title, author, the book page URL, the
+  largest real cover (never the "no photo" placeholder) and my rating (Goodreads
+  sends 0 for unrated, stored as null).
+- **github.py:** GraphQL `contributionsCollection` from the Sunday 51 weeks
+  before the current week until now (52 columns, under GitHub's one-year limit), authenticated with
   `GH_STATS_TOKEN`; then the public events of `GITHUB_USERNAME`, keeping the
   latest push to each of the 3 most recently pushed repositories. Since October
   2025 push events no longer include commits, so each message (first line only)
@@ -561,4 +647,6 @@ The build also generates `/rss.xml` (journal entries and recipes) and a sitemap.
 3. ✓ Challenge map and `countries.yaml`.
 4. ✓ Python fetchers, tests and the deploy workflow.
 5. Mobile pass, accessibility pass (contrast, focus styles as a 2px accent
-   outline offset 2px, alt text), Lighthouse ≥ 95 in every category.
+   outline offset 2px, alt text), Lighthouse ≥ 95 in every category. The mobile
+   and tablet layouts, the menu and the focus style are done (§4.8); the
+   contrast audit and Lighthouse remain.

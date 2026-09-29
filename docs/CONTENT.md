@@ -168,19 +168,11 @@ home page always links to the latest year.
 
 ## The "now" box
 
-Edit `src/data/now.yaml`:
-
-```yaml
-on_repeat: Song — Artist
-reading: # leave empty to use the current Goodreads book
-thinking_about: Something
-progress: # optional: shows a progress bar on the reading card
-  page: 124
-  of: 312
-updated: 2026-09-21
-```
-
-`on_repeat`, `thinking_about` and `updated` are required.
+Nothing to edit: it fills itself on every deploy. "on repeat" is your most
+played track of the last seven days on Last.fm, and "reading" is the first book
+on your Goodreads currently-reading shelf. A row without data is hidden, and with
+neither there is no box. To change what "reading" shows, change the shelf on
+Goodreads.
 
 ## The around-the-world challenge
 

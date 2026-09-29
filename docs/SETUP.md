@@ -49,20 +49,20 @@ Every site-specific value is in [`site.config.ts`](../site.config.ts). Values
 still in CAPITALS are placeholders; a fetcher that needs one skips until it is
 filled in.
 
-| Field                | Value                                                                             |
-| -------------------- | --------------------------------------------------------------------------------- |
-| `name`               | The lowercase wordmark, `matteo`.                                                 |
-| `tagline`            | `a slow feed`.                                                                    |
-| `heroTitle`          | The large line on the home page.                                                  |
-| `heroBio`            | One or two sentences about you, under the hero title.                             |
-| `url`                | `https://vitellaro-matteo.github.io` (origin only, no path).                      |
-| `basePath`           | `/`, since Pages serves the `<user>.github.io` repo from the root.                |
-| `timezone`           | An IANA zone such as `Europe/Berlin`. Used for dates and the "this week" range.   |
-| `spotifyPlaylistId`  | The id at the end of the playlist's share link, `open.spotify.com/playlist/<id>`. |
-| `letterboxdUsername` | From your profile URL, `letterboxd.com/<username>/`.                              |
-| `goodreadsUserId`    | The number in your profile URL, `goodreads.com/user/show/<id>-name`.              |
-| `instagramUsername`  | `fuzetea_esports`.                                                                |
-| `githubUsername`     | Your GitHub login, `vitellaro-matteo`.                                            |
+| Field                | Value                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `name`               | The lowercase wordmark, `matteo`.                                                  |
+| `tagline`            | `a slow feed`.                                                                     |
+| `heroTitle`          | The large line on the home page.                                                   |
+| `heroBio`            | One or two sentences about you, under the hero title.                              |
+| `url`                | `https://vitellaro-matteo.github.io` (origin only, no path).                       |
+| `basePath`           | `/`, since Pages serves the `<user>.github.io` repo from the root.                 |
+| `timezone`           | An IANA zone such as `Europe/Berlin`. Used for dates and the "this week" range.    |
+| `spotifyPlaylistId`  | The playlist id, `open.spotify.com/playlist/<id>`; a pasted share link also works. |
+| `lastfmUsername`     | Your Last.fm username, from `last.fm/user/<username>`.                             |
+| `letterboxdUsername` | From your profile URL, `letterboxd.com/<username>/`.                               |
+| `goodreadsUserId`    | The number in your profile URL, `goodreads.com/user/show/<id>-name`.               |
+| `githubUsername`     | Your GitHub login, `vitellaro-matteo`.                                             |
 
 Letterboxd and Goodreads need no secrets: once their values are filled in, those
 cards work on the next deploy. Your Goodreads profile must be public.
@@ -192,50 +192,24 @@ need; a dedicated token from `scripts.spotify_auth` asks only for read access.
 When saving secrets, `gh secret set NAME` prompts for the value, which avoids a
 trailing newline from `echo`.
 
-### 3. `GH_SECRETS_TOKEN`: lets the deploy rotate the Instagram token
+### 3. `LASTFM_API_KEY`: the "on repeat" row of the now box
 
-The built-in workflow token can't write secrets, so this one does. Create it
-before the Instagram token, so the first refresh can already be saved.
+The now box shows your most played track of the last seven days on Last.fm, so
+Last.fm has to know what you play.
 
-1. **Settings → Developer settings → Personal access tokens → Fine-grained
-   tokens → Generate new token**.
-2. **Token name:** `site secrets rotation`. **Expiration:** up to a year; set a
-   reminder.
-3. **Repository access:** **Only select repositories** →
-   `vitellaro-matteo.github.io`.
-4. **Permissions → Repository permissions → Secrets:** **Read and write**.
-   Leave everything else at **No access** (Metadata stays read-only, as GitHub
-   requires).
-5. Generate it and save it as `GH_SECRETS_TOKEN`.
+1. **Scrobble Spotify to Last.fm**, if you don't already. At
+   [last.fm/settings/applications](https://www.last.fm/settings/applications),
+   connect **Spotify scrobbling**. Plays count from then on.
+2. **Create an API account.** Logged in to Last.fm, open
+   [last.fm/api/account/create](https://www.last.fm/api/account/create). Fill in
+   an application name (e.g. `slow feed`) and a short description; leave the
+   callback URL empty. Submit.
+3. The next page shows an **API key** and a **shared secret**. Only the API key
+   is needed: save it as `LASTFM_API_KEY`. (Your applications are listed later
+   at [last.fm/api/accounts](https://www.last.fm/api/accounts).)
+4. Set `lastfmUsername` in `site.config.ts`.
 
-### 4. `INSTAGRAM_TOKEN`: the photo grid
-
-The fetcher uses the Instagram API with Instagram Login, which needs a
-professional (Creator or Business) account. The account stays public.
-
-1. **Switch the account to Creator.** In the Instagram app, logged in as
-   `@fuzetea_esports`: **Settings → Account type and tools → Switch to
-   professional account → Creator**. Pick any category; you can hide it from the
-   profile.
-2. **Create a Meta app.** At [developers.facebook.com/apps](https://developers.facebook.com/apps),
-   log in (register as a developer if asked) and click **Create app**. Choose
-   the use case **Manage messaging & content on Instagram**, then finish with
-   the defaults. The app can stay in development mode.
-3. **Set up Instagram login.** In the app dashboard, open **Instagram → API
-   setup with Instagram login**. Under **Generate access tokens**, click **Add
-   account** and log in as `@fuzetea_esports`. If Meta asks you to add the
-   account as a tester first, add it under **App roles → Roles → Instagram
-   testers**, then accept the invite in Instagram at **Settings → Website
-   permissions → Apps and websites → Tester invites**.
-4. **Generate the token.** Click **Generate token** next to the account and
-   approve the `instagram_business_basic` permission. The token shown is
-   long-lived (60 days). Copy it.
-5. Save it as `INSTAGRAM_TOKEN`.
-
-From then on every deploy refreshes the token and, when Instagram returns a new
-one, writes it back to `INSTAGRAM_TOKEN` using `GH_SECRETS_TOKEN`. Since the site
-deploys daily, it never reaches its 60 days. If deploys stop for longer than
-that, generate a new token the same way.
+The key only reads public listening data and doesn't expire.
 
 ### Check it worked
 
