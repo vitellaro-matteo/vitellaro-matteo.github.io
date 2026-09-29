@@ -3,7 +3,7 @@
 A personal site that collects what I listen to, watch, read, photograph, build
 and cook, one quiet shelf at a time.
 
-**Live:** [vitellaro-matteo.github.io](https://vitellaro-matteo.github.io/) (launching soon)
+**Live:** [vitellaro-matteo.github.io](https://vitellaro-matteo.github.io/)
 
 [![CI](https://github.com/vitellaro-matteo/vitellaro-matteo.github.io/actions/workflows/ci.yml/badge.svg)](https://github.com/vitellaro-matteo/vitellaro-matteo.github.io/actions/workflows/ci.yml)
 
