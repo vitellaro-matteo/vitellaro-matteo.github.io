@@ -5,7 +5,7 @@ import MediaTile from './MediaTile.astro';
 import { goodreads } from '../../lib/feeds';
 import { links } from '../../../site.config';
 import { placeholderTone } from '../../lib/placeholder';
-import { bookLabel, stars } from '../../lib/labels';
+import { bookDetails, stars } from '../../lib/labels';
 import type { CardSpan } from '../../lib/layout';
 
 interface Props {
@@ -30,12 +30,15 @@ const finished = goodreads?.read.slice(0, 6) ?? [];
     href={links.goodreads}
   >
     {book && (
-      <a class="current" href={book.url} aria-label={bookLabel(book.title, book.author)}>
+      <a class="current" href={book.url}>
         <Frame src={book.cover} alt="" width={120} height={180} tone={2} class="cover" />
         <span class="stack">
           <span class="mono muted">now</span>
           <span class="title">{book.title}</span>
-          <span class="author muted">{book.author}</span>
+          <span class="author muted">
+            <span class="visually-hidden">by</span> {book.author}
+          </span>
+          <span class="visually-hidden">on Goodreads</span>
         </span>
       </a>
     )}
@@ -47,7 +50,7 @@ const finished = goodreads?.read.slice(0, 6) ?? [];
             <li>
               <MediaTile
                 href={b.url}
-                label={bookLabel(b.title, b.author)}
+                details={bookDetails(b.author)}
                 image={b.cover}
                 title={b.title}
                 meta={stars(b.rating)}

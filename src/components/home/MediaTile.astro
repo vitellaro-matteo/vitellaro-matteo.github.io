@@ -1,25 +1,32 @@
 ---
-// A film or book tile: cover, title and meta as one link to its page. The link's
-// name comes from `label`, so the cover's alt text is left empty.
+// A film or book tile: cover, title and meta as one link to its page. The link is
+// named by its visible title followed by `details`, which says the meta line in
+// words; the cover's alt text is left empty so it isn't read twice.
 import Frame from '../Frame.astro';
 import type { PlaceholderTone } from '../../lib/placeholder';
 
 interface Props {
   href: string;
-  label: string;
+  /** Read after the title, e.g. "(1997), rated 4.5 stars, on Letterboxd". */
+  details: string;
   image: string | null;
   title: string;
   meta?: string | null;
   tone: PlaceholderTone;
 }
 
-const { href, label, image, title, meta, tone } = Astro.props;
+const { href, details, image, title, meta, tone } = Astro.props;
 ---
 
-<a class="tile" href={href} aria-label={label}>
+<a class="tile" href={href}>
   <Frame src={image} alt="" ratio="2 / 3" tone={tone} />
   <span class="title">{title}</span>
-  {meta && <span class="meta mono muted">{meta}</span>}
+  {meta && (
+    <span class="meta mono muted" aria-hidden="true">
+      {meta}
+    </span>
+  )}
+  <span class="visually-hidden">{details}</span>
 </a>
 
 <style>

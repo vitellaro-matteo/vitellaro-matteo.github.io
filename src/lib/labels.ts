@@ -8,14 +8,18 @@ export function filmMeta(year: number | null, rating: number | null): string {
   return [year, stars(rating)].filter((part) => part != null).join(' · ');
 }
 
-/** Screen-reader name of a film tile: "Title (1997), rated 4.5 stars on Letterboxd". */
-export function filmLabel(title: string, year: number | null, rating: number | null): string {
-  const name = year ? `${title} (${year})` : title;
-  const rated = rating ? `, rated ${rating} ${rating === 1 ? 'star' : 'stars'}` : '';
-  return `${name}${rated} on Letterboxd`;
+/**
+ * What a screen reader hears after a film's title, in place of the symbol-heavy
+ * meta line: "(1997), rated 4.5 stars, on Letterboxd".
+ */
+export function filmDetails(year: number | null, rating: number | null): string {
+  const rated = rating ? `rated ${rating} ${rating === 1 ? 'star' : 'stars'}` : null;
+  return [year ? `(${year})` : null, rated, 'on Letterboxd']
+    .filter((part) => part != null)
+    .join(', ');
 }
 
-/** Screen-reader name of a book tile: "Title by Author on Goodreads". */
-export function bookLabel(title: string, author: string): string {
-  return author ? `${title} by ${author} on Goodreads` : `${title} on Goodreads`;
+/** What a screen reader hears after a book's title: "by Author, on Goodreads". */
+export function bookDetails(author: string): string {
+  return author ? `by ${author}, on Goodreads` : 'on Goodreads';
 }

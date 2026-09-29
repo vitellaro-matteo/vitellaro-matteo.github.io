@@ -38,7 +38,7 @@ const STOP = '■';
                 class="index play mono"
                 type="button"
                 aria-pressed="false"
-                aria-label={`Play preview of ${track.title} by ${artists}`}
+                aria-label={`${number}. Play preview of ${track.title} by ${artists}`}
                 data-preview={track.preview}
               >
                 <span class="number">{number}</span>
@@ -95,7 +95,6 @@ const STOP = '■';
       audio.pause();
       cancelAnimationFrame(frame);
       current.setAttribute('aria-pressed', 'false');
-      current.setAttribute('aria-label', current.dataset.label ?? '');
       rowOf(current)?.classList.remove('playing');
       setProgress(current, 0);
       current = null;
@@ -125,7 +124,6 @@ const STOP = '■';
       stop();
       current = button;
       button.setAttribute('aria-pressed', 'true');
-      button.setAttribute('aria-label', 'Stop preview');
       rowOf(button)?.classList.add('playing');
       audio.src = button.dataset.preview ?? '';
       audio
@@ -141,10 +139,9 @@ const STOP = '■';
         });
     };
 
-    buttons.forEach((button) => {
-      button.dataset.label = button.getAttribute('aria-label') ?? '';
-      button.addEventListener('click', () => (button === current ? stop() : play(button)));
-    });
+    buttons.forEach((button) =>
+      button.addEventListener('click', () => (button === current ? stop() : play(button))),
+    );
     audio.addEventListener('ended', stop);
     // A load failure (an expired link, say) can arrive as an error event rather
     // than as a rejected play().

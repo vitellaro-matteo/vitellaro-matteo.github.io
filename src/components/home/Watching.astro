@@ -5,7 +5,7 @@ import { letterboxd } from '../../lib/feeds';
 import { links } from '../../../site.config';
 import { placeholderTone } from '../../lib/placeholder';
 import { firstSentence } from '../../lib/text';
-import { filmLabel, filmMeta } from '../../lib/labels';
+import { filmDetails, filmMeta } from '../../lib/labels';
 import type { CardSpan } from '../../lib/layout';
 
 interface Props {
@@ -35,7 +35,7 @@ const quote = latestReview ? firstSentence(latestReview) : null;
         <li>
           <MediaTile
             href={film.url}
-            label={filmLabel(film.title, film.year, film.rating)}
+            details={filmDetails(film.year, film.rating)}
             image={film.poster}
             title={film.title}
             meta={filmMeta(film.year, film.rating)}
