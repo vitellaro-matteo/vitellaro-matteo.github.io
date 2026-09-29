@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import PageIntro from '../components/PageIntro.astro';
+import { routes } from '../lib/paths';
+---
+
+<Base title="Nothing on this shelf" description="This page doesn't exist, or it moved.">
+  <PageIntro label="404" title="Nothing on this shelf" />
+  <p class="lead muted">This page doesn't exist, or it moved.</p>
+  <p class="home">
+    <a class="mono muted" href={routes.home}>
+      back home →
+    </a>
+  </p>
+</Base>
+
+<style>
+  .lead {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .home {
+    padding: 24px 0 112px;
+  }
+  .home a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+</style>
