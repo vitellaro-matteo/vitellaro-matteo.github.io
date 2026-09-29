@@ -14,17 +14,27 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site } from '../../site.config';
-import { routes } from '../lib/paths';
+import { routes, url } from '../lib/paths';
+import { colour } from '../lib/tokens';
+import { OG_CARDS, isOgType, ogImageUrl, type OgType } from '../lib/og';
 
 interface Props {
   title?: string;
   description?: string;
   /** nav item to mark as current (journal, lists, cooking) */
   current?: string;
+  /** Share card to use; defaults to the current section's, or the home card. */
+  og?: OgType;
+  /** Journal entries and recipes are articles; every other page is a website. */
+  article?: boolean;
 }
 
-const { title, description = site.heroTitle, current } = Astro.props;
+const { title, description = site.heroTitle, current, article = false } = Astro.props;
+const og = Astro.props.og ?? (isOgType(current) ? current : 'home');
 const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const image = ogImageUrl(og, site.url);
+const imageAlt = `${OG_CARDS[og].label}: ${OG_CARDS[og].title}`;
 ---
 
 <!doctype html>
@@ -34,7 +44,25 @@ const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={url('/favicon-32.png')} type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
+    <meta name="theme-color" content={colour('paper')} />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title ?? site.name} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title ?? site.name} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+    <meta name="twitter:image:alt" content={imageAlt} />
     <link rel="alternate" type="application/rss+xml" title={site.name} href={routes.rss} />
   </head>
   <body>

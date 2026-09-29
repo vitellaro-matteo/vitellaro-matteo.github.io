@@ -14,7 +14,11 @@ const recipes = await getRecipes();
 const cooked = (await getCooked()).size;
 ---
 
-<Base title="What I've been cooking" current="cooking">
+<Base
+  title="What I've been cooking"
+  description="Recipes I followed, with what I changed."
+  current="cooking"
+>
   <PageIntro
     label="cooking"
     title="What I've been cooking"
