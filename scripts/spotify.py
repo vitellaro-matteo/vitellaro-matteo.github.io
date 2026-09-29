@@ -1,7 +1,9 @@
 """
 Spotify: the tracks of the "last week's finds" playlist, plus every track
 embedded with <Track id="…"> anywhere in src/content, so those embeds keep
-working after a song leaves the playlist.
+working after a song leaves the playlist. Spotify no longer gives new apps
+preview clips, so each playlist track's 30-second preview is looked up on
+Deezer's public search API instead.
 
     python -m scripts.spotify --check
 
@@ -24,6 +26,8 @@ import json
 import os
 import re
 import sys
+import time
+import unicodedata
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import TypedDict
@@ -46,6 +50,9 @@ from scripts.site_config import load_site_config, require_setting
 
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 API = "https://api.spotify.com/v1"
+DEEZER_SEARCH = "https://api.deezer.com/search"
+# Deezer allows 50 requests per 5 seconds; a short pause keeps long playlists under it.
+DEEZER_PAUSE_SECONDS = 0.12
 CONTENT_DIR = ROOT / "src" / "content"
 DEBUG_DIR = ROOT / ".debug" / "spotify"
 
@@ -106,6 +113,8 @@ class Track(TypedDict):
     artists: list[str]
     url: str
     cover: str | None
+    #: A 30-second MP3 from Deezer (signed, expires within days), or None.
+    preview: str | None
 
 
 class SpotifyFeed(TypedDict):
@@ -270,6 +279,7 @@ def parse_track(raw: object, images: ImageSaver) -> Track | None:
         "artists": artists,
         "url": url or f"https://open.spotify.com/track/{track_id}",
         "cover": images.save(_cover_url(raw.get("album")), key=f"album:{track_id}"),
+        "preview": None,
     }
 
 
@@ -336,6 +346,93 @@ def parse_playlist_items(pages: Iterable[object], images: ImageSaver) -> list[Tr
             else:
                 log.warning("spotify: skipped playlist entry %d: %s", position, _skip_reason(entry))
     return tracks
+
+
+def playlist_id_from(value: str) -> str:
+    """
+    The playlist id from `spotifyPlaylistId`, which may be the bare id, a share
+    link (`https://open.spotify.com/playlist/<id>?si=…`) or a URI. A leftover
+    `?si=…` would otherwise turn /playlists/<id>/items into a different request.
+    """
+    candidate = value.split("?", 1)[0].rstrip("/").rsplit("/", 1)[-1].rsplit(":", 1)[-1]
+    if not _SPOTIFY_ID.fullmatch(candidate):
+        raise SkipFetcher("spotifyPlaylistId in site.config.ts is not a playlist id or link")
+    return candidate
+
+
+def normalise(text: str) -> str:
+    """Lowercase ASCII words for comparing titles and names across services."""
+    decomposed = unicodedata.normalize("NFKD", text.casefold())
+    plain = "".join(char for char in decomposed if not unicodedata.combining(char))
+    words = re.findall(r"[a-z0-9]+", plain)
+    if words[:1] == ["the"]:
+        words = words[1:]
+    return " ".join(words)
+
+
+def base_title(title: str) -> str:
+    """A title without its version: "Song - Live" and "Song (Live)" both become "Song"."""
+    base = re.split(r"\s+-\s+|\s*[(\[]", title, maxsplit=1)[0].strip()
+    return base or title
+
+
+def match_preview(results: object, title: str, artists: list[str]) -> str | None:
+    """
+    The preview URL of the Deezer search result that is the same recording: the
+    artist must match, and the exact title wins over one that only matches
+    without its version (so "Song - Live" prefers "Song (Live)" to "Song").
+    """
+    data = results.get("data") if isinstance(results, dict) else None
+    wanted_artists = {normalise(artist) for artist in artists}
+    full, base = normalise(title), normalise(base_title(title))
+    candidates: list[tuple[str, str, str]] = []
+    for item in data if isinstance(data, list) else []:
+        if not isinstance(item, dict):
+            continue
+        artist = item.get("artist")
+        name = _text(artist.get("name")) if isinstance(artist, dict) else None
+        preview = _text(item.get("preview"))
+        found_title = _text(item.get("title"))
+        if name and preview and found_title and normalise(name) in wanted_artists:
+            candidates.append((normalise(found_title), normalise(base_title(found_title)), preview))
+    for found_full, _, preview in candidates:
+        if found_full == full:
+            return preview
+    for _, found_base, preview in candidates:
+        if found_base == base:
+            return preview
+    return None
+
+
+def lookup_preview(session: requests.Session, title: str, artists: list[str]) -> str | None:
+    """A Deezer preview for the track, or None when there's no match or Deezer fails."""
+    query = " ".join([*artists[:1], base_title(title)])
+    try:
+        response = session.get(DEEZER_SEARCH, params={"q": query}, timeout=TIMEOUT_SECONDS)
+        results = response.json()
+    except (requests.RequestException, ValueError) as error:
+        log.warning("spotify: no preview for %s (%s)", title, type(error).__name__)
+        return None
+    error_body = results.get("error") if isinstance(results, dict) else None
+    if isinstance(error_body, dict):
+        log.warning("spotify: no preview for %s (Deezer: %s)", title, error_body.get("message"))
+        return None
+    return match_preview(results, title, artists)
+
+
+def add_previews(
+    session: requests.Session,
+    tracks: list[Track],
+    pause: Callable[[float], None] = time.sleep,
+) -> int:
+    """Fills in each track's preview; returns how many were found."""
+    found = 0
+    for index, track in enumerate(tracks):
+        if index:
+            pause(DEEZER_PAUSE_SECONDS)
+        track["preview"] = lookup_preview(session, track["title"], track["artists"])
+        found += track["preview"] is not None
+    return found
 
 
 def verify_client(
@@ -431,7 +528,7 @@ def _credentials() -> tuple[str, str, str]:
 
 
 def fetch(session: requests.Session, config: dict[str, str], images: ImageSaver) -> FeedResult:
-    playlist_id = require_setting(config, "spotifyPlaylistId")
+    playlist_id = playlist_id_from(require_setting(config, "spotifyPlaylistId"))
     client_id, secret, refresh = _credentials()
 
     try:
@@ -441,6 +538,7 @@ def fetch(session: requests.Session, config: dict[str, str], images: ImageSaver)
         raise
     headers = {"Authorization": f"Bearer {token}"}
     tracks = parse_playlist_items(_playlist_pages(session, playlist_id, headers), images)
+    previews = add_previews(session, tracks)
 
     # Get Several Tracks was removed for development-mode apps, so embeds are
     # fetched one by one. A bad id is logged, never fatal: the site build then
@@ -467,7 +565,8 @@ def fetch(session: requests.Session, config: dict[str, str], images: ImageSaver)
         "tracks": tracks,
         "embedded": embedded,
     }
-    return FeedResult(feed, f"{len(tracks)} tracks, {len(embedded)} embedded")
+    detail = f"{len(tracks)} tracks ({previews} with previews), {len(embedded)} embedded"
+    return FeedResult(feed, detail)
 
 
 # ---------- local check: python -m scripts.spotify --check ----------
@@ -641,7 +740,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
     try:
-        playlist_id = require_setting(load_site_config(), "spotifyPlaylistId")
+        playlist_id = playlist_id_from(require_setting(load_site_config(), "spotifyPlaylistId"))
     except SkipFetcher as reason:
         print(f"failed: {reason}")
         return 1

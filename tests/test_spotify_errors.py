@@ -29,7 +29,7 @@ CLIENT_ID = "0123456789abcdef0123456789abcdef"
 SECRET = "fedcba9876543210fedcba9876543210"
 REFRESH = "AQ" + "r" * 130
 ACCESS = "BQ" + "a" * 100
-PLAYLIST = "37i9dQZF1DXexample"
+PLAYLIST = "5vxDxvkiXxa8SCCT0MgJMI"
 
 
 OK_CLIENT = (200, '{"access_token": "client-only", "token_type": "Bearer"}')
@@ -68,6 +68,11 @@ class SpotifyStub(requests.Session):
         response.url = str(request.url)
         response.request = request
         return response
+
+
+@pytest.fixture(autouse=True)
+def no_deezer_pause(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("scripts.spotify.DEEZER_PAUSE_SECONDS", 0)
 
 
 def ok_token() -> tuple[int, str]:

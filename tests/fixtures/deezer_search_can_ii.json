@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "id": 2113267347,
+      "title": "Can II",
+      "title_short": "Can II",
+      "title_version": "",
+      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/7/e/7/0/7e7e7c724f862618261d1b414879a537.mp3?hdnea=exp=1790629705~acl=/api/1/1/7/e/7/0/7e7e7c724f862618261d1b414879a537.mp3*~data=user_id=0,application_id=42~hmac=374e23f7977f113f48548e7d3fce7cfaf8d256999e459f735b75f5b42c3cf04a",
+      "type": "track",
+      "artist": {
+        "name": "Hana Stretton"
+      }
+    },
+    {
+      "id": 2113267337,
+      "title": "Can I",
+      "title_short": "Can I",
+      "title_version": "",
+      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/e/f/c/0/efc2c300f33c5dbe5d737dcb6bcffb66.mp3?hdnea=exp=1790629705~acl=/api/1/1/e/f/c/0/efc2c300f33c5dbe5d737dcb6bcffb66.mp3*~data=user_id=0,application_id=42~hmac=a41e27260208a94c518f8b38d8d85e5d1b01e85b13ffa3b8e4d871ac8e6e9f5e",
+      "type": "track",
+      "artist": {
+        "name": "Hana Stretton"
+      }
+    }
+  ],
+  "total": 2
+}
