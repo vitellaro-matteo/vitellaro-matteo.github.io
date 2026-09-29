@@ -20,14 +20,14 @@ how to fill in each value and create each secret.
 | Value                                                                 | Where           | Notes                                                                             |
 | --------------------------------------------------------------------- | --------------- | --------------------------------------------------------------------------------- |
 | `SITE_NAME`                                                           | site.config.ts  | `matteo` (lowercase wordmark)                                                     |
-| `TAGLINE`                                                             | site.config.ts  | `a slow feed`                                                                     |
-| `HERO_TITLE`                                                          | site.config.ts  | `A quiet shelf for the songs, films, books and small things I keep finding.`      |
+| `TAGLINE`                                                             | site.config.ts  | `my feed`                                                                         |
+| `HERO_TITLE`                                                          | site.config.ts  | `A shelf for the things I keep finding.`                                          |
 | `HERO_BIO`                                                            | site.config.ts  | 1–2 sentences about Matteo                                                        |
 | `SITE_URL`                                                            | site.config.ts  | `https://vitellaro-matteo.github.io` (origin only)                                |
 | `BASE_PATH`                                                           | site.config.ts  | `/`: the repo is `vitellaro-matteo.github.io`, which Pages serves from the root   |
 | `TIMEZONE`                                                            | site.config.ts  | `Europe/Berlin` (week numbers and dates)                                          |
 | `SPOTIFY_PLAYLIST_ID`                                                 | site.config.ts  | the "last week's finds" playlist: the id, or its share link (`?si=…` is stripped) |
-| `LASTFM_USERNAME`                                                     | site.config.ts  | for the now box's "on repeat" row                                                 |
+| `LASTFM_USERNAME`                                                     | site.config.ts  | for the now box's "on repeat" row and the footer's `last.fm ↗` link               |
 | `LETTERBOXD_USERNAME`                                                 | site.config.ts  |                                                                                   |
 | `GOODREADS_USER_ID`                                                   | site.config.ts  | numeric id from the profile URL                                                   |
 | `GITHUB_USERNAME`                                                     | site.config.ts  |                                                                                   |
@@ -59,6 +59,9 @@ the directory-style output, so GitHub Pages never redirects.
 - **Quality:** ESLint (typescript-eslint, eslint-plugin-astro, jsx-a11y),
   Prettier, `astro check`, Vitest for every module in `src/lib`, ruff, mypy
   (strict), pytest, all run by CI.
+- **Build-time images:** `opentype.js` turns text in the site's own fonts into
+  outlines and `@resvg/resvg-js` rasterises the SVG, for the favicon PNGs and the
+  share cards (§3, Head and share images). No headless browser, no system fonts.
 - **Hosting:** GitHub Pages via `actions/deploy-pages`.
 - **Client JavaScript** is limited to the listening previews, the lists-page
   tabs, the map tooltips and the menu below desktop width, each a few dozen
@@ -88,6 +91,36 @@ the directory-style output, so GitHub Pages never redirects.
 
 Alternative accents are kept as comments only: moss `#5E6B4E`, slate `#3F5A6B`,
 ink `#2A2724`.
+
+### Contrast
+
+Every text and background pair the site uses, with its WCAG 2.2 contrast ratio.
+All of them pass AA (4.5:1 for text, 3:1 for large text and graphics) with the
+tokens as they are; none needed changing. `src/lib/contrast.ts` lists the pairs
+and its test reads the values from `tokens.css`, so a token change that breaks a
+pair fails `npm test`.
+
+| Foreground  | Background | Ratio   | Needs | Where                                                       |
+| ----------- | ---------- | ------- | ----- | ----------------------------------------------------------- |
+| `--ink`     | `--paper`  | 12.95:1 | 4.5   | body text, headings, nav, footer wordmark                   |
+| `--ink`     | `--card`   | 14.00:1 | 4.5   | card text, tile titles, map tooltip                         |
+| `--ink`     | `--kraft`  | 11.11:1 | 4.5   | now box values, lists band heading and tiles                |
+| `--muted`   | `--paper`  | 6.11:1  | 4.5   | bio, page intro text, meta, footer links                    |
+| `--muted`   | `--card`   | 6.60:1  | 4.5   | artists, authors, dates, source links, notes                |
+| `--muted`   | `--kraft`  | 5.24:1  | 4.5   | now box labels and `updated` line, band text                |
+| `--accent`  | `--paper`  | 5.32:1  | 4.5   | labels, current nav item, hover, the challenge count        |
+| `--accent`  | `--card`   | 5.76:1  | 4.5   | card labels, the `■` stop glyph, the #1 numeral             |
+| `--accent`  | `--kraft`  | 4.57:1  | 4.5   | lists and challenge band labels                             |
+| `--numeral` | `--paper`  | 3.43:1  | 3     | list numerals 02–10 (display 32–56px, large text)           |
+| `--accent`  | `--kraft`  | 4.57:1  | 3     | cooked countries against uncooked ones on the map (graphic) |
+| `--accent`  | `--paper`  | 5.32:1  | 3     | the focus outline (graphic; 5.76:1 on cards)                |
+
+Two graphics sit below 3:1 on purpose, because neither is the only way to get
+their information: the contribution calendar's lighter levels (accent at 30% and
+60% on card, 1.56:1 and 2.61:1) decorate an image whose name gives the total
+(`N contributions in the last 52 weeks`), and uncooked countries (`--kraft`,
+1.26:1 on card) are listed in full, by continent, under the map. Borders and
+rules (`--line`, `--line-soft`) are decorative.
 
 ### Type
 
@@ -132,7 +165,7 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
 - 12-column grid, `column-gap: 32px` (row gap 32px for card grids).
 - **Breakpoints:** desktop from 1024px; **tablet** 768–1023px; **mobile** below
   768px. Below desktop every 12-column grid becomes a single column (twelve
-  columns would still reserve eleven 32px gaps, wider than a phone). §4.8 has the
+  columns would still reserve eleven 32px gaps, wider than a phone). §4.9 has the
   details.
 
 ### Components
@@ -143,7 +176,7 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
   `listening · watching · reading · making · cooking · journal · lists`.
   The first five are anchors to the home-page sections; journal and lists link to
   their pages. On the journal, lists and cooking pages the matching item is
-  `--accent`. Below desktop the nav becomes the menu (§4.8).
+  `--accent`. Below desktop the nav becomes the menu (§4.9).
 - **Section heading:** display 32px `<h2>` on the left, mono muted meta on the
   right, baseline-aligned, `padding-bottom: 20px; border-bottom: 1px solid var(--ink)`;
   content starts 40px below.
@@ -154,9 +187,11 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
 - **Media tile** (films and books): one link wrapping the 2:3 cover, the title
   (body 14px) and a mono muted meta line. Hover turns the title `--accent`, with
   no image effect; focus outlines the whole tile. It opens the Letterboxd entry
-  or Goodreads book page in the same tab, and its accessible name is
-  `Title (year), rated N stars on Letterboxd` or `Title by Author on Goodreads`
-  (the cover's alt text is empty, since the link names it).
+  or Goodreads book page in the same tab. Its accessible name starts with the
+  visible title (WCAG 2.5.3, label in name) and goes on with visually hidden
+  words in place of the symbol-heavy meta line, which is `aria-hidden`:
+  `Title (year), rated N stars, on Letterboxd` or `Title by Author, on
+Goodreads`. The cover's alt text is empty, since the link names it.
 - **Rows inside a card:** each row has `border-top: 1px solid var(--line-soft)`,
   including the first, so every list starts with a hairline under the card
   header. Padding 14px 0 (12px for GitHub rows, 16px for journal rows).
@@ -169,7 +204,9 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
 - **Footer:** `margin-top: 96px; padding: 40px 0 64px; border-top: 1px solid var(--ink)`.
   Left: wordmark (display 22px) and `Updated automatically, written slowly.`
   (body 14px, muted) side by side, baseline-aligned, gap 14px, like the header.
-  Right: mono muted links, gap 24px: spotify, letterboxd, goodreads, github, rss.
+  Right: mono muted links, gap 24px: spotify, last.fm, letterboxd, goodreads,
+  github, rss. The last.fm link is left out while `LASTFM_USERNAME` is still a
+  placeholder (`isFilled` in `src/lib/config.ts`).
 
 ### Formats
 
@@ -179,6 +216,38 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
 - Relative time: `40m ago`, `5h ago`, `3d ago`.
 - Tags: joined with `, `.
 - Reading time: word count at 200 words a minute, shown as `N min`.
+
+### Head and share images
+
+Every page's `<head>` (in `src/layouts/Base.astro`) carries:
+
+- `<title>`: `Page title — matteo`, or `matteo — TAGLINE` on the home page;
+  a meta description (the entry's summary, the recipe's lead, the page intro's
+  text, or `HERO_TITLE`); a canonical URL on `SITE_URL`; the RSS alternate link;
+  `theme-color` `--paper`.
+- **Favicon:** a lowercase `m` in Shippori Mincho 400, `--ink` on a `--paper`
+  square, fitted to 26 of 32px so it stays legible at 16px. `/favicon.svg`, with
+  a `/favicon-32.png` fallback and a 180px `/apple-touch-icon.png`.
+- **Open Graph and Twitter card** (`summary_large_image`): `og:type` `article`
+  for journal entries and recipes, `website` elsewhere; title, description, URL,
+  site name, and a share image with its size and alt text.
+- **Share images:** one 1200×630 PNG per page type, generated at build time as
+  `/og/TYPE.png` (`src/lib/brand.ts`, `src/lib/og.ts`). Paper background; the
+  wordmark (display 48px, ink) and tagline (mono 20px, muted) at the top over a
+  1px `--line` rule, like the header; at the bottom left, 80px from the edges,
+  the mono accent label (24px) over the title in display 84px / 1.1, ink,
+  wrapped to the width.
+
+  | Type        | Used by                        | Label              | Title                      |
+  | ----------- | ------------------------------ | ------------------ | -------------------------- |
+  | `home`      | the home page and the 404 page | `hello`            | `HERO_TITLE`               |
+  | `journal`   | the journal index and entries  | `journal`          | `Notes & essays`           |
+  | `lists`     | the lists pages                | `lists`            | `Top tens, every December` |
+  | `cooking`   | the cooking index and recipes  | `cooking`          | `What I've been cooking`   |
+  | `challenge` | the around-the-world page      | `around the world` | `One dish, every country`  |
+
+- `/robots.txt` allows everything and points to the sitemap, which leaves out
+  the 404 page.
 
 ---
 
@@ -214,8 +283,9 @@ solid var(--kraft-3)`: the date of the newest successful fetch behind the
      `--accent` while playing, when a 2px `--accent` line grows along the bottom
      of the row. One preview plays at a time; starting another stops the first;
      a preview ends at 30 seconds or when the clip ends; nothing autoplays. The
-     button's `aria-label` is `Play preview of Title by Artist` (or
-     `Stop preview` while playing) and `aria-pressed` follows playback. A
+     button's name starts with the number it shows, `01. Play preview of Title
+by Artist`, and stays the same while playing; `aria-pressed` carries the
+     state. A
      preview that fails to load (the signed Deezer links expire) turns its row
      back into a plain number. Rows without a preview keep a plain number.
      Under the list, body 14px muted: `30-second previews via Deezer. Full songs
@@ -410,7 +480,15 @@ Uses the journal entry layout (§4.3), including the older/newer footer.
   a code missing from the list fails the build. When several recipes share a
   country, the most recent one is linked.
 
-### 4.8 Tablet and mobile
+### 4.8 Not found `/404`
+
+GitHub Pages serves `404.html` for any unknown path. It uses the page-intro
+pattern (§4.4): mono accent `404`, h1 `Nothing on this shelf`, no right-hand
+text. Below, body 16px / 1.7 muted `This page doesn't exist, or it moved.`, then
+a mono muted `back home →` link (44px tall) to `/`, with 112px before the
+footer.
+
+### 4.9 Tablet and mobile
 
 Checked on every page at 360, 390, 768 and 1024px wide: no horizontal scrolling,
 nothing overflows its card or the viewport, touch targets are at least 44px
@@ -632,11 +710,19 @@ group queues runs so two never overlap, and never cancels one mid-deploy.
    `actions/deploy-pages` in a separate job. Nothing is committed back to the repo.
 
 **CI workflow, `.github/workflows/ci.yml`:** on every push and pull request, runs
-lint, `astro check`, the Vitest suite and a build with `USE_FIXTURES=true`, plus
-ruff, mypy and pytest. The pytest suite runs every parser against saved API
+lint, `astro check`, the Vitest suite and a sample build with `USE_FIXTURES=true`
+(the sample feeds and the draft examples, as in `npm run dev`), plus ruff, mypy
+and pytest. The pytest suite runs every parser against saved API
 responses in `tests/fixtures/`, with no network access.
 
 The build also generates `/rss.xml` (journal entries and recipes) and a sitemap.
+
+**Actions and dependencies:** every action in both workflows is pinned to the
+full commit SHA of its latest release, with the version in a comment
+(`actions/checkout@<sha> # v7.0.1`), and all of them run on Node 24. Dependabot
+(`.github/dependabot.yml`) checks GitHub Actions, npm and pip weekly, each
+ecosystem in one grouped pull request, and keeps the SHA pins and their version
+comments current.
 
 ---
 
@@ -646,7 +732,17 @@ The build also generates `/rss.xml` (journal entries and recipes) and a sitemap.
 2. ✓ Journal, lists and cooking pages, content schemas, example files.
 3. ✓ Challenge map and `countries.yaml`.
 4. ✓ Python fetchers, tests and the deploy workflow.
-5. Mobile pass, accessibility pass (contrast, focus styles as a 2px accent
-   outline offset 2px, alt text), Lighthouse ≥ 95 in every category. The mobile
-   and tablet layouts, the menu and the focus style are done (§4.8); the
-   contrast audit and Lighthouse remain.
+5. ✓ Mobile pass, accessibility pass (contrast, focus styles as a 2px accent
+   outline offset 2px, alt text), Lighthouse ≥ 95 in every category, plus the
+   favicon, share images, meta tags and 404 page.
+
+**Lighthouse** 13.5 on a sample build (`USE_FIXTURES=true`), Edge headless,
+29 Sep 2026. Scores are performance / accessibility / best practices / SEO:
+
+| Page                         | Mobile                | Desktop               |
+| ---------------------------- | --------------------- | --------------------- |
+| `/`                          | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| `/journal/example-entry/`    | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| `/lists/example/`            | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| `/cooking/`                  | 99 / 100 / 100 / 100  | 100 / 100 / 100 / 100 |
+| `/cooking/around-the-world/` | 98 / 100 / 100 / 100  | 100 / 100 / 100 / 100 |

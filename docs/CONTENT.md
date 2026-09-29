@@ -8,7 +8,8 @@ Run `npm run dev` while editing to see changes live at `http://localhost:4321/`.
 
 ## Drafts and examples
 
-Any entry with `draft: true` shows in `npm run dev` but never in the built site.
+Any entry with `draft: true` shows in `npm run dev` and in a sample build
+(`USE_FIXTURES=true`, which CI uses), but never in the real built site.
 Each content type has one example file, marked as an example and set as a
 draft, to copy from:
 

@@ -7,7 +7,10 @@ and cook, one quiet shelf at a time.
 
 [![CI](https://github.com/vitellaro-matteo/vitellaro-matteo.github.io/actions/workflows/ci.yml/badge.svg)](https://github.com/vitellaro-matteo/vitellaro-matteo.github.io/actions/workflows/ci.yml)
 
-![The home page](docs/screenshot.png)
+<p>
+  <img src="docs/screenshot.png" alt="The home page on a desktop: the wordmark and nav, the hero line and the now box, and the first cards of this week" width="72%">
+  <img src="docs/screenshot-mobile.png" alt="The home page on a phone: the wordmark, the menu button, the hero line and the now box stacked" width="22%">
+</p>
 
 ## Features
 
@@ -28,6 +31,11 @@ and cook, one quiet shelf at a time.
   on an Equal Earth world map rendered to static SVG at build time, with
   keyboard-accessible tooltips and a full list by continent.
 - **Yearly top tens** of songs, albums, films and books.
+- **Accessible and fast:** Lighthouse 98–100 in every category on mobile and
+  desktop, every colour pair checked against WCAG AA by a unit test, visible
+  focus everywhere, and screen-reader names that match what's on screen.
+- **Share cards drawn at build time:** a favicon and one Open Graph image per
+  page type, set in the site's own fonts and colours, plus full meta tags.
 - **RSS feed and sitemap.** All content is validated at build time: a typo in
   frontmatter or in the country list fails the build with a clear message.
 
@@ -90,11 +98,13 @@ it; touch targets are at least 44px.
 - **TypeScript** (strict) and **Zod** schemas for all content and data files
 - **Plain CSS** with custom properties; no UI framework
 - **d3-geo, topojson-client and topojson-simplify** for the build-time SVG map
+- **opentype.js and resvg** for the favicon and share images, drawn at build time
 - **Python 3.10+** fetchers (`requests`, `defusedxml`), checked with ruff, mypy
   (strict) and pytest against saved API responses
 - **Vitest** for the TypeScript helpers
 - **ESLint** (typescript-eslint, astro, jsx-a11y) and **Prettier**
-- **GitHub Actions** for CI and a daily deploy, **GitHub Pages** for hosting
+- **GitHub Actions** for CI and a daily deploy, every action pinned to a commit
+  SHA and kept current by Dependabot; **GitHub Pages** for hosting
 
 ## Project structure
 
@@ -109,13 +119,13 @@ it; touch targets are at least 44px.
 │   ├── data/               countries.yaml and sample feed fixtures
 │   ├── layouts/            the page shell
 │   ├── lib/                typed, tested helpers (dates, paths, feeds, map, …)
-│   ├── pages/              routes and the RSS feed
+│   ├── pages/              routes, the RSS feed, favicon and share images
 │   └── styles/             design tokens and global CSS
 ├── scripts/                Python fetchers (one per source + fetch_all), Spotify token helper
 ├── tests/                  pytest suite and saved API responses
 ├── public/media/           photos and cover art
 ├── docs/                   DESIGN, CONTENT and SETUP guides
-└── .github/workflows/      CI and deploy
+└── .github/               CI and deploy workflows, Dependabot
 ```
 
 ## Decisions
@@ -135,6 +145,10 @@ it; touch targets are at least 44px.
   written as compact SVG paths during the build. Visitors get about 45 KB of
   inline SVG (26 KB gzipped for the whole challenge page) instead of a map
   library plus 750 KB of country geometry.
+- **Share images without a browser.** The Open Graph cards and favicon are
+  drawn from the site's own font files with opentype.js and rasterised with
+  resvg during the build, so they always match the fonts and tokens, need no
+  headless browser, and pull in no dependency with a known vulnerability.
 - **One place for configuration.** Every username, URL and path lives in
   `site.config.ts`, and every internal link goes through one path helper, so
   moving the site to a sub-path or a custom domain is a one-line change.
@@ -145,7 +159,21 @@ it; touch targets are at least 44px.
 - [x] Around-the-world map and challenge page
 - [x] Python fetchers and the deploy workflow (daily refresh, cached fallbacks)
 - [x] Mobile and tablet layouts, menu, focus styles
-- [ ] Accessibility audit (contrast) and Lighthouse ≥ 95
+- [x] Accessibility audit (contrast, names, focus) and Lighthouse ≥ 95
+- [x] Favicon, share images, meta tags and a 404 page
+
+## Lighthouse
+
+Lighthouse 13.5 on a sample build (`USE_FIXTURES=true`, sample feeds and the
+draft examples), 29 Sep 2026. Performance / accessibility / best practices / SEO:
+
+| Page                         | Mobile                | Desktop               |
+| ---------------------------- | --------------------- | --------------------- |
+| `/`                          | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| `/journal/example-entry/`    | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| `/lists/example/`            | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| `/cooking/`                  | 99 / 100 / 100 / 100  | 100 / 100 / 100 / 100 |
+| `/cooking/around-the-world/` | 98 / 100 / 100 / 100  | 100 / 100 / 100 / 100 |
 
 ## Quick start
 

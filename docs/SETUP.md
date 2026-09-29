@@ -27,9 +27,9 @@ ruff check . && ruff format --check . && mypy && pytest
 
 The sample feeds in `src/data/feeds/` are for development only. `npm run dev`
 uses them automatically; a build uses them only when run with
-`USE_FIXTURES=true` (as CI does). A plain `npm run build` behaves like
-production: any feed card without real data is left out, and the build log
-lists which ones.
+`USE_FIXTURES=true` (as CI does), which also includes the draft examples. A plain
+`npm run build` behaves like production: any feed card without real data is left
+out, and the build log lists which ones.
 
 ### Running the fetchers locally
 
@@ -52,14 +52,14 @@ filled in.
 | Field                | Value                                                                              |
 | -------------------- | ---------------------------------------------------------------------------------- |
 | `name`               | The lowercase wordmark, `matteo`.                                                  |
-| `tagline`            | `a slow feed`.                                                                     |
+| `tagline`            | The short line beside the wordmark, `my feed`.                                     |
 | `heroTitle`          | The large line on the home page.                                                   |
 | `heroBio`            | One or two sentences about you, under the hero title.                              |
 | `url`                | `https://vitellaro-matteo.github.io` (origin only, no path).                       |
 | `basePath`           | `/`, since Pages serves the `<user>.github.io` repo from the root.                 |
 | `timezone`           | An IANA zone such as `Europe/Berlin`. Used for dates and the "this week" range.    |
 | `spotifyPlaylistId`  | The playlist id, `open.spotify.com/playlist/<id>`; a pasted share link also works. |
-| `lastfmUsername`     | Your Last.fm username, from `last.fm/user/<username>`.                             |
+| `lastfmUsername`     | From `last.fm/user/<username>`. Also adds `last.fm ↗` to the footer.               |
 | `letterboxdUsername` | From your profile URL, `letterboxd.com/<username>/`.                               |
 | `goodreadsUserId`    | The number in your profile URL, `goodreads.com/user/show/<id>-name`.               |
 | `githubUsername`     | Your GitHub login, `vitellaro-matteo`.                                             |

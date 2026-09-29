@@ -70,7 +70,7 @@ Anything you decided where the design is silent, and anything you need from Matt
 2. ✓ Journal, lists, cooking pages, content schemas, example files.
 3. ✓ Challenge map + `countries.yaml`.
 4. ✓ Python fetchers + tests + deploy workflow.
-5. Mobile pass, accessibility pass (contrast, focus = 2px accent outline offset 2px,
+5. ✓ Mobile pass, accessibility pass (contrast, focus = 2px accent outline offset 2px,
    alt text), Lighthouse ≥ 95 in all categories.
 
 After each phase: make every check above pass, then stop and give the
