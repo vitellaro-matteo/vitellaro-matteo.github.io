@@ -65,7 +65,9 @@ the directory-style output, so GitHub Pages never redirects.
 - **Hosting:** GitHub Pages via `actions/deploy-pages`.
 - **Client JavaScript** is limited to the listening previews, the lists-page
   tabs, the map tooltips and the menu below desktop width, each a few dozen
-  lines with no dependencies. Everything else is static HTML.
+  lines with no dependencies. Everything else is static HTML. The previews are
+  the only thing that talks to another site from the page, and only when a
+  preview is pressed.
 
 ---
 
@@ -285,9 +287,25 @@ solid var(--kraft-3)`: the date of the newest successful fetch behind the
      a preview ends at 30 seconds or when the clip ends; nothing autoplays. The
      button's name starts with the number it shows, `01. Play preview of Title
 by Artist`, and stays the same while playing; `aria-pressed` carries the
-     state. A
-     preview that fails to load (the signed Deezer links expire) turns its row
-     back into a plain number. Rows without a preview keep a plain number.
+     state.
+     **Fresh URLs:** Deezer's preview URLs are signed (`?hdnea=exp=…`) and
+     expire exactly 15 minutes after the API issues them; the CDN then answers 403. So a row stores only the Deezer track id (`data-deezer`), and each
+     press asks `https://api.deezer.com/track/ID` for a freshly signed URL.
+     Deezer's API sends no CORS headers, so the request is JSONP
+     (`output=jsonp`), loaded by `src/lib/deezer.ts`: every call gets its own
+     callback name, gives up after 8 seconds, and removes its script and
+     callback when it settles (a timed-out call leaves a no-op that removes
+     itself if the answer comes late). The id and callback name are validated
+     before they go into the URL, and only an `https` URL on `*.dzcdn.net` is
+     ever played. Nothing is requested before the first press.
+     While the URL loads the row already shows the playing state (`■`, pressed),
+     with the progress line starting once audio does. Because Safari only lets
+     audio start inside the tap itself, the press first plays 10ms of inline
+     silence to unlock the audio element, then switches to the preview. If the
+     fetch fails, times out, returns no preview, or the clip won't play, the row
+     turns back into a plain number, as before. A browser that blocks playback
+     outright (`NotAllowedError`) only stops, and the row stays playable. Rows
+     without a Deezer match keep a plain number.
      Under the list, body 14px muted: `30-second previews via Deezer. Full songs
 on Spotify ↗` (the second part links to the playlist; only when some row
      has a preview), then `Every Monday, the songs I liked the week before move
@@ -631,10 +649,13 @@ tests.
   result whose artist matches one of the track's artists and whose title matches
   exactly, or else matches once both titles lose their version suffix
   (`Song - Live` / `Song (Live)`). Titles and names are compared normalised:
-  case, accents, punctuation and a leading "The" are ignored. The preview URL
-  is stored, or null when nothing matches or Deezer errors; the links are signed
-  and expire within days, which the daily redeploy covers. Requests are paced to
-  stay under Deezer's 50 per 5 seconds. It also scans
+  case, accents, punctuation and a leading "The" are ignored. Only results
+  with a preview count. The match's Deezer track id is stored as `deezer_id`,
+  or null when nothing matches or Deezer errors; never the preview URL, which
+  expires 15 minutes after it's issued (the player fetches a fresh one, §4.1).
+  A feed cached before this field has no `deezer_id`, so its rows show plain
+  numbers until the next successful fetch. Requests are paced to stay under
+  Deezer's 50 per 5 seconds. It also scans
   `src/content` for `<Track id="…">` embeds and fetches any that aren't in the
   playlist with `GET /tracks/{id}`, one by one, since the batch endpoint was
   removed for development-mode apps in February 2026. They are written to the

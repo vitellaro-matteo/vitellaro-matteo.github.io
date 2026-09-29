@@ -11,7 +11,7 @@ interface Props {
 const { span, alone } = Astro.props;
 
 const tracks = spotify?.tracks.slice(0, 10) ?? [];
-const hasPreviews = tracks.some((track) => track.preview);
+const hasPreviews = tracks.some((track) => track.deezer_id);
 // Text-style variation selector (U+FE0E) so iOS doesn't swap in the emoji play button.
 const PLAY = '▶︎';
 const STOP = '■';
@@ -33,13 +33,13 @@ const STOP = '■';
         const artists = track.artists.join(', ');
         return (
           <li class="row">
-            {track.preview ? (
+            {track.deezer_id ? (
               <button
                 class="index play mono"
                 type="button"
                 aria-pressed="false"
                 aria-label={`${number}. Play preview of ${track.title} by ${artists}`}
-                data-preview={track.preview}
+                data-deezer={track.deezer_id}
               >
                 <span class="number">{number}</span>
                 <span class="icon play-icon" aria-hidden="true">
@@ -54,7 +54,7 @@ const STOP = '■';
             )}
             <span class="title">{track.title}</span>
             <span class="artist muted">{artists}</span>
-            {track.preview && <span class="progress" aria-hidden="true" />}
+            {track.deezer_id && <span class="progress" aria-hidden="true" />}
           </li>
         );
       })}
@@ -76,14 +76,18 @@ const STOP = '■';
 )}
 
 <script>
-  import { previewFinished, previewProgress } from '../../lib/preview';
+  import { freshPreview } from '../../lib/deezer';
+  import { SILENCE, previewFinished, previewProgress } from '../../lib/preview';
 
-  const buttons = document.querySelectorAll<HTMLButtonElement>('button[data-preview]');
+  const buttons = document.querySelectorAll<HTMLButtonElement>('button[data-deezer]');
 
   if (buttons.length > 0) {
     const audio = new Audio();
     audio.preload = 'none';
     let current: HTMLButtonElement | null = null;
+    // True while the current row waits for its preview URL and only the
+    // unlocking silence is playing, whose end and errors don't count.
+    let loading = false;
     let frame = 0;
 
     const rowOf = (button: HTMLButtonElement) => button.closest('li');
@@ -92,6 +96,7 @@ const STOP = '■';
 
     const stop = () => {
       if (!current) return;
+      loading = false;
       audio.pause();
       cancelAnimationFrame(frame);
       current.setAttribute('aria-pressed', 'false');
@@ -100,7 +105,7 @@ const STOP = '■';
       current = null;
     };
 
-    // A preview that won't load leaves its row as a plain, unplayable number.
+    // A preview that can't be fetched or played leaves its row as a plain number.
     const makeUnplayable = (button: HTMLButtonElement) => {
       const number = document.createElement('span');
       number.className = 'index mono muted';
@@ -120,34 +125,44 @@ const STOP = '■';
       else frame = requestAnimationFrame(tick);
     };
 
-    const play = (button: HTMLButtonElement) => {
+    const play = async (button: HTMLButtonElement) => {
       stop();
       current = button;
+      loading = true;
       button.setAttribute('aria-pressed', 'true');
       rowOf(button)?.classList.add('playing');
-      audio.src = button.dataset.preview ?? '';
-      audio
-        .play()
-        .then(() => {
-          frame = requestAnimationFrame(tick);
-        })
-        .catch((error: unknown) => {
-          // AbortError only means another preview was started first.
-          if (error instanceof DOMException && error.name === 'AbortError') return;
-          if (current === button) stop();
-          makeUnplayable(button);
-        });
+      audio.src = SILENCE;
+      audio.play().catch(() => undefined);
+      try {
+        // Deezer's preview URLs expire 15 minutes after they're issued, so each
+        // press asks for a fresh one.
+        const preview = await freshPreview(Number(button.dataset.deezer));
+        if (current !== button) return;
+        loading = false;
+        audio.src = preview;
+        await audio.play();
+        if (current === button) frame = requestAnimationFrame(tick);
+      } catch (error) {
+        // AbortError only means another preview was started first.
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        if (current === button) stop();
+        // A browser that blocks playback says nothing about the preview itself,
+        // so the row stays playable for the next press.
+        if (error instanceof DOMException && error.name === 'NotAllowedError') return;
+        makeUnplayable(button);
+      }
     };
 
     buttons.forEach((button) =>
-      button.addEventListener('click', () => (button === current ? stop() : play(button))),
+      button.addEventListener('click', () => (button === current ? stop() : void play(button))),
     );
-    audio.addEventListener('ended', stop);
-    // A load failure (an expired link, say) can arrive as an error event rather
-    // than as a rejected play().
+    audio.addEventListener('ended', () => {
+      if (!loading) stop();
+    });
+    // A load failure can arrive as an error event rather than as a rejected play().
     audio.addEventListener('error', () => {
       const failed = current;
-      if (!failed) return;
+      if (!failed || loading) return;
       stop();
       makeUnplayable(failed);
     });

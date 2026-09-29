@@ -8,7 +8,7 @@
       "artists": ["Artist name"],
       "url": "https://open.spotify.com/track/placeholder1",
       "cover": null,
-      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-1.mp3"
+      "deezer_id": 2113267347
     },
     {
       "id": "placeholder2",
@@ -16,7 +16,7 @@
       "artists": ["Another artist"],
       "url": "https://open.spotify.com/track/placeholder2",
       "cover": null,
-      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-2.mp3"
+      "deezer_id": 3561842691
     },
     {
       "id": "placeholder3",
@@ -24,7 +24,7 @@
       "artists": ["Artist name", "Featured artist"],
       "url": "https://open.spotify.com/track/placeholder3",
       "cover": null,
-      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-3.mp3"
+      "deezer_id": 1
     },
     {
       "id": "placeholder4",
@@ -32,7 +32,7 @@
       "artists": ["Band name"],
       "url": "https://open.spotify.com/track/placeholder4",
       "cover": null,
-      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-4.mp3"
+      "deezer_id": 68024456
     },
     {
       "id": "placeholder5",
@@ -40,7 +40,7 @@
       "artists": ["Solo artist"],
       "url": "https://open.spotify.com/track/placeholder5",
       "cover": null,
-      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-5.mp3"
+      "deezer_id": 2113267337
     },
     {
       "id": "placeholder6",
@@ -48,7 +48,7 @@
       "artists": ["Artist name"],
       "url": "https://open.spotify.com/track/placeholder6",
       "cover": null,
-      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-6.mp3"
+      "deezer_id": 3951051531
     },
     {
       "id": "placeholder7",
@@ -56,7 +56,7 @@
       "artists": ["Duo name"],
       "url": "https://open.spotify.com/track/placeholder7",
       "cover": null,
-      "preview": "https://cdnt-preview.dzcdn.net/api/1/1/sample/preview-7.mp3"
+      "deezer_id": 68024460
     },
     {
       "id": "placeholder8",
@@ -64,7 +64,7 @@
       "artists": ["Another artist"],
       "url": "https://open.spotify.com/track/placeholder8",
       "cover": null,
-      "preview": null
+      "deezer_id": null
     },
     {
       "id": "placeholder9",
@@ -72,7 +72,7 @@
       "artists": ["Ensemble name"],
       "url": "https://open.spotify.com/track/placeholder9",
       "cover": null,
-      "preview": null
+      "deezer_id": null
     },
     {
       "id": "placeholder10",
@@ -80,7 +80,7 @@
       "artists": ["Artist name"],
       "url": "https://open.spotify.com/track/placeholder10",
       "cover": null,
-      "preview": null
+      "deezer_id": null
     }
   ],
   "embedded": []

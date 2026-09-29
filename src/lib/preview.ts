@@ -1,3 +1,11 @@
+/**
+ * 10 ms of silence. Safari only lets audio start inside the tap itself, and a
+ * preview's URL arrives a moment later, so the player starts this first to
+ * unlock the audio element.
+ */
+export const SILENCE =
+  'data:audio/wav;base64,UklGRnQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVAAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
+
 /** Previews stop after this many seconds, even if the clip is longer. */
 export const PREVIEW_SECONDS = 30;
 

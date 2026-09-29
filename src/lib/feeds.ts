@@ -53,8 +53,12 @@ export interface SpotifyTrack {
   artists: string[];
   url: string;
   cover: string | null;
-  /** A 30-second MP3 from Deezer; signed, so it expires within days. */
-  preview: string | null;
+  /**
+   * The same recording on Deezer, whose 30-second preview the player fetches
+   * when pressed (its signed URLs expire after 15 minutes, so none is stored),
+   * or null when Deezer has no match. Missing in feeds cached before the field.
+   */
+  deezer_id?: number | null;
 }
 
 export interface SpotifyFeed {
