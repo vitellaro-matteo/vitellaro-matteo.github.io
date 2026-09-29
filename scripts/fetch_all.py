@@ -20,7 +20,7 @@ from typing import Literal
 
 import requests
 
-from scripts import github, goodreads, instagram, letterboxd, spotify
+from scripts import github, goodreads, lastfm, letterboxd, spotify
 from scripts.common import (
     LIVE_DIR,
     MEDIA_DIR,
@@ -57,9 +57,9 @@ class Outcome:
 
 FETCHERS: tuple[Fetcher, ...] = (
     Fetcher("spotify", spotify.fetch),
+    Fetcher("lastfm", lastfm.fetch),
     Fetcher("letterboxd", letterboxd.fetch),
     Fetcher("goodreads", goodreads.fetch),
-    Fetcher("instagram", instagram.fetch),
     Fetcher("github", github.fetch),
 )
 

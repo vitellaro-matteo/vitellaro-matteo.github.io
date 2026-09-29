@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "slow-feed-fetchers"
 version = "0.1.0"
-description = "Fetchers that turn Spotify, Letterboxd, Goodreads, Instagram and GitHub into feed JSON for the site."
+description = "Fetchers that turn Spotify, Last.fm, Letterboxd, Goodreads and GitHub into feed JSON for the site."
 license = "MIT"
 requires-python = ">=3.10"
 dependencies = ["defusedxml>=0.7.1", "requests>=2.32"]

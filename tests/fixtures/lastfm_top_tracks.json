@@ -1,0 +1,33 @@
+{
+  "toptracks": {
+    "track": [
+      {
+        "streamable": { "fulltrack": "0", "#text": "0" },
+        "mbid": "",
+        "name": "Can II",
+        "image": [
+          {
+            "size": "small",
+            "#text": "https://lastfm.freetls.fastly.net/i/u/34s/2a96cbd8b46e442fc41c2b86b821562f.png"
+          }
+        ],
+        "artist": {
+          "url": "https://www.last.fm/music/Hana+Stretton",
+          "name": "Hana Stretton",
+          "mbid": ""
+        },
+        "url": "https://www.last.fm/music/Hana+Stretton/_/Can+II",
+        "duration": "220",
+        "@attr": { "rank": "1" },
+        "playcount": "14"
+      }
+    ],
+    "@attr": {
+      "user": "example",
+      "totalPages": "31",
+      "page": "1",
+      "perPage": "1",
+      "total": "31"
+    }
+  }
+}

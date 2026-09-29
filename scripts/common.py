@@ -112,7 +112,7 @@ class ImageSaver(Protocol):
 class MediaStore:
     """
     Downloads a feed's images into public/media/feeds/<feed>/ so the site never
-    hotlinks (Instagram URLs expire). Files are named by a hash of `key` (or the
+    hotlinks (a source's CDN links can change or expire). Files are named by a hash of `key` (or the
     URL), so an image already on disk is not downloaded again.
     """
 

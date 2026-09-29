@@ -96,7 +96,7 @@ export const site = {
   basePath: '/',
   spotifyPlaylistId: 'SPOTIFY_PLAYLIST_ID',
   goodreadsUserId: '12345678',
-  instagramUsername: 'fuzetea_esports',
+  lastfmUsername: 'LASTFM_USERNAME',
 };
 """
 
@@ -106,12 +106,13 @@ def test_reads_values_from_site_config() -> None:
     assert config["name"] == "matteo"
     assert config["basePath"] == "/"
     assert require_setting(config, "goodreadsUserId") == "12345678"
-    assert require_setting(config, "instagramUsername") == "fuzetea_esports"
 
 
 def test_placeholders_and_missing_values_skip_the_fetcher() -> None:
     config = parse_site_config(SITE_CONFIG)
     with pytest.raises(SkipFetcher, match="spotifyPlaylistId"):
         require_setting(config, "spotifyPlaylistId")
+    with pytest.raises(SkipFetcher, match="lastfmUsername"):
+        require_setting(config, "lastfmUsername")
     with pytest.raises(SkipFetcher, match="githubUsername"):
         require_setting(config, "githubUsername")
