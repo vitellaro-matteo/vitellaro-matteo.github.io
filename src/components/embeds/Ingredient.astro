@@ -22,4 +22,10 @@ const { qty = '' } = Astro.props;
     padding: 14px 0;
     border-top: 1px solid var(--line-soft);
   }
+
+  @media (max-width: 767px) {
+    .ingredient {
+      grid-template-columns: 88px minmax(0, 1fr);
+    }
+  }
 </style>

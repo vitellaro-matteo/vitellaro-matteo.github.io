@@ -1,4 +1,5 @@
-/* Global styles — docs/DESIGN.md §3. */
+/* Global styles — docs/DESIGN.md §3. Breakpoints: mobile below 768px, tablet
+   768–1023px (one column, desktop type), desktop from 1024px. */
 
 *,
 *::before,
@@ -9,6 +10,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Taps get the site's own focus and hover colours, not the browser's blue flash. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -64,6 +67,20 @@ a:hover {
   color: var(--accent);
 }
 
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
 /* ---------- type helpers ---------- */
 
 .mono {
@@ -71,6 +88,12 @@ a:hover {
   font-size: 12px;
   letter-spacing: 0.06em;
   line-height: 1.5;
+}
+
+@media (max-width: 767px) {
+  .mono {
+    font-size: 11px;
+  }
 }
 
 .display {
@@ -105,6 +128,12 @@ a:hover {
   }
 }
 
+@media (max-width: 767px) {
+  .container {
+    padding: 0 24px;
+  }
+}
+
 .grid-12 {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -130,11 +159,34 @@ a:hover {
   grid-column: span 12;
 }
 
+/* Below desktop every grid stacks into a single column. (Twelve columns would
+   still reserve eleven 32px gaps, wider than a phone's content area.) */
+@media (max-width: 1023px) {
+  .grid-12 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .grid-12 > [class*='span-'] {
+    grid-column: 1;
+  }
+}
+
 /* ---------- kraft band ---------- */
 
 .kraft-band {
   background: var(--kraft);
   padding: 56px;
+}
+
+@media (max-width: 1023px) {
+  .kraft-band {
+    padding: 40px;
+  }
+}
+
+@media (max-width: 767px) {
+  .kraft-band {
+    padding: 28px 24px;
+  }
 }
 
 /* ---------- image frame (kraft background while loading) ---------- */

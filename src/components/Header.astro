@@ -8,12 +8,11 @@ interface Props {
 
 const { current } = Astro.props;
 
-// The first six are sections of the home page; journal and lists are pages of their own.
+// The first five are sections of the home page; journal and lists are pages of their own.
 const nav = [
   { key: 'listening', href: `${routes.home}#listening` },
   { key: 'watching', href: `${routes.home}#watching` },
   { key: 'reading', href: `${routes.home}#reading` },
-  { key: 'seeing', href: `${routes.home}#seeing` },
   { key: 'making', href: `${routes.home}#making` },
   { key: 'cooking', href: `${routes.home}#cooking` },
   { key: 'journal', href: routes.journal },
@@ -27,7 +26,7 @@ const nav = [
       <span class="wordmark display">{site.name}</span>
       <span class="tagline mono muted">{site.tagline}</span>
     </a>
-    <nav aria-label="Main">
+    <nav class="bar-nav" aria-label="Main">
       <ul>
         {nav.map((item) => (
           <li>
@@ -42,8 +41,101 @@ const nav = [
         ))}
       </ul>
     </nav>
+    <button
+      class="menu-button"
+      type="button"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="site-menu"
+      data-menu-open
+    >
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
+        <path d="M3 9h18M3 15h18" fill="none" stroke="currentColor" stroke-width="1.5"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div id="site-menu" class="menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <div class="container menu-bar">
+      <a class="brand" href={routes.home}>
+        <span class="wordmark display">{site.name}</span>
+      </a>
+      <button class="menu-close mono" type="button" aria-label="Close menu" data-menu-close>
+        close
+      </button>
+    </div>
+    <nav class="container" aria-label="Main">
+      <ul class="menu-list">
+        {nav.map((item) => (
+          <li>
+            <a
+              class="display"
+              href={item.href}
+              class:list={{ current: item.key === current }}
+              aria-current={item.key === current ? 'page' : undefined}
+            >
+              {item.key}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
   </div>
 </header>
+
+<script>
+  const openButton = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  const menu = document.getElementById('site-menu');
+  const closeButton = menu?.querySelector<HTMLButtonElement>('[data-menu-close]');
+
+  if (openButton && menu && closeButton) {
+    const focusable = () => Array.from(menu.querySelectorAll<HTMLElement>('a[href], button'));
+
+    const open = () => {
+      menu.hidden = false;
+      openButton.setAttribute('aria-expanded', 'true');
+      document.documentElement.classList.add('menu-open');
+      closeButton.focus();
+    };
+
+    const close = (returnFocus: boolean) => {
+      if (menu.hidden) return;
+      menu.hidden = true;
+      openButton.setAttribute('aria-expanded', 'false');
+      document.documentElement.classList.remove('menu-open');
+      if (returnFocus) openButton.focus();
+    };
+
+    openButton.addEventListener('click', open);
+    closeButton.addEventListener('click', () => close(true));
+    // Following a link (often an anchor on this page) closes the menu first.
+    menu.addEventListener('click', (event) => {
+      if (event.target instanceof Element && event.target.closest('a')) close(false);
+    });
+    menu.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        close(true);
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const items = focusable();
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    });
+    // The menu only exists below desktop width; widening the window closes it.
+    window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
+      if (event.matches) close(false);
+    });
+  }
+</script>
 
 <style>
   .site-header {
@@ -54,11 +146,13 @@ const nav = [
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 24px;
   }
   .brand {
     display: flex;
     align-items: baseline;
     gap: 14px;
+    padding: 10px 0;
   }
   .wordmark {
     font-size: 28px;
@@ -67,17 +161,89 @@ const nav = [
   .brand:hover .tagline {
     color: var(--accent);
   }
-  nav ul {
+  .bar-nav ul {
     display: flex;
     gap: 30px;
   }
-  nav a {
+  .bar-nav a {
     display: flex;
     align-items: center;
     min-height: 44px;
     font-size: 15px;
   }
-  nav a.current {
+  a.current {
     color: var(--accent);
+  }
+  .menu-button,
+  .menu-close {
+    display: none;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .menu-button:hover,
+  .menu-close:hover {
+    color: var(--accent);
+  }
+
+  /* ---------- the full-screen menu (below desktop) ---------- */
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    overflow-y: auto;
+    background: var(--paper);
+  }
+  .menu[hidden] {
+    display: none;
+  }
+  .menu-bar {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+  }
+  .menu-list {
+    padding: 24px 0 48px;
+  }
+  .menu-list a {
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    font-size: 28px;
+  }
+
+  @media (max-width: 1023px) {
+    .inner {
+      height: 72px;
+    }
+    .wordmark {
+      font-size: 24px;
+    }
+    .bar-nav {
+      display: none;
+    }
+    .menu-button,
+    .menu-close {
+      display: flex;
+    }
+    .menu-close {
+      width: auto;
+      min-width: 44px;
+      justify-content: flex-end;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .tagline {
+      display: none;
+    }
+  }
+
+  :global(html.menu-open) {
+    overflow: hidden;
   }
 </style>

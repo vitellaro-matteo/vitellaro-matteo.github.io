@@ -107,4 +107,29 @@ const byContinent = CONTINENTS.map((continent) => ({
   .dish {
     font-size: 14px;
   }
+
+  @media (max-width: 1023px) {
+    .countries {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .continent:first-of-type {
+      margin-top: 64px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .countries {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 16px;
+    }
+    .continent {
+      margin-top: 48px;
+    }
+    .continent:first-of-type {
+      margin-top: 48px;
+    }
+    .n {
+      font-size: 40px;
+    }
+  }
 </style>

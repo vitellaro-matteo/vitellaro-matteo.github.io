@@ -88,6 +88,12 @@ const { label, meta, title, lead, older, newer } = Astro.props;
   .value {
     font-size: 15px;
   }
+  /* A 44px touch target around a one-line meta link, without taller rows. */
+  .value a {
+    display: inline-block;
+    padding: 12px 0;
+    margin: -12px 0;
+  }
   .main {
     display: flex;
     flex-direction: column;
@@ -168,5 +174,54 @@ const { label, meta, title, lead, older, newer } = Astro.props;
     font-family: var(--font-display);
     font-size: 18px;
     line-height: 1.4;
+  }
+
+  /* Below desktop: one column, the details as a wrapped row above the title. */
+  @media (max-width: 1023px) {
+    .entry {
+      padding-top: 72px;
+      row-gap: 32px;
+    }
+    .meta {
+      padding-top: 0;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 16px 32px;
+    }
+    .meta > p {
+      flex-basis: 100%;
+    }
+    h1 {
+      font-size: 40px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .entry {
+      padding-top: 48px;
+    }
+    .main {
+      gap: 32px;
+    }
+    h1 {
+      font-size: 32px;
+      line-height: 1.3;
+    }
+    .lead {
+      font-size: 19px;
+    }
+    .prose {
+      font-size: 17px;
+    }
+    .prose :global(h2) {
+      font-size: 24px;
+    }
+    .prose :global(blockquote) {
+      font-size: 22px;
+      padding-left: 20px;
+    }
+    .pager {
+      gap: 16px;
+    }
   }
 </style>

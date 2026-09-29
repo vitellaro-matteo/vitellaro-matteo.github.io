@@ -53,8 +53,7 @@ const square = (cat: string) => cat === 'songs' || cat === 'albums';
             <Frame
               src={item.image}
               alt={`${item.title} — ${item.creator}`}
-              width={104}
-              height={square(cat) ? 104 : 156}
+              ratio={square(cat) ? '1 / 1' : '2 / 3'}
               tone={placeholderTone(i)}
             />
             <div class="text">
@@ -165,5 +164,49 @@ const square = (cat: string) => cat === 'songs' || cat === 'albums';
     display: flex;
     align-items: center;
     min-height: 44px;
+  }
+
+  /* Below desktop the note moves under the title. */
+  @media (max-width: 1023px) {
+    .row {
+      grid-template-columns: 72px 104px minmax(0, 1fr);
+      grid-template-areas:
+        'numeral image text'
+        'numeral image note';
+      row-gap: 12px;
+    }
+    .numeral {
+      grid-area: numeral;
+      font-size: 48px;
+    }
+    .row > :global(.frame) {
+      grid-area: image;
+    }
+    .text {
+      grid-area: text;
+    }
+    .note {
+      grid-area: note;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .tabs {
+      gap: 24px;
+    }
+    .row {
+      grid-template-columns: 48px 72px minmax(0, 1fr);
+      column-gap: 16px;
+      padding: 20px 0;
+    }
+    .numeral {
+      font-size: 32px;
+    }
+    .title {
+      font-size: 20px;
+    }
+    .archive {
+      justify-content: flex-start;
+    }
   }
 </style>

@@ -46,4 +46,29 @@ const { label, title, text } = Astro.props;
     line-height: 1.7;
     max-width: 360px;
   }
+
+  @media (max-width: 1023px) {
+    .page-intro {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 72px 0 48px;
+    }
+    h1 {
+      font-size: 56px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .page-intro {
+      padding: 48px 0 40px;
+      gap: 20px;
+    }
+    .left {
+      gap: 16px;
+    }
+    h1 {
+      font-size: 40px;
+      line-height: 1.15;
+    }
+  }
 </style>

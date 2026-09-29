@@ -6,7 +6,6 @@ const items = [
   { label: 'spotify', href: links.spotify, external: true },
   { label: 'letterboxd', href: links.letterboxd, external: true },
   { label: 'goodreads', href: links.goodreads, external: true },
-  { label: 'instagram', href: links.instagram, external: true },
   { label: 'github', href: links.github, external: true },
   { label: 'rss', href: routes.rss, external: false },
 ];
@@ -62,5 +61,20 @@ const items = [
     display: flex;
     align-items: center;
     min-height: 44px;
+  }
+
+  @media (max-width: 767px) {
+    .site-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .left {
+      flex-wrap: wrap;
+    }
+    .links {
+      column-gap: 16px;
+      row-gap: 0;
+    }
   }
 </style>

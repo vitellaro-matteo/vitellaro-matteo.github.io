@@ -49,20 +49,54 @@ const label = `World map: ${cooked.size} of ${COUNTRY_TOTAL} countries cooked, s
       }
       tip.hidden = false;
 
-      // Keep the tooltip inside the map: flip it to the left of the pointer near the right edge.
+      // Keep the tooltip inside the map: flip it to the left of the pointer near the
+      // right edge, and above it near the bottom.
       const box = root.getBoundingClientRect();
       const left = x - box.left + OFFSET;
       const fitsRight = left + tip.offsetWidth <= box.width;
-      tip.style.left = `${fitsRight ? left : x - box.left - OFFSET - tip.offsetWidth}px`;
-      tip.style.top = `${y - box.top + OFFSET}px`;
+      const x0 = fitsRight ? left : x - box.left - OFFSET - tip.offsetWidth;
+      const top = y - box.top + OFFSET;
+      const fitsBelow = top + tip.offsetHeight <= box.height;
+      const y0 = fitsBelow ? top : y - box.top - OFFSET - tip.offsetHeight;
+      tip.style.left = `${Math.max(0, x0)}px`;
+      tip.style.top = `${Math.max(0, y0)}px`;
     };
 
+    // Mouse: the tooltip follows the pointer. Touch has no hover, so a first tap
+    // shows the tooltip and a second tap on a cooked country follows its link.
+    let pointerType = 'mouse';
+    let tapped: SVGElement | null = null;
+
+    root.addEventListener('pointerdown', (event) => {
+      pointerType = event.pointerType;
+    });
     root.addEventListener('pointermove', (event) => {
+      if (event.pointerType !== 'mouse') return;
       const country = countryFrom(event.target);
       if (country) show(country, event.clientX, event.clientY);
       else hide();
     });
-    root.addEventListener('pointerleave', hide);
+    root.addEventListener('pointerleave', (event) => {
+      if (event.pointerType === 'mouse') hide();
+    });
+    root.addEventListener('click', (event) => {
+      if (pointerType === 'mouse') return;
+      const country = countryFrom(event.target);
+      if (!country) {
+        tapped = null;
+        hide();
+        return;
+      }
+      if (country !== tapped && country.closest('a')) event.preventDefault();
+      tapped = country;
+      show(country, event.clientX, event.clientY);
+    });
+    document.addEventListener('pointerdown', (event) => {
+      if (event.target instanceof Node && !root.contains(event.target)) {
+        tapped = null;
+        hide();
+      }
+    });
     root.addEventListener('focusin', (event) => {
       const country = countryFrom(event.target);
       if (!country) return;

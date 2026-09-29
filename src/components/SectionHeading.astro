@@ -26,4 +26,14 @@ const { title, meta, id } = Astro.props;
   h2 {
     font-size: 32px;
   }
+
+  @media (max-width: 767px) {
+    .section-heading {
+      flex-wrap: wrap;
+      row-gap: 4px;
+    }
+    h2 {
+      font-size: 24px;
+    }
+  }
 </style>

@@ -59,4 +59,21 @@ const entries = await getJournal();
   .tags {
     text-align: right;
   }
+
+  @media (max-width: 767px) {
+    .row {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 8px;
+      padding: 20px 0;
+    }
+    .title {
+      font-size: 22px;
+    }
+    .summary {
+      font-size: 15px;
+    }
+    .tags {
+      text-align: left;
+    }
+  }
 </style>

@@ -20,4 +20,14 @@
   .margin-note :global(p) {
     margin: 0;
   }
+
+  /* Below desktop there is no margin, so the note becomes an indented block. */
+  @media (max-width: 1023px) {
+    .margin-note {
+      float: none;
+      width: auto;
+      margin-right: 0;
+      padding-left: 24px;
+    }
+  }
 </style>
