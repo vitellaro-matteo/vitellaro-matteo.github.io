@@ -72,7 +72,7 @@ class SpotifyStub(requests.Session):
 
 @pytest.fixture(autouse=True)
 def no_deezer_pause(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("scripts.spotify.DEEZER_PAUSE_SECONDS", 0)
+    monkeypatch.setattr("scripts.spotify.PAUSE_SECONDS", 0)
 
 
 def ok_token() -> tuple[int, str]:

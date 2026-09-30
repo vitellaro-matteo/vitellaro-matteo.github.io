@@ -2,10 +2,8 @@
 Spotify: the tracks of the "last week's finds" playlist, plus every track
 embedded with <Track id="…"> anywhere in src/content, so those embeds keep
 working after a song leaves the playlist. Spotify no longer gives new apps
-preview clips, so each playlist track is matched on Deezer's public search API
-instead. Only the Deezer track id is stored: Deezer's preview URLs are signed
-and expire 15 minutes after they're issued, so the site asks for a fresh one
-when a preview is played.
+preview clips, so each playlist track is matched on Deezer instead
+(scripts/deezer.py), and its Deezer id is stored for the site's player.
 
     python -m scripts.spotify --check
 
@@ -29,7 +27,6 @@ import os
 import re
 import sys
 import time
-import unicodedata
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import TypedDict
@@ -48,13 +45,11 @@ from scripts.common import (
     require_env,
     utc_now,
 )
+from scripts.deezer import PAUSE_SECONDS, lookup_track_id
 from scripts.site_config import load_site_config, require_setting
 
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 API = "https://api.spotify.com/v1"
-DEEZER_SEARCH = "https://api.deezer.com/search"
-# Deezer allows 50 requests per 5 seconds; a short pause keeps long playlists under it.
-DEEZER_PAUSE_SECONDS = 0.12
 CONTENT_DIR = ROOT / "src" / "content"
 DEBUG_DIR = ROOT / ".debug" / "spotify"
 
@@ -362,76 +357,6 @@ def playlist_id_from(value: str) -> str:
     return candidate
 
 
-def normalise(text: str) -> str:
-    """Lowercase ASCII words for comparing titles and names across services."""
-    decomposed = unicodedata.normalize("NFKD", text.casefold())
-    plain = "".join(char for char in decomposed if not unicodedata.combining(char))
-    words = re.findall(r"[a-z0-9]+", plain)
-    if words[:1] == ["the"]:
-        words = words[1:]
-    return " ".join(words)
-
-
-def base_title(title: str) -> str:
-    """A title without its version: "Song - Live" and "Song (Live)" both become "Song"."""
-    base = re.split(r"\s+-\s+|\s*[(\[]", title, maxsplit=1)[0].strip()
-    return base or title
-
-
-def _deezer_id(value: object) -> int | None:
-    # bool is an int subclass, and JSON true is never an id.
-    if isinstance(value, int) and not isinstance(value, bool) and value > 0:
-        return value
-    return None
-
-
-def match_deezer_id(results: object, title: str, artists: list[str]) -> int | None:
-    """
-    The id of the Deezer search result that is the same recording and has a
-    preview: the artist must match, and the exact title wins over one that only
-    matches without its version (so "Song - Live" prefers "Song (Live)" to "Song").
-    """
-    data = results.get("data") if isinstance(results, dict) else None
-    wanted_artists = {normalise(artist) for artist in artists}
-    full, base = normalise(title), normalise(base_title(title))
-    candidates: list[tuple[str, str, int]] = []
-    for item in data if isinstance(data, list) else []:
-        if not isinstance(item, dict):
-            continue
-        artist = item.get("artist")
-        name = _text(artist.get("name")) if isinstance(artist, dict) else None
-        deezer_id = _deezer_id(item.get("id"))
-        has_preview = _text(item.get("preview")) is not None
-        found_title = _text(item.get("title"))
-        if name and deezer_id and has_preview and found_title and normalise(name) in wanted_artists:
-            candidates.append(
-                (normalise(found_title), normalise(base_title(found_title)), deezer_id)
-            )
-    for found_full, _, deezer_id in candidates:
-        if found_full == full:
-            return deezer_id
-    for _, found_base, deezer_id in candidates:
-        if found_base == base:
-            return deezer_id
-    return None
-
-
-def lookup_deezer_id(session: requests.Session, title: str, artists: list[str]) -> int | None:
-    """The track's Deezer id, or None when there's no match or Deezer fails."""
-    query = " ".join([*artists[:1], base_title(title)])
-    try:
-        response = session.get(DEEZER_SEARCH, params={"q": query}, timeout=TIMEOUT_SECONDS)
-        results = response.json()
-    except (requests.RequestException, ValueError) as error:
-        log.warning("spotify: no preview for %s (%s)", title, type(error).__name__)
-        return None
-    error_body = results.get("error") if isinstance(results, dict) else None
-    if isinstance(error_body, dict):
-        log.warning("spotify: no preview for %s (Deezer: %s)", title, error_body.get("message"))
-        return None
-    return match_deezer_id(results, title, artists)
-
-
 def add_previews(
     session: requests.Session,
     tracks: list[Track],
@@ -441,8 +366,8 @@ def add_previews(
     found = 0
     for index, track in enumerate(tracks):
         if index:
-            pause(DEEZER_PAUSE_SECONDS)
-        track["deezer_id"] = lookup_deezer_id(session, track["title"], track["artists"])
+            pause(PAUSE_SECONDS)
+        track["deezer_id"] = lookup_track_id(session, track["title"], track["artists"])
         found += track["deezer_id"] is not None
     return found
 

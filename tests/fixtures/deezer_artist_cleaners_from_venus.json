@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "id": 1877261,
+      "name": "The Cleaners From Venus",
+      "link": "https:\/\/www.deezer.com\/artist\/1877261",
+      "picture": "https:\/\/api.deezer.com\/artist\/1877261\/image",
+      "picture_small": "https:\/\/cdn-images.dzcdn.net\/images\/artist\/6dee2473591ff4f975b712b12077d591\/56x56-000000-80-0-0.jpg",
+      "picture_medium": "https:\/\/cdn-images.dzcdn.net\/images\/artist\/6dee2473591ff4f975b712b12077d591\/250x250-000000-80-0-0.jpg",
+      "picture_big": "https:\/\/cdn-images.dzcdn.net\/images\/artist\/6dee2473591ff4f975b712b12077d591\/500x500-000000-80-0-0.jpg",
+      "picture_xl": "https:\/\/cdn-images.dzcdn.net\/images\/artist\/6dee2473591ff4f975b712b12077d591\/1000x1000-000000-80-0-0.jpg",
+      "nb_album": 43,
+      "nb_fan": 2140,
+      "radio": true,
+      "tracklist": "https:\/\/api.deezer.com\/artist\/1877261\/top?limit=50",
+      "type": "artist"
+    },
+    {
+      "id": 3906071,
+      "name": "Cleaners From Venus",
+      "link": "https:\/\/www.deezer.com\/artist\/3906071",
+      "picture": "https:\/\/api.deezer.com\/artist\/3906071\/image",
+      "picture_small": "https:\/\/cdn-images.dzcdn.net\/images\/artist\/6dee2473591ff4f975b712b12077d591\/56x56-000000-80-0-0.jpg",
+      "picture_medium": "https:\/\/cdn-images.dzcdn.net\/images\/artist\/6dee2473591ff4f975b712b12077d591\/250x250-000000-80-0-0.jpg",
+      "picture_big": "https:\/\/cdn-images.dzcdn.net\/images\/artist\/6dee2473591ff4f975b712b12077d591\/500x500-000000-80-0-0.jpg",
+      "picture_xl": "https:\/\/cdn-images.dzcdn.net\/images\/artist\/6dee2473591ff4f975b712b12077d591\/1000x1000-000000-80-0-0.jpg",
+      "nb_album": 2,
+      "nb_fan": 124,
+      "radio": true,
+      "tracklist": "https:\/\/api.deezer.com\/artist\/3906071\/top?limit=50",
+      "type": "artist"
+    }
+  ],
+  "total": 2
+}
