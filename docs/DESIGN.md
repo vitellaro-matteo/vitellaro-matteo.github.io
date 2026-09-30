@@ -62,12 +62,19 @@ the directory-style output, so GitHub Pages never redirects.
 - **Build-time images:** `opentype.js` turns text in the site's own fonts into
   outlines and `@resvg/resvg-js` rasterises the SVG, for the favicon PNGs and the
   share cards (§3, Head and share images). No headless browser, no system fonts.
+- **Content images:** `astro:assets` with `sharp` (bundled with Astro): each
+  photo next to its entry is served as AVIF and WebP at the widths its layout
+  needs (§3, Images).
+- **CMS:** [Sveltia CMS](https://sveltiacms.app/) at `/admin`, a static page that
+  loads a pinned, hash-checked build from unpkg and commits to the repository
+  with a fine-grained token (§5, CMS). No server, no OAuth app.
 - **Hosting:** GitHub Pages via `actions/deploy-pages`.
 - **Client JavaScript** is limited to the song previews (listening card and now
   box), the lists-page tabs, the map tooltips and the menu below desktop width,
   each a few dozen lines with no dependencies. Everything else is static HTML.
   The previews are the only thing that talks to another site from the page, and
-  only when a preview is pressed.
+  only when a preview is pressed. The CMS at `/admin` is a separate app, not part
+  of the site's pages.
 
 ---
 
@@ -220,6 +227,26 @@ Goodreads`. The cover's alt text is empty, since the link names it.
 - Relative time: `40m ago`, `5h ago`, `3d ago`.
 - Tags: joined with `, `.
 - Reading time: word count at 200 words a minute, shown as `N min`.
+
+### Images
+
+Content images (a recipe's photo, a journal cover, the lists' covers) live next
+to their entry and go through Astro's `image()` schema helper, so the build
+optimises them. `Frame` renders them with `<Picture>`: AVIF and WebP sources, a
+WebP fallback `<img>`, `loading="lazy"`, and `width`/`height` from the original
+so the page never jumps. The widths follow the layout (`src/lib/images.ts`) and
+never exceed the original:
+
+| Where                          | Widths (px)          | `sizes`                                    |
+| ------------------------------ | -------------------- | ------------------------------------------ |
+| Recipe photo, journal cover    | 640, 960, 1280, 1920 | 100vw − 48px / 100vw − 80px / 640px        |
+| Recipe cards on `/cooking`     | 360, 720, 1080       | 100vw − 48px / (100vw − 112px) ÷ 2 / 352px |
+| List covers                    | 72, 104, 144, 208    | 72px on phones, 104px                      |
+| A fixed-width image (e.g. 120) | 120, 240             | 120px                                      |
+
+Feed images (downloaded by the fetchers into `public/media/feeds/`) and the
+embeds' `poster`/`cover` paths stay plain `<img>` under `public/`. With no image,
+the kraft box stands in, as before.
 
 ### Head and share images
 
@@ -389,7 +416,8 @@ A 12-column grid with `padding-top: 112px`.
   pairs of a mono muted label over a body 15px value (gap 6px): `written`,
   `reading time`, `filed under`.
 - **Middle, span 7**, gap 40px: `<h1>` display 50px / 1.25; the lead (frontmatter
-  `lead`) display 22px / 1.6 muted; the body in Instrument Sans 18px / 1.75, with
+  `lead`) display 22px / 1.6 muted; an optional `cover` photo at 4:3 across the
+  column, like a recipe's photo (§4.6); the body in Instrument Sans 18px / 1.75, with
   blocks 28px apart; `<h2>` display 28px; blockquotes display 26px / 1.5,
   `padding-left: 32px`, no border.
 - **Right, span 2:** margin notes (`<Aside>`), mono 12px / 1.8 muted, level with
@@ -410,7 +438,9 @@ label, a display 20px title, a body 15px muted subtitle and a mono link.
 | `<Recipe slug="…"/>` | 96×72 photo (4:3)   | `recipe`                 | `recipe →`     |
 
 Every embed takes a `label` to replace the default. `<Track>` looks the track up
-by id in the Spotify feed (§6).
+by id in the Spotify feed (§6). With the live feed, which holds every embedded
+track, an unknown id fails the build (a typo); with the sample feed (dev, CI) or
+no feed, the embed is left out with a log line instead.
 
 ### 4.4 Lists `/lists/[year]` and `/lists`
 
@@ -583,29 +613,103 @@ alternative), and the previews, the lists tabs and the map tooltips work by touc
 
 ## 5. Content model
 
-Everything below is edited by hand; the now box is filled from Last.fm and
-Goodreads (§4.1). [CONTENT.md](CONTENT.md) is the how-to.
+Everything below is edited in the CMS (below) or by hand; the now box is filled
+from Last.fm and Goodreads (§4.1). [CONTENT.md](CONTENT.md) is the how-to.
+
+Each entry is a folder of its own, holding the entry and its images; the folder
+name is the URL slug.
 
 ```
-site.config.ts                  every value from §1
-src/data/countries.yaml         the challenge list (§4.7)
-src/content/journal/*.mdx       title, date, lead, summary, tags[], draft
-src/content/recipes/*.mdx       title, date, lead, source_name, source_url,
-                                country, challenge (iso_n3, optional),
-                                time, serves, again, image, draft
-src/content/lists/YEAR.yaml     draft, songs[10], albums[10], films[10], books[10]:
-                                {title, creator, note, image}
-public/media/…                  Matteo's photos (recipes, list covers)
+site.config.ts                        every value from §1
+src/data/countries.yaml               the challenge list (§4.7)
+src/content/journal/SLUG/index.mdx    title, date, lead, summary, tags[], draft,
+                                      cover (optional image)
+src/content/recipes/SLUG/index.mdx    title, date, lead, source_name, source_url,
+                                      country, challenge (iso_n3, optional),
+                                      time, serves, again, image, draft
+src/content/lists/YEAR/index.yaml     draft, songs, albums, films, books:
+                                      up to 10 of {title, creator, note, image}
+src/content/*/SLUG/*.webp             the entry's images, next to it
 ```
 
-- All frontmatter and YAML is validated with Zod. A missing or invalid field
-  fails the build with a message naming the file and the field.
-- Image fields are paths under `/media/…`, and the file must exist in `public/`.
-- A published list file must be named after its year, e.g. `2025.yaml`.
+- The schemas are in `src/lib/schemas.ts` (the countries' in
+  `src/lib/countries.ts`). All frontmatter and YAML is validated with Zod; a
+  missing or invalid field fails the build with a message naming the file and
+  the field.
+- Image fields name a file next to the entry (`image: ragu.webp`) and use
+  Astro's `image()`: a missing file fails the build (§3, Images).
+- A list's folder must be named after its year, e.g. `2025/`. A draft list may
+  hold up to ten of each category while it is filled in; a published one has
+  exactly ten of each.
 - **Drafts** (`draft: true`) show in `npm run dev` and never in the build.
-- There is one example file per content type, marked as an example and
-  `draft: true`, with flat `--kraft-2` placeholder images in
-  `public/media/examples/`.
+- There is one example per content type, marked as an example and
+  `draft: true`, with flat `--kraft-2` WebP placeholders beside it.
+
+### CMS (`/admin`)
+
+[Sveltia CMS](https://sveltiacms.app/) writes the same files, from a phone or a
+laptop. It is two static files, `public/admin/index.html` (not an Astro route,
+so the dev server never reloads it while you edit local files) and
+`public/admin/config.yml`, plus `public/admin/cms.js` with the site's additions.
+
+- **Loading:** Sveltia 0.225.0 from unpkg, pinned and checked with a `sha384`
+  subresource-integrity hash (`crossorigin="anonymous"`; unpkg sends CORS
+  headers). The page is `noindex, nofollow`, and the sitemap only lists Astro
+  pages, so `/admin` is never in it. Updating is in [SETUP.md](SETUP.md).
+- **Sign-in:** the GitHub backend on `vitellaro-matteo/vitellaro-matteo.github.io`,
+  branch `main`, with `auth_methods: [token]`: a fine-grained personal access
+  token with Contents read and write on this repository only, kept in the
+  browser. No OAuth server.
+- **Commits** go straight to `main` and so trigger the deploy workflow (§6), with
+  Conventional Commits messages: `content(journal): add SLUG`,
+  `content(cooking): update SLUG`, `content(lists): remove SLUG`,
+  `content(media): upload PATH`, `content(media): delete PATH`. The collection
+  names (`journal`, `cooking`, `lists`, `countries`) are the scopes.
+- **Collections** match the schemas exactly: same field names, types and
+  required flags. `src/lib/cms.test.ts` reads `config.yml` and the Zod schemas
+  and fails if they drift (a renamed field, a changed required flag, a different
+  list maximum), and checks `site_url` against `site.config.ts`.
+  - Journal: new entries default to today's date and `draft: true`.
+  - Recipes (`cooking`): `challenge` is a searchable relation to
+    `countries.yaml`, shown as `Country — dish`, storing the `iso_n3` code;
+    `again` is a yes / no / maybe choice; the photo is required.
+  - Lists: one entry per year; its slug is the year, typed when it is created
+    (`^\d{4}$`). The four categories are lists of `{title, creator, note, image}`,
+    at most 10 each.
+  - Around the world: `countries.yaml` as a file collection. Dishes, notes and
+    **Verified** can change; codes, names, continents and centroids are
+    read-only, and countries can't be added, removed or reordered. Saving from
+    the CMS rewrites the file in its own layout and drops its comments.
+  - Every entry collection keeps an entry per folder (`path: '{{slug}}/index'`)
+    with its media beside it (`media_folder: ''`), so deleting an entry deletes
+    its images too. Slugs come from the title: ASCII, accents removed,
+    lowercase, dashes (`Walkthrough ragù` → `walkthrough-ragu`). An unfilled
+    optional field is left out, not written as `null`
+    (`omit_empty_optional_fields`).
+- **Photos:** before a raster image is committed (including HEIC from a phone)
+  it is resized in the browser to at most 2400px on its long side and re-encoded
+  as WebP at quality 85 (`raster_image` transformation); a 4032×3024 JPEG became
+  a 2400×1800 WebP in testing. File names are slugified. Photo fields hide the
+  URL option, stock photo services are turned off, and a photo from the global
+  `public/media` folder is refused on save (`pattern: ['^[^/]', …]`), since
+  `image()` needs the file beside the entry.
+- **MDX bodies:** the body editor opens in rich text, with raw Markdown as the
+  second mode. Sveltia keeps an MDX body intact: an edit changes only what was
+  edited, JSX expressions like `year={1997}` included, and a body with embeds
+  rich text can't show (`<Film>`, `<Book>`, `<Recipe>`) opens in raw mode rather
+  than being rewritten. Three **editor components** in the Insert menu write the
+  embeds from a form: **Song** (`<Track>`; takes a Spotify share link and keeps
+  only the id), **Margin note** (`<Aside>`) and **Ingredients**
+  (`<Ingredients>` with one `<Ingredient qty>` row each). Each reads back
+  exactly what it writes; attribute values are escaped (`&quot;`, `&amp;`).
+- **MDX escaping:** a `{`, `}` or a `<` that doesn't open a tag, typed in prose,
+  would make MDX read an expression or a tag and fail the build. A `preSave`
+  hook (`escapeBodyOnSave` in `cms.js`) escapes them as `\{`, `\}` and `\<` in the
+  journal's and recipes' bodies, leaving tag lines, fenced code and inline code
+  alone; it is idempotent. The Aside and Ingredients components escape their own
+  text the same way.
+- **Local mode:** with `npm run dev`, `/admin/index.html` in a Chromium browser →
+  **Work with Local Repository** edits the files on disk and commits nothing.
 
 ---
 

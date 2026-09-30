@@ -1,7 +1,8 @@
 # Setup
 
-Everything that has to be configured once: the site values, GitHub Pages, and
-the secrets the fetchers use. Nothing here ever goes into the repo as a file.
+Everything that has to be configured once: the site values, GitHub Pages, the
+secrets the fetchers use, and the CMS token. Nothing here ever goes into the repo
+as a file.
 
 ## Local development
 
@@ -217,3 +218,42 @@ The key only reads public listening data and doesn't expire.
 Run **Actions → Deploy → Run workflow**. In the finished run, open the **Fetch
 feeds** step's summary: every feed you configured should say `updated`, and the
 live site shows its card.
+
+## CMS access token
+
+The CMS at `/admin` ([CONTENT.md](CONTENT.md#writing-in-the-cms)) commits to this
+repository as you, with a fine-grained personal access token that can touch this
+one repository and nothing else. There is no OAuth app or server to run. This
+token is not an Actions secret: it lives only in the browser you sign in with.
+
+1. On GitHub, open **Settings → Developer settings → Personal access tokens →
+   Fine-grained tokens → Generate new token**.
+2. **Token name:** `slow feed CMS`. **Expiration:** up to a year; the CMS asks
+   for a new token once it expires.
+3. **Resource owner:** `vitellaro-matteo`. **Repository access:** **Only select
+   repositories** → `vitellaro-matteo.github.io`.
+4. **Permissions → Repository permissions → Contents: Read and write.** Leave
+   everything else at **No access**; **Metadata: Read-only** is added by itself.
+5. Generate the token and copy it.
+6. Open <https://vitellaro-matteo.github.io/admin/>, choose **Sign In Using
+   Access Token** and paste it. Do the same once on each device, e.g. your phone.
+
+The browser keeps the token in its local storage until you sign out from the
+account menu. If a device is lost, delete the token on GitHub (same page as step
+1); every browser signed in with it is locked out at once.
+
+### Updating Sveltia CMS
+
+`public/admin/index.html` loads a pinned version of Sveltia CMS from unpkg and
+checks it against its hash, so a changed file on the CDN is refused. To update,
+pick the version from [npm](https://www.npmjs.com/package/@sveltia/cms), then:
+
+```sh
+VERSION=0.225.0
+curl -sL "https://unpkg.com/@sveltia/cms@$VERSION/dist/sveltia-cms.js" \
+  | openssl dgst -sha384 -binary | openssl base64 -A
+```
+
+Put the version in the script's `src`, `sha384-` plus the printed hash in its
+`integrity`, and the version in the `$schema` line of `public/admin/config.yml`.
+Then open `/admin` locally and check it loads.
