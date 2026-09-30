@@ -1,0 +1,152 @@
+---
+// A 30-second Deezer preview's play button, or an empty cell of the same size
+// when there is no preview, so rows with and without one line up. Every button
+// on the page shares the one player below: starting a preview stops any other.
+// The row that holds the button is marked `data-preview-row`; it gets the class
+// `playing` and a `--progress` value from 0 to 1 while its preview plays.
+interface Props {
+  deezerId: number | null | undefined;
+  /** The button's name, e.g. "Play preview of Title by Artist". */
+  label: string;
+}
+
+const { deezerId, label } = Astro.props;
+---
+
+{deezerId ? (
+  <button
+    class="preview mono"
+    type="button"
+    aria-pressed="false"
+    aria-label={label}
+    data-deezer={deezerId}
+  >
+    <span class="icon" aria-hidden="true" />
+  </button>
+) : (
+  <span class="preview" aria-hidden="true" />
+)}
+
+<script>
+  import { freshPreview } from '../lib/deezer';
+  import { SILENCE, previewFinished, previewProgress } from '../lib/preview';
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>('button[data-deezer]');
+
+  if (buttons.length > 0) {
+    const audio = new Audio();
+    audio.preload = 'none';
+    let current: HTMLButtonElement | null = null;
+    // True while the current button waits for its preview URL and only the
+    // unlocking silence is playing, whose end and errors don't count.
+    let loading = false;
+    let frame = 0;
+
+    const rowOf = (button: HTMLButtonElement) => button.closest<HTMLElement>('[data-preview-row]');
+    const setProgress = (button: HTMLButtonElement, value: number) =>
+      rowOf(button)?.style.setProperty('--progress', String(value));
+
+    const stop = () => {
+      if (!current) return;
+      loading = false;
+      audio.pause();
+      cancelAnimationFrame(frame);
+      current.setAttribute('aria-pressed', 'false');
+      rowOf(current)?.classList.remove('playing');
+      setProgress(current, 0);
+      current = null;
+    };
+
+    // A preview that can't be fetched or played leaves an empty cell, as for a
+    // row that never had one.
+    const makeUnplayable = (button: HTMLButtonElement) => {
+      const empty = document.createElement('span');
+      empty.className = 'preview';
+      empty.setAttribute('aria-hidden', 'true');
+      // Keep Astro's scoping attribute so the cell keeps its size.
+      for (const name of button.getAttributeNames()) {
+        if (name.startsWith('data-astro-cid')) empty.setAttribute(name, '');
+      }
+      rowOf(button)?.querySelector('[data-preview-progress]')?.remove();
+      button.replaceWith(empty);
+    };
+
+    const tick = () => {
+      if (!current) return;
+      setProgress(current, previewProgress(audio.currentTime, audio.duration));
+      if (previewFinished(audio.currentTime, audio.duration)) stop();
+      else frame = requestAnimationFrame(tick);
+    };
+
+    const play = async (button: HTMLButtonElement) => {
+      stop();
+      current = button;
+      loading = true;
+      button.setAttribute('aria-pressed', 'true');
+      rowOf(button)?.classList.add('playing');
+      audio.src = SILENCE;
+      audio.play().catch(() => undefined);
+      try {
+        // Deezer's preview URLs expire 15 minutes after they're issued, so each
+        // press asks for a fresh one.
+        const preview = await freshPreview(Number(button.dataset.deezer));
+        if (current !== button) return;
+        loading = false;
+        audio.src = preview;
+        await audio.play();
+        if (current === button) frame = requestAnimationFrame(tick);
+      } catch (error) {
+        // AbortError only means another preview was started first.
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        if (current === button) stop();
+        // A browser that blocks playback says nothing about the preview itself,
+        // so the button stays for the next press.
+        if (error instanceof DOMException && error.name === 'NotAllowedError') return;
+        makeUnplayable(button);
+      }
+    };
+
+    buttons.forEach((button) =>
+      button.addEventListener('click', () => (button === current ? stop() : void play(button))),
+    );
+    audio.addEventListener('ended', () => {
+      if (!loading) stop();
+    });
+    // A load failure can arrive as an error event rather than as a rejected play().
+    audio.addEventListener('error', () => {
+      const failed = current;
+      if (!failed || loading) return;
+      stop();
+      makeUnplayable(failed);
+    });
+  }
+</script>
+
+<style>
+  .preview {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    /* A 44px target that doesn't make a row of one line of text any taller. */
+    margin-block: -10px;
+    flex-shrink: 0;
+  }
+  button.preview {
+    color: var(--muted);
+  }
+  button.preview:hover {
+    color: var(--accent);
+  }
+  /* The glyphs are generated content, not text: the button is named by its
+     label, and a ▶︎ in its text reads to checkers as a label missing from the
+     name. U+FE0E keeps iOS from swapping in the emoji play button. */
+  .icon::before {
+    content: '\25B6\FE0E';
+  }
+  .preview[aria-pressed='true'] .icon::before {
+    content: '\25A0';
+    color: var(--accent);
+  }
+</style>

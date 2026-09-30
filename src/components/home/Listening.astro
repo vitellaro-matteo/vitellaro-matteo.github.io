@@ -1,5 +1,6 @@
 ---
 import Card from '../Card.astro';
+import PreviewButton from '../PreviewButton.astro';
 import { spotify } from '../../lib/feeds';
 import type { CardSpan } from '../../lib/layout';
 
@@ -12,9 +13,6 @@ const { span, alone } = Astro.props;
 
 const tracks = spotify?.tracks.slice(0, 10) ?? [];
 const hasPreviews = tracks.some((track) => track.deezer_id);
-// Text-style variation selector (U+FE0E) so iOS doesn't swap in the emoji play button.
-const PLAY = '▶︎';
-const STOP = '■';
 ---
 
 {spotify && (
@@ -32,29 +30,17 @@ const STOP = '■';
         const number = String(i + 1).padStart(2, '0');
         const artists = track.artists.join(', ');
         return (
-          <li class="row">
-            {track.deezer_id ? (
-              <button
-                class="index play mono"
-                type="button"
-                aria-pressed="false"
-                aria-label={`${number}. Play preview of ${track.title} by ${artists}`}
-                data-deezer={track.deezer_id}
-              >
-                <span class="number">{number}</span>
-                <span class="icon play-icon" aria-hidden="true">
-                  {PLAY}
-                </span>
-                <span class="icon stop-icon" aria-hidden="true">
-                  {STOP}
-                </span>
-              </button>
-            ) : (
-              <span class="index mono muted">{number}</span>
-            )}
+          <li class="row" data-preview-row>
+            <span class="index mono muted">{number}</span>
             <span class="title">{track.title}</span>
             <span class="artist muted">{artists}</span>
-            {track.deezer_id && <span class="progress" aria-hidden="true" />}
+            <span class="play">
+              <PreviewButton
+                deezerId={track.deezer_id}
+                label={`Play preview of ${track.title} by ${artists}`}
+              />
+            </span>
+            {track.deezer_id && <span class="progress" aria-hidden="true" data-preview-progress />}
           </li>
         );
       })}
@@ -75,148 +61,19 @@ const STOP = '■';
   </Card>
 )}
 
-<script>
-  import { freshPreview } from '../../lib/deezer';
-  import { SILENCE, previewFinished, previewProgress } from '../../lib/preview';
-
-  const buttons = document.querySelectorAll<HTMLButtonElement>('button[data-deezer]');
-
-  if (buttons.length > 0) {
-    const audio = new Audio();
-    audio.preload = 'none';
-    let current: HTMLButtonElement | null = null;
-    // True while the current row waits for its preview URL and only the
-    // unlocking silence is playing, whose end and errors don't count.
-    let loading = false;
-    let frame = 0;
-
-    const rowOf = (button: HTMLButtonElement) => button.closest('li');
-    const setProgress = (button: HTMLButtonElement, value: number) =>
-      rowOf(button)?.style.setProperty('--progress', String(value));
-
-    const stop = () => {
-      if (!current) return;
-      loading = false;
-      audio.pause();
-      cancelAnimationFrame(frame);
-      current.setAttribute('aria-pressed', 'false');
-      rowOf(current)?.classList.remove('playing');
-      setProgress(current, 0);
-      current = null;
-    };
-
-    // A preview that can't be fetched or played leaves its row as a plain number.
-    const makeUnplayable = (button: HTMLButtonElement) => {
-      const number = document.createElement('span');
-      number.className = 'index mono muted';
-      number.textContent = button.querySelector('.number')?.textContent ?? '';
-      // Keep Astro's scoping attribute so the row's styles still apply.
-      for (const name of button.getAttributeNames()) {
-        if (name.startsWith('data-astro-cid')) number.setAttribute(name, '');
-      }
-      rowOf(button)?.querySelector('.progress')?.remove();
-      button.replaceWith(number);
-    };
-
-    const tick = () => {
-      if (!current) return;
-      setProgress(current, previewProgress(audio.currentTime, audio.duration));
-      if (previewFinished(audio.currentTime, audio.duration)) stop();
-      else frame = requestAnimationFrame(tick);
-    };
-
-    const play = async (button: HTMLButtonElement) => {
-      stop();
-      current = button;
-      loading = true;
-      button.setAttribute('aria-pressed', 'true');
-      rowOf(button)?.classList.add('playing');
-      audio.src = SILENCE;
-      audio.play().catch(() => undefined);
-      try {
-        // Deezer's preview URLs expire 15 minutes after they're issued, so each
-        // press asks for a fresh one.
-        const preview = await freshPreview(Number(button.dataset.deezer));
-        if (current !== button) return;
-        loading = false;
-        audio.src = preview;
-        await audio.play();
-        if (current === button) frame = requestAnimationFrame(tick);
-      } catch (error) {
-        // AbortError only means another preview was started first.
-        if (error instanceof DOMException && error.name === 'AbortError') return;
-        if (current === button) stop();
-        // A browser that blocks playback says nothing about the preview itself,
-        // so the row stays playable for the next press.
-        if (error instanceof DOMException && error.name === 'NotAllowedError') return;
-        makeUnplayable(button);
-      }
-    };
-
-    buttons.forEach((button) =>
-      button.addEventListener('click', () => (button === current ? stop() : void play(button))),
-    );
-    audio.addEventListener('ended', () => {
-      if (!loading) stop();
-    });
-    // A load failure can arrive as an error event rather than as a rejected play().
-    audio.addEventListener('error', () => {
-      const failed = current;
-      if (!failed || loading) return;
-      stop();
-      makeUnplayable(failed);
-    });
-  }
-</script>
-
 <style>
   .row {
     position: relative;
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) auto;
+    grid-template-columns: 44px minmax(0, 1fr) auto 44px;
     align-items: baseline;
     column-gap: 16px;
     padding: 14px 0;
     border-top: 1px solid var(--line-soft);
   }
-  .index {
-    justify-self: start;
-  }
   .play {
-    /* A 44px-tall target without making the row taller. */
-    min-height: 44px;
-    margin: -12px 0;
-    min-width: 32px;
-    display: inline-flex;
-    align-items: center;
-    color: var(--muted);
-  }
-  .icon {
-    display: none;
-  }
-  .play:focus-visible .number {
-    display: none;
-  }
-  .play:focus-visible .play-icon {
-    display: inline;
-    color: var(--ink);
-  }
-  @media (hover: hover) {
-    .play:hover .number {
-      display: none;
-    }
-    .play:hover .play-icon {
-      display: inline;
-      color: var(--accent);
-    }
-  }
-  .play[aria-pressed='true'] .number,
-  .play[aria-pressed='true'] .play-icon {
-    display: none;
-  }
-  .play[aria-pressed='true'] .stop-icon {
-    display: inline;
-    color: var(--accent);
+    display: flex;
+    align-self: center;
   }
   .progress {
     position: absolute;
@@ -250,10 +107,10 @@ const STOP = '■';
 
   @media (max-width: 767px) {
     .row {
-      grid-template-columns: 32px minmax(0, 1fr);
+      grid-template-columns: 32px minmax(0, 1fr) 44px;
       grid-template-areas:
-        'index title'
-        'index artist';
+        'index title play'
+        'index artist play';
       row-gap: 2px;
       align-items: start;
     }
@@ -262,8 +119,7 @@ const STOP = '■';
       align-self: center;
     }
     .play {
-      margin: 0;
-      min-width: 32px;
+      grid-area: play;
     }
     .title {
       grid-area: title;
