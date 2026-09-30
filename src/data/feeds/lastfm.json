@@ -4,6 +4,13 @@
     "title": "Placeholder song",
     "artist": "Artist name",
     "url": "https://www.last.fm/music/Artist+name/_/Placeholder+song",
-    "playcount": 14
+    "playcount": 14,
+    "deezer_id": 2113267347
+  },
+  "top_artist": {
+    "name": "Placeholder artist",
+    "url": "https://www.last.fm/music/Placeholder+artist",
+    "playcount": 23,
+    "image": null
   }
 }

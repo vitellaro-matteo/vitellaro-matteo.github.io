@@ -16,7 +16,7 @@ const useFixtures = import.meta.env.DEV || process.env.USE_FIXTURES === 'true';
 /** What each feed fills on the home page, named when the build reports what it hides. */
 export const usedBy = {
   spotify: 'the listening card',
-  lastfm: 'the "on repeat" row of the now box',
+  lastfm: 'the "on repeat" and "most played" rows of the now box',
   letterboxd: 'the watching card',
   goodreads: 'the reading card and the "reading" row of the now box',
   github: 'the making card',
@@ -105,7 +105,22 @@ export interface GoodreadsFeed {
 export interface LastfmFeed {
   fetched_at: string;
   /** my most played track of the last seven days, or null for a silent week */
-  top_track: { title: string; artist: string; url: string; playcount: number } | null;
+  top_track: {
+    title: string;
+    artist: string;
+    url: string;
+    playcount: number;
+    /** The same recording on Deezer, for its preview; missing in feeds cached before the field. */
+    deezer_id?: number | null;
+  } | null;
+  /** my most played artist of the last seven days; missing in feeds cached before the field */
+  top_artist?: {
+    name: string;
+    url: string;
+    playcount: number;
+    /** a square photo from Deezer, or null */
+    image: string | null;
+  } | null;
 }
 
 export interface GithubFeed {

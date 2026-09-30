@@ -3,6 +3,8 @@ import { site } from '../../../site.config';
 import { goodreads, lastfm } from '../../lib/feeds';
 import { nowBox } from '../../lib/now';
 import { formatDate } from '../../lib/dates';
+import Frame from '../Frame.astro';
+import PreviewButton from '../PreviewButton.astro';
 
 const box = nowBox(lastfm, goodreads);
 ---
@@ -17,12 +19,30 @@ const box = nowBox(lastfm, goodreads);
     <aside class="now span-4" aria-label="Now">
       <p class="mono muted">now</p>
       <dl>
-        {box.rows.map((row) => (
-          <div class="row">
-            <dt class="muted">{row.label}</dt>
-            <dd>{row.value}</dd>
-          </div>
-        ))}
+        {box.rows.map((row) =>
+          row.kind === 'artist' ? (
+            <div class="row artist">
+              <dt class="muted">{row.label}</dt>
+              <dd>
+                <Frame src={row.image} alt="" width={48} height={48} tone={2} />
+                <span class="stack">
+                  <span>{row.name}</span>
+                  <span class="mono muted">{row.plays}</span>
+                </span>
+              </dd>
+            </div>
+          ) : (
+            <div class="row" data-preview-row>
+              <dt class="muted">{row.label}</dt>
+              <dd>
+                <span class="value">{row.value}</span>
+                {row.deezerId && row.previewLabel && (
+                  <PreviewButton deezerId={row.deezerId} label={row.previewLabel} />
+                )}
+              </dd>
+            </div>
+          ),
+        )}
       </dl>
       <p class="updated mono muted">updated {formatDate(box.updated)}</p>
     </aside>
@@ -69,9 +89,40 @@ const box = nowBox(lastfm, goodreads);
   }
   dd {
     margin: 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
     text-align: right;
+  }
+  .value {
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+  /* The photo, name and play count only fit beside the label in a wide box;
+     otherwise they wrap under it, still right-aligned, rather than squeezing. */
+  .artist {
+    align-items: center;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .artist dd {
+    gap: 12px;
+    margin-left: auto;
+  }
+  .artist dd > :global(.frame) {
+    flex-shrink: 0;
+  }
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+  .stack .mono {
+    white-space: nowrap;
   }
   .updated {
     padding-top: 14px;
