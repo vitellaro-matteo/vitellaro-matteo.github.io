@@ -192,10 +192,11 @@ need; a dedicated token from `scripts.spotify_auth` asks only for read access.
 When saving secrets, `gh secret set NAME` prompts for the value, which avoids a
 trailing newline from `echo`.
 
-### 3. `LASTFM_API_KEY`: the "on repeat" row of the now box
+### 3. `LASTFM_API_KEY`: the "on repeat" and "most played" rows of the now box
 
-The now box shows your most played track of the last seven days on Last.fm, so
-Last.fm has to know what you play.
+The now box shows your most played track and artist of the last seven days on
+Last.fm, so Last.fm has to know what you play. The artist's photo and the
+track's preview come from Deezer, which needs no key.
 
 1. **Scrobble Spotify to Last.fm**, if you don't already. At
    [last.fm/settings/applications](https://www.last.fm/settings/applications),

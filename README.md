@@ -17,7 +17,8 @@ and cook, one quiet shelf at a time.
 - **Self-updating home page:** last week's Spotify finds with playable
   30-second previews, recent Letterboxd films, what I'm reading and have read on
   Goodreads, a year of GitHub contributions, and a "now" box with my most played
-  track of the week (Last.fm), all refreshed every morning by Python fetchers. If
+  track (playable) and artist of the week (Last.fm, with the artist's photo from
+  Deezer), all refreshed every morning by Python fetchers. If
   a source fails, the card shows the last good copy, or steps aside and the grid
   repacks itself.
 - **Works as well on a phone as on a desktop:** dedicated tablet and mobile

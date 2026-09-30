@@ -170,10 +170,11 @@ home page always links to the latest year.
 ## The "now" box
 
 Nothing to edit: it fills itself on every deploy. "on repeat" is your most
-played track of the last seven days on Last.fm, and "reading" is the first book
-on your Goodreads currently-reading shelf. A row without data is hidden, and with
-neither there is no box. To change what "reading" shows, change the shelf on
-Goodreads.
+played track of the last seven days on Last.fm, with a play button when Deezer
+has the song; "most played" is your most played artist of the week, with their
+photo from Deezer and your play count; and "reading" is the first book on your
+Goodreads currently-reading shelf. A row without data is hidden, and with none
+there is no box. To change what "reading" shows, change the shelf on Goodreads.
 
 ## The around-the-world challenge
 

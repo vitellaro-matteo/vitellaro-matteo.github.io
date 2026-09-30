@@ -27,12 +27,12 @@ how to fill in each value and create each secret.
 | `BASE_PATH`                                                           | site.config.ts  | `/`: the repo is `vitellaro-matteo.github.io`, which Pages serves from the root   |
 | `TIMEZONE`                                                            | site.config.ts  | `Europe/Berlin` (week numbers and dates)                                          |
 | `SPOTIFY_PLAYLIST_ID`                                                 | site.config.ts  | the "last week's finds" playlist: the id, or its share link (`?si=…` is stripped) |
-| `LASTFM_USERNAME`                                                     | site.config.ts  | for the now box's "on repeat" row and the footer's `last.fm ↗` link               |
+| `LASTFM_USERNAME`                                                     | site.config.ts  | for the now box's "on repeat" and "most played" rows and the footer's `last.fm ↗` |
 | `LETTERBOXD_USERNAME`                                                 | site.config.ts  |                                                                                   |
 | `GOODREADS_USER_ID`                                                   | site.config.ts  | numeric id from the profile URL                                                   |
 | `GITHUB_USERNAME`                                                     | site.config.ts  |                                                                                   |
 | `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN` | Actions secrets | same kind as in the WeeklySpotifyUpdate repo                                      |
-| `LASTFM_API_KEY`                                                      | Actions secret  | a free Last.fm API key, for user.getTopTracks                                     |
+| `LASTFM_API_KEY`                                                      | Actions secret  | a free Last.fm API key, for user.getTopTracks and user.getTopArtists              |
 | `GH_STATS_TOKEN`                                                      | Actions secret  | fine-grained PAT, read-only, for the contribution calendar                        |
 
 ### Base path
@@ -63,11 +63,11 @@ the directory-style output, so GitHub Pages never redirects.
   outlines and `@resvg/resvg-js` rasterises the SVG, for the favicon PNGs and the
   share cards (§3, Head and share images). No headless browser, no system fonts.
 - **Hosting:** GitHub Pages via `actions/deploy-pages`.
-- **Client JavaScript** is limited to the listening previews, the lists-page
-  tabs, the map tooltips and the menu below desktop width, each a few dozen
-  lines with no dependencies. Everything else is static HTML. The previews are
-  the only thing that talks to another site from the page, and only when a
-  preview is pressed.
+- **Client JavaScript** is limited to the song previews (listening card and now
+  box), the lists-page tabs, the map tooltips and the menu below desktop width,
+  each a few dozen lines with no dependencies. Everything else is static HTML.
+  The previews are the only thing that talks to another site from the page, and
+  only when a preview is pressed.
 
 ---
 
@@ -102,20 +102,20 @@ tokens as they are; none needed changing. `src/lib/contrast.ts` lists the pairs
 and its test reads the values from `tokens.css`, so a token change that breaks a
 pair fails `npm test`.
 
-| Foreground  | Background | Ratio   | Needs | Where                                                       |
-| ----------- | ---------- | ------- | ----- | ----------------------------------------------------------- |
-| `--ink`     | `--paper`  | 12.95:1 | 4.5   | body text, headings, nav, footer wordmark                   |
-| `--ink`     | `--card`   | 14.00:1 | 4.5   | card text, tile titles, map tooltip                         |
-| `--ink`     | `--kraft`  | 11.11:1 | 4.5   | now box values, lists band heading and tiles                |
-| `--muted`   | `--paper`  | 6.11:1  | 4.5   | bio, page intro text, meta, footer links                    |
-| `--muted`   | `--card`   | 6.60:1  | 4.5   | artists, authors, dates, source links, notes                |
-| `--muted`   | `--kraft`  | 5.24:1  | 4.5   | now box labels and `updated` line, band text                |
-| `--accent`  | `--paper`  | 5.32:1  | 4.5   | labels, current nav item, hover, the challenge count        |
-| `--accent`  | `--card`   | 5.76:1  | 4.5   | card labels, the `■` stop glyph, the #1 numeral             |
-| `--accent`  | `--kraft`  | 4.57:1  | 4.5   | lists and challenge band labels                             |
-| `--numeral` | `--paper`  | 3.43:1  | 3     | list numerals 02–10 (display 32–56px, large text)           |
-| `--accent`  | `--kraft`  | 4.57:1  | 3     | cooked countries against uncooked ones on the map (graphic) |
-| `--accent`  | `--paper`  | 5.32:1  | 3     | the focus outline (graphic; 5.76:1 on cards)                |
+| Foreground  | Background | Ratio   | Needs | Where                                                        |
+| ----------- | ---------- | ------- | ----- | ------------------------------------------------------------ |
+| `--ink`     | `--paper`  | 12.95:1 | 4.5   | body text, headings, nav, footer wordmark                    |
+| `--ink`     | `--card`   | 14.00:1 | 4.5   | card text, tile titles, map tooltip                          |
+| `--ink`     | `--kraft`  | 11.11:1 | 4.5   | now box values, lists band heading and tiles                 |
+| `--muted`   | `--paper`  | 6.11:1  | 4.5   | bio, page intro text, meta, footer links                     |
+| `--muted`   | `--card`   | 6.60:1  | 4.5   | artists, authors, dates, source links, notes                 |
+| `--muted`   | `--kraft`  | 5.24:1  | 4.5   | now box labels, plays and `updated` line, its `▶︎`, band text |
+| `--accent`  | `--paper`  | 5.32:1  | 4.5   | labels, current nav item, hover, the challenge count         |
+| `--accent`  | `--card`   | 5.76:1  | 4.5   | card labels, the listening `■`, the #1 numeral               |
+| `--accent`  | `--kraft`  | 4.57:1  | 4.5   | lists and challenge band labels, the now box's `■`           |
+| `--numeral` | `--paper`  | 3.43:1  | 3     | list numerals 02–10 (display 32–56px, large text)            |
+| `--accent`  | `--kraft`  | 4.57:1  | 3     | cooked countries against uncooked ones on the map (graphic)  |
+| `--accent`  | `--paper`  | 5.32:1  | 3     | the focus outline (graphic; 5.76:1 on cards)                 |
 
 Two graphics sit below 3:1 on purpose, because neither is the only way to get
 their information: the contribution calendar's lighter levels (accent at 30% and
@@ -142,7 +142,9 @@ Mono is always lowercase as written; nothing is ever uppercase-transformed.
 - Border radius **0** everywhere. **No shadows, no gradients, no emoji, no
   icons**, except the one inline stroke SVG (the menu button). The preview
   controls are text glyphs, `▶︎` (U+25B6 + U+FE0E, so iOS keeps it as text) and
-  `■` (U+25A0).
+  `■` (U+25A0), drawn as CSS generated content so they are never part of the
+  button's text (its `aria-label` names it; a visible `▶︎` in the text reads to
+  accessibility checkers as a label missing from the name).
 - Links are ink with no underline; hover turns them `--accent`. No other hover
   effects, no transition longer than 120ms, no scroll animations.
 - **Links inside journal and recipe body text** are the exception: underlined,
@@ -262,32 +264,46 @@ Every page's `<head>` (in `src/layouts/Base.astro`) carries:
    - Left, span 8, gap 32px: mono accent `hello`; `<h1>` display 56px / 1.28
      `HERO_TITLE`; `<p>` body 18px / 1.7 muted, max-width 580px, `HERO_BIO`.
    - Right, span 4: the **now box**, kraft background, padding 32px, gap 18px:
-     mono muted `now`; up to two rows (body 15px, muted label left, value right),
-     both automatic:
+     mono muted `now`; up to three rows (body 15px, muted label left, value right),
+     all automatic:
      - `on repeat`: my most played track of the last seven days on Last.fm,
-       `Title — Artist`;
+       `Title — Artist`, followed by a **preview button** (the listening
+       card's, below) when Deezer has the song, gap 4px, vertically centred on
+       the text. The now box has no progress line; `■` shows that it plays;
+     - `most played`: my most played artist of the last seven days on Last.fm: a
+       48×48 square photo (`--kraft-2` while loading or when there is none, so
+       it shows on the kraft box), then 12px to its right the name, body 15px,
+       over mono muted `N plays this week` (`1 play this week`), which never
+       breaks. When the photo, name and count don't fit beside the label (the
+       desktop box is 229–288px wide inside), they wrap under it, still
+       right-aligned (8px row gap); at phone and tablet widths they sit beside it;
      - `reading`: the first book on the Goodreads currently-reading shelf,
        `Title — Author`.
 
      Then mono muted `updated [date]` with `padding-top: 14px; border-top: 1px
 solid var(--kraft-3)`: the date of the newest successful fetch behind the
-     rows shown. A row without data is hidden; with neither, there is no box and
+     rows shown. A row without data is hidden; with none, there is no box and
      the hero text spans all 12 columns. `nowBox` in `src/lib/now.ts` builds it.
+     The now box's preview shares the page's one player with the listening
+     card: starting either stops the other.
 3. **Section heading** `This week`, meta `week NN · D–D mon YYYY`: the previous
    ISO week (Mon–Sun) in `TIMEZONE`, matching the playlist.
 4. **Card grid** (12 columns, gap 32px), in this order and, with every card
    visible, these rows: listening 7 + watching 5, reading 5 + making 7,
    journal 5 + cooking 7.
    - **01 — listening**, h3 `last week's finds`, link `spotify ↗`. Up to 10 rows,
-     grid `44px 1fr auto`: the index, track title body 16px, artist body 15px
-     muted. **Previews:** in a row with a preview, the index is a `<button>`
-     (44px tall): it shows the number, `▶︎` on hover or focus, and `■` in
-     `--accent` while playing, when a 2px `--accent` line grows along the bottom
-     of the row. One preview plays at a time; starting another stops the first;
-     a preview ends at 30 seconds or when the clip ends; nothing autoplays. The
-     button's name starts with the number it shows, `01. Play preview of Title
-by Artist`, and stays the same while playing; `aria-pressed` carries the
-     state.
+     grid `44px 1fr auto 44px`: the index (mono muted, a plain number), track
+     title body 16px, artist body 15px muted, and the **preview button**. A row
+     without a preview gets an empty 44px cell there, so the columns line up.
+     While a row's preview plays, a 2px `--accent` line grows along its bottom.
+     **Preview button** (`src/components/PreviewButton.astro`, used here and in
+     the now box): a 44×44 `<button>`, `▶︎` in `--muted` (`--accent` on hover),
+     `■` in `--accent` while playing; negative block margins keep a 44px target
+     from making a one-line row taller. Its `aria-label` is `Play preview of
+Title by Artist` and stays the same while playing; `aria-pressed` carries
+     the state. Every preview button on the page shares one player: one preview
+     plays at a time, starting another stops the first, a preview ends at 30
+     seconds or when the clip ends, and nothing autoplays.
      **Fresh URLs:** Deezer's preview URLs are signed (`?hdnea=exp=…`) and
      expire exactly 15 minutes after the API issues them; the CDN then answers 403. So a row stores only the Deezer track id (`data-deezer`), and each
      press asks `https://api.deezer.com/track/ID` for a freshly signed URL.
@@ -302,10 +318,10 @@ by Artist`, and stays the same while playing; `aria-pressed` carries the
      with the progress line starting once audio does. Because Safari only lets
      audio start inside the tap itself, the press first plays 10ms of inline
      silence to unlock the audio element, then switches to the preview. If the
-     fetch fails, times out, returns no preview, or the clip won't play, the row
-     turns back into a plain number, as before. A browser that blocks playback
-     outright (`NotAllowedError`) only stops, and the row stays playable. Rows
-     without a Deezer match keep a plain number.
+     fetch fails, times out, returns no preview, or the clip won't play, the
+     button is replaced by the empty cell (and the row's progress line removed).
+     A browser that blocks playback outright (`NotAllowedError`) only stops, and
+     the button stays. Rows without a Deezer match have the empty cell.
      Under the list, body 14px muted: `30-second previews via Deezer. Full songs
 on Spotify ↗` (the second part links to the playlist; only when some row
      has a preview), then `Every Monday, the songs I liked the week before move
@@ -545,7 +561,9 @@ alternative), and the previews, the lists tabs and the map tooltips work by touc
 - Cards stack with a 16px gap and padding 24px; the card header is the mono label
   on the left and the source link on the right on one row, then the h3 display
   22px.
-- Listening shows 5 rows as grid `32px 1fr`, title 15px over artist 13px muted.
+- Listening shows 5 rows as grid `32px 1fr 44px`, title 15px over artist 13px
+  muted, and the preview button (or empty cell) at the right, centred on the
+  two lines.
   Watching and reading tiles stay 3 columns, gap 10px. GitHub rows put the repo
   and the time on one line and the message (14px) below.
 - Lists band padding 28px 24px, h2 26px, tiles 2 × 2.
@@ -630,7 +648,7 @@ tests.
 2. With no cached copy either, the build has no data for that feed, and the card
    it fills is left out of the page (the other cards are repacked, §4.1). The
    build log names each hidden card, e.g.
-   `[feeds] no lastfm feed: hiding the "on repeat" row of the now box`. A `<Track>` embed is
+   `[feeds] no lastfm feed: hiding the "on repeat" and "most played" rows of the now box`. A `<Track>` embed is
    likewise left out when the Spotify feed is missing.
 3. **Fixtures never reach production.** The site reads fixtures only in
    `npm run dev` or when the build runs with `USE_FIXTURES=true` (CI does, so it
@@ -644,7 +662,8 @@ tests.
   the id, a share link or a URI; anything after `?` is stripped, because a
   leftover `?si=…` turns the request into a different one.
   **Previews:** Spotify no longer gives new apps preview clips, so each playlist
-  track's 30-second preview is looked up on Deezer's public search API (no key):
+  track's 30-second preview is looked up on Deezer's public search API (no key,
+  `scripts/deezer.py`, shared with lastfm.py):
   it searches `first artist + title without its version`, then takes the first
   result whose artist matches one of the track's artists and whose title matches
   exactly, or else matches once both titles lose their version suffix
@@ -687,10 +706,21 @@ tests.
   watched date, poster and review text. Letterboxd's boilerplate paragraphs
   ("Watched on …", "This review may contain spoilers") are dropped, so an entry
   without a real review has none.
-- **lastfm.py:** `user.getTopTracks` for `LASTFM_USERNAME` with `period=7day`,
-  `limit=1`, authenticated with `LASTFM_API_KEY`: title, artist, url and play
-  count of my most played track of the week, or null for a silent week. Last.fm's
-  own error code and message are reported; the key is never logged.
+- **lastfm.py:** `user.getTopTracks` and `user.getTopArtists` for
+  `LASTFM_USERNAME` with `period=7day`, `limit=1`, authenticated with
+  `LASTFM_API_KEY`: title, artist, url and play count of my most played track of
+  the week, and name, url and play count of my most played artist, each null for
+  a silent week. The track is matched on Deezer exactly like a playlist track
+  (above) and its `deezer_id` stored. Last.fm stopped serving artist images (its
+  `image` entries are all the same grey star), so the artist is looked up on
+  Deezer's artist search by name, taking the first result whose normalised name
+  is the same; its `picture_medium` (250×250) is downloaded like any feed image,
+  unless it is Deezer's placeholder for an artist without a photo (an empty
+  image hash, `/images/artist//…`). A Deezer failure or no match only costs the
+  preview or the photo, never the feed. Last.fm's own error code and message are
+  reported; the key is never logged. A feed cached before these fields has no
+  `deezer_id` or `top_artist`, so the row has no button, or is hidden, until the
+  next successful fetch.
 - **goodreads.py:** RSS `https://www.goodreads.com/review/list_rss/GOODREADS_USER_ID`
   with `?shelf=currently-reading` (every book on it), and `?shelf=read` sorted by
   finish date to keep the latest 6: title, author, the book page URL, the
