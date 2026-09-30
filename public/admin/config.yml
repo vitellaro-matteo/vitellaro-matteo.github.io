@@ -1,0 +1,276 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms@0.225.0/schema/sveltia-cms.json
+#
+# Sveltia CMS at /admin — docs/DESIGN.md §5 (CMS) and docs/CONTENT.md. Every field
+# mirrors the content schemas in src/lib/schemas.ts and src/lib/countries.ts:
+# same names, types and required flags. src/lib/cms.test.ts fails if they drift.
+
+app_title: matteo — content
+site_url: https://vitellaro-matteo.github.io
+
+backend:
+  name: github
+  repo: vitellaro-matteo/vitellaro-matteo.github.io
+  branch: main
+  # Sign in with a fine-grained personal access token (docs/SETUP.md): no OAuth
+  # server to run.
+  auth_methods: [token]
+  commit_messages:
+    create: 'content({{collection}}): add {{slug}}'
+    update: 'content({{collection}}): update {{slug}}'
+    delete: 'content({{collection}}): remove {{slug}}'
+    uploadMedia: 'content(media): upload {{path}}'
+    deleteMedia: 'content(media): delete {{path}}'
+
+# Required by the CMS, but each collection below keeps its images next to its
+# entries instead, where Astro optimises them.
+media_folder: /public/media
+public_folder: /media
+
+media_libraries:
+  default:
+    config:
+      slugify_filename: true
+      # Phone photos are resized and re-encoded in the browser before they are
+      # committed, so a 12 MP HEIC or JPEG lands as a WebP of a few hundred KB.
+      transformations:
+        raster_image:
+          format: webp
+          quality: 85
+          width: 2400
+          height: 2400
+  # Stock photo services would put someone else's picture where mine belongs.
+  stock_assets: false
+
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: '-'
+
+output:
+  # An unfilled optional field is left out rather than written as null, which
+  # the content schemas would reject.
+  omit_empty_optional_fields: true
+
+collections:
+  - name: journal
+    label: Journal
+    label_singular: Entry
+    description: Notes and essays. New entries start as drafts.
+    icon: edit_note
+    folder: src/content/journal
+    path: '{{slug}}/index'
+    extension: mdx
+    format: frontmatter
+    media_folder: ''
+    public_folder: ''
+    slug: '{{title}}'
+    summary: '{{title}}'
+    sortable_fields: [date, title]
+    preview_path: /journal/{{slug}}/
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: date
+        label: Date
+        widget: datetime
+        type: date
+        format: YYYY-MM-DD
+        default: '{{now}}'
+      - { name: lead, label: Lead, widget: text, hint: One or two sentences under the title. }
+      - { name: summary, label: Summary, widget: string, hint: The line on the journal index. }
+      - { name: tags, label: Tags, widget: list, required: false }
+      - name: draft
+        label: Draft
+        widget: boolean
+        default: true
+        required: false
+        hint: Drafts never reach the site. Turn this off to publish.
+      - name: cover
+        label: Cover photo
+        widget: image
+        required: false
+        hint: Optional, shown above the text at 4:3.
+        choose_url: false
+        pattern: ['^[^/]', 'Upload the photo here, so it sits next to this entry.']
+      - &body
+        name: body
+        label: Text
+        widget: markdown
+        modes: [rich_text, raw]
+        editor_components: [track, aside, ingredients]
+        hint: Use Insert for a song, a margin note or the ingredients.
+
+  - name: cooking
+    label: Recipes
+    label_singular: Recipe
+    description: Recipes I followed, with a photo and what I changed. New recipes start as drafts.
+    icon: skillet
+    folder: src/content/recipes
+    path: '{{slug}}/index'
+    extension: mdx
+    format: frontmatter
+    media_folder: ''
+    public_folder: ''
+    slug: '{{title}}'
+    summary: '{{title}}'
+    sortable_fields: [date, title]
+    preview_path: /cooking/{{slug}}/
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: date
+        label: Cooked on
+        widget: datetime
+        type: date
+        format: YYYY-MM-DD
+        default: '{{now}}'
+      - { name: lead, label: Lead, widget: text, hint: One or two sentences about the dish. }
+      - name: source_name
+        label: Source
+        widget: string
+        hint: Who the recipe is from, e.g. a book or a site.
+      - name: source_url
+        label: Source link
+        widget: string
+        type: url
+        pattern: ['^https?://', 'A full link, starting with https://']
+      - { name: country, label: Country, widget: string }
+      - name: challenge
+        label: Around-the-world country
+        widget: relation
+        collection: countries
+        file: countries
+        value_field: countries.*.iso_n3
+        display_fields: ['{{countries.*.name}} — {{countries.*.dish}}']
+        search_fields: [countries.*.name, countries.*.dish]
+        required: false
+        hint: Only when this is the country's dish for the challenge.
+      - { name: time, label: Time, widget: string, hint: 'e.g. 1 hour' }
+      - { name: serves, label: Serves, widget: string }
+      - name: again
+        label: Again?
+        widget: select
+        options: ['yes', 'no', 'maybe']
+      - name: image
+        label: Photo
+        widget: image
+        hint: Shown at 4:3. Phone photos are resized to 2400px and saved as WebP.
+        choose_url: false
+        pattern: ['^[^/]', 'Upload the photo here, so it sits next to this entry.']
+      - name: draft
+        label: Draft
+        widget: boolean
+        default: true
+        required: false
+        hint: Drafts never reach the site. Turn this off to publish.
+      - *body
+
+  - name: lists
+    label: Lists
+    label_singular: List
+    description: One list per year, ten of each. A draft can hold fewer while you fill it in.
+    icon: format_list_numbered
+    folder: src/content/lists
+    path: '{{slug}}/index'
+    extension: yaml
+    format: yaml
+    media_folder: ''
+    public_folder: ''
+    slug:
+      editable: [create]
+      pattern: ['^\d{4}$', 'The year, e.g. 2026']
+      hint: The year this list is for, e.g. 2026.
+    summary: '{{slug}}'
+    preview_path: /lists/{{slug}}/
+    fields:
+      - name: draft
+        label: Draft
+        widget: boolean
+        default: true
+        required: false
+        hint: A published list has exactly ten of each.
+      - name: songs
+        label: Songs
+        label_singular: Song
+        widget: list
+        max: 10
+        required: false
+        collapsed: auto
+        summary: '{{fields.title}} — {{fields.creator}}'
+        thumbnail: image
+        fields: &item
+          - { name: title, label: Title, widget: string }
+          - { name: creator, label: By, widget: string }
+          - { name: note, label: Why it stayed, widget: text }
+          - name: image
+            label: Cover
+            widget: image
+            hint: Square for songs and albums, 2:3 for films and books.
+            choose_url: false
+            pattern: ['^[^/]', 'Upload the cover here, so it sits next to this list.']
+      - name: albums
+        label: Albums
+        label_singular: Album
+        widget: list
+        max: 10
+        required: false
+        collapsed: auto
+        summary: '{{fields.title}} — {{fields.creator}}'
+        thumbnail: image
+        fields: *item
+      - name: films
+        label: Films
+        label_singular: Film
+        widget: list
+        max: 10
+        required: false
+        collapsed: auto
+        summary: '{{fields.title}} — {{fields.creator}}'
+        thumbnail: image
+        fields: *item
+      - name: books
+        label: Books
+        label_singular: Book
+        widget: list
+        max: 10
+        required: false
+        collapsed: auto
+        summary: '{{fields.title}} — {{fields.creator}}'
+        thumbnail: image
+        fields: *item
+
+  - name: countries
+    label: Around the world
+    description: The national dish of each country. Check a dish, then tick Verified.
+    icon: public
+    files:
+      - name: countries
+        label: Dishes by country
+        file: src/data/countries.yaml
+        fields:
+          - name: countries
+            label: Countries
+            label_singular: Country
+            widget: list
+            root: true
+            allow_add: false
+            allow_remove: false
+            allow_reorder: false
+            allow_duplicate: false
+            collapsed: true
+            summary: '{{fields.name}} — {{fields.dish}}'
+            fields:
+              - { name: iso_n3, label: Code, widget: string, readonly: true }
+              - { name: name, label: Country, widget: string, readonly: true }
+              - name: continent
+                label: Continent
+                widget: select
+                readonly: true
+                options: [Africa, Americas, Asia, Europe, Oceania]
+              - { name: dish, label: Dish, widget: string }
+              - { name: dish_verified, label: Verified, widget: boolean }
+              - { name: note, label: Note, widget: string, required: false }
+              - name: centroid
+                label: Dot position (lon, lat)
+                widget: list
+                readonly: true
+                required: false
+                field: { name: coordinate, label: Coordinate, widget: number, value_type: float }

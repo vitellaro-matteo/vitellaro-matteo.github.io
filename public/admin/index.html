@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>matteo — content</title>
+  </head>
+  <body>
+    <!--
+      Sveltia CMS (docs/DESIGN.md §5, CMS). A static page, not an Astro route,
+      so the dev server never reloads it while you edit local files. The version
+      is pinned and checked with its hash; to update it, see docs/SETUP.md.
+    -->
+    <script
+      src="https://unpkg.com/@sveltia/cms@0.225.0/dist/sveltia-cms.js"
+      integrity="sha384-ogFdy9B8CeHzZkIPPzjI8IXJmGVFHCgfP7x2h8yPN2VE9Babe+gYIDUewT5zDYSl"
+      crossorigin="anonymous"
+    ></script>
+    <script type="module">
+      import { components, escapeBodyOnSave } from './cms.js';
+
+      for (const component of components) window.CMS.registerEditorComponent(component);
+      window.CMS.registerEventListener(escapeBodyOnSave);
+    </script>
+  </body>
+</html>

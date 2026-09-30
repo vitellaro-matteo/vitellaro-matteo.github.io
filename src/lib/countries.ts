@@ -9,7 +9,7 @@ export type Continent = (typeof CONTINENTS)[number];
 /** 193 UN member states, the Holy See and Palestine. */
 export const COUNTRY_TOTAL = 195;
 
-const countrySchema = z.object({
+export const countrySchema = z.object({
   iso_n3: z.string().regex(/^\d{3}$/, 'iso_n3 must be a quoted 3-digit code, e.g. "004"'),
   name: z.string(),
   continent: z.enum(CONTINENTS),
