@@ -2,11 +2,13 @@
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import EntryLayout from '../../components/EntryLayout.astro';
+import Frame from '../../components/Frame.astro';
 import { embeds } from '../../components/embeds';
 import { getJournal, type JournalEntry } from '../../lib/content';
 import { neighbours } from '../../lib/entries';
 import { readingTime } from '../../lib/text';
 import { formatDate } from '../../lib/dates';
+import { COLUMN_IMAGE } from '../../lib/images';
 import { routes } from '../../lib/paths';
 
 export async function getStaticPaths() {
@@ -43,6 +45,16 @@ const meta = [
     older={link(older)}
     newer={link(newer)}
   >
+    {entry.data.cover && (
+      <Frame
+        slot="media"
+        src={entry.data.cover}
+        alt=""
+        ratio="4 / 3"
+        sizes={COLUMN_IMAGE}
+        tone={2}
+      />
+    )}
     <Content components={embeds} />
   </EntryLayout>
 </Base>

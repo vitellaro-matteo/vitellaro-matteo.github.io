@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import Frame from '../../components/Frame.astro';
+import { CARD_IMAGE } from '../../lib/images';
 import MiniMap from '../../components/map/MiniMap.astro';
 import { getRecipes, emptyNotes } from '../../lib/content';
 import { getCooked } from '../../lib/challenge';
@@ -52,6 +53,7 @@ const cooked = (await getCooked()).size;
               src={recipe.data.image}
               alt={recipe.data.title}
               ratio="4 / 3"
+              sizes={CARD_IMAGE}
               tone={placeholderTone(i)}
             />
             <span class="text">

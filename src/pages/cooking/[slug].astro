@@ -7,6 +7,7 @@ import { embeds } from '../../components/embeds';
 import { getRecipes, type Recipe } from '../../lib/content';
 import { neighbours } from '../../lib/entries';
 import { formatDate } from '../../lib/dates';
+import { COLUMN_IMAGE } from '../../lib/images';
 import { routes } from '../../lib/paths';
 
 export async function getStaticPaths() {
@@ -49,7 +50,7 @@ const meta = [
     older={link(older)}
     newer={link(newer)}
   >
-    <Frame slot="media" src={r.image} alt={r.title} ratio="4 / 3" tone={2} />
+    <Frame slot="media" src={r.image} alt={r.title} ratio="4 / 3" sizes={COLUMN_IMAGE} tone={2} />
     <Content components={embeds} />
   </EntryLayout>
 </Base>

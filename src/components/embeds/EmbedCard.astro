@@ -1,12 +1,13 @@
 ---
 // Shared card shape for MDX embeds — docs/DESIGN.md §4.3.
+import type { ImageMetadata } from 'astro';
 import Frame from '../Frame.astro';
 
 interface Props {
   label: string;
   title: string;
   subtitle?: string;
-  image: string | null | undefined;
+  image: string | ImageMetadata | null | undefined;
   imageAlt: string;
   /** image height for a 96px-wide image: 96 square, 144 for 2:3, 72 for 4:3 */
   imageHeight: number;

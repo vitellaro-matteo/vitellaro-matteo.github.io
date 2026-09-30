@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import Frame from '../../components/Frame.astro';
+import { LIST_IMAGE } from '../../lib/images';
 import { getLists, type List } from '../../lib/content';
 import { routes } from '../../lib/paths';
 import { placeholderTone } from '../../lib/placeholder';
@@ -54,6 +55,7 @@ const square = (cat: string) => cat === 'songs' || cat === 'albums';
               src={item.image}
               alt={`${item.title} — ${item.creator}`}
               ratio={square(cat) ? '1 / 1' : '2 / 3'}
+              sizes={LIST_IMAGE}
               tone={placeholderTone(i)}
             />
             <div class="text">
