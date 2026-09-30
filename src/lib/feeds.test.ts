@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { selectFeed } from './feeds';
+import { feedSource, selectFeed } from './feeds';
 
 const live = { '../data/live/spotify.json': { source: 'live' } };
 const fixtures = {
@@ -26,5 +26,14 @@ describe('selectFeed', () => {
 
   it('returns null when there is neither', () => {
     expect(selectFeed('lastfm', { live, fixtures, useFixtures: true })).toBeNull();
+  });
+});
+
+describe('feedSource', () => {
+  it('says whether a feed is live, a fixture or missing', () => {
+    expect(feedSource('spotify', { live, fixtures, useFixtures: true })).toBe('live');
+    expect(feedSource('github', { live, fixtures, useFixtures: true })).toBe('fixture');
+    expect(feedSource('github', { live, fixtures, useFixtures: false })).toBeNull();
+    expect(feedSource('lastfm', { live, fixtures, useFixtures: true })).toBeNull();
   });
 });

@@ -30,11 +30,20 @@ export interface FeedSources {
   useFixtures: boolean;
 }
 
+/** Where a feed comes from: the live feed if there is one, else the fixture when allowed. */
+export function feedSource(name: FeedName, sources: FeedSources): 'live' | 'fixture' | null {
+  if (sources.live[`../data/live/${name}.json`] !== undefined) return 'live';
+  if (sources.useFixtures && sources.fixtures[`../data/feeds/${name}.json`] !== undefined) {
+    return 'fixture';
+  }
+  return null;
+}
+
 /** The live feed if there is one, else the fixture when fixtures are allowed, else null. */
 export function selectFeed(name: FeedName, sources: FeedSources): unknown {
-  const liveData = sources.live[`../data/live/${name}.json`];
-  if (liveData !== undefined) return liveData;
-  if (sources.useFixtures) return sources.fixtures[`../data/feeds/${name}.json`] ?? null;
+  const source = feedSource(name, sources);
+  if (source === 'live') return sources.live[`../data/live/${name}.json`];
+  if (source === 'fixture') return sources.fixtures[`../data/feeds/${name}.json`];
   return null;
 }
 
@@ -139,6 +148,8 @@ export interface GithubFeed {
 }
 
 export const spotify = load<SpotifyFeed>('spotify');
+/** Whether the Spotify feed is the real one, which holds every embedded track. */
+export const spotifyIsLive = feedSource('spotify', { live, fixtures, useFixtures }) === 'live';
 export const lastfm = load<LastfmFeed>('lastfm');
 export const letterboxd = load<LetterboxdFeed>('letterboxd');
 export const goodreads = load<GoodreadsFeed>('goodreads');

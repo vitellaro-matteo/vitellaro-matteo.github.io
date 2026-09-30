@@ -3,7 +3,7 @@
 // then the embedded tracks the fetcher adds. Explicit title/artist/cover props
 // override the feed.
 import EmbedCard from './EmbedCard.astro';
-import { spotify } from '../../lib/feeds';
+import { spotify, spotifyIsLive } from '../../lib/feeds';
 
 interface Props {
   id: string;
@@ -18,17 +18,20 @@ const found = [...(spotify?.tracks ?? []), ...(spotify?.embedded ?? [])].find((t
 const title = given.title ?? found?.title;
 const artist = given.artist ?? found?.artists.join(', ');
 
-// With a feed, an unknown id is an authoring mistake and should stop the build.
-// Without one (the fetch failed and nothing was cached), the embed is left out,
-// like the home-page card, so one outage can't block a deploy.
-if (!(title && artist) && spotify) {
+// The live feed holds every embedded track (the fetcher adds them), so there an
+// unknown id is an authoring mistake and stops the build. The sample feed only
+// knows its placeholders, and with no feed at all (the fetch failed and nothing
+// was cached) nothing is known: the embed is left out, like the home-page card,
+// so neither CI nor one outage can block a build.
+if (!(title && artist) && spotifyIsLive) {
   throw new Error(
     `<Track id="${id}"/>: track not found in the Spotify feed. ` +
       `Pass title="…" and artist="…" (and optionally cover="/media/…") directly.`,
   );
 }
 if (!(title && artist)) {
-  console.warn(`[feeds] no spotify feed: leaving out <Track id="${id}"/>`);
+  const feed = spotify ? 'not in the sample spotify feed' : 'no spotify feed';
+  console.warn(`[feeds] ${feed}: leaving out <Track id="${id}"/>`);
 }
 ---
 
